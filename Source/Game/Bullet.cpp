@@ -110,3 +110,6 @@ void CBullet::SetIfBoom(bool Status) {
 	_Boom.ToggleAnimation();
 	_IfBoom = Status;
 }
+CMovingBitmap CBullet::GetBulletBitmap() {
+	return _Bulletimage;
+}

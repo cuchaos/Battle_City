@@ -47,7 +47,8 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 		event.TrigGetProps(Prop, Stage1, _PlayerTank);
 	}
 
-	PlayerTankMove(&_PlayerTank);
+
+	CGameStateRun::PlayerTankMove(&_PlayerTank);
 	for (int i = 0; i < 4; i++) {
 		if (_TimerFinish >= 11000 && !(EnemyList[0].isBreak())) {
 			EnemyList[0].SetLife(0);
@@ -59,6 +60,9 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 		else if(!(EnemyList[i].isBreak())) {
 			EnemyTankMove(&EnemyList[i]);
 		}
+	}
+	if (_PlayerTank.GetSpawnAnimationDone()){
+		CGameStateRun::BulletHitCollision(&_PlayerTank, EnemyList);
 	}
 	_TimerFinish = clock();
 	
@@ -329,4 +333,20 @@ void CGameStateRun::TankCollisionMap(CTank *tank) {
 			tank->Move();
 		}*/
 	tank->Animation();
+}
+void CGameStateRun::BulletHitCollision(CPlayer *tank, vector<Enemy> &enemy) {
+	for (auto& enemyTank:enemy){
+		/*if (CMovingBitmap::IsOverlap(tank->GetTankBitmap(),enemyTank.GetTankBulletBitmap())){
+			tank->SetLife(0);
+		}
+		else*/ if (CMovingBitmap::IsOverlap(tank->GetTankBulletBitmap(), enemyTank.GetTankBitmap()))	{
+			enemyTank.SetLife(0);
+		}
+		else if (CMovingBitmap::IsOverlap(tank->GetTankBulletBitmap(), enemyTank.GetTankBulletBitmap())){
+			tank->SetBulletStatus(false);
+			tank->SetIfFire(false);
+			enemyTank.SetBulletStatus(false);
+			enemyTank.SetIfFire(false);
+		}
+	}
 }

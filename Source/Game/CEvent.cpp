@@ -45,10 +45,12 @@ void Event::TrigGetProps(GameProps& Props,Map& StageMap,CPlayer& Player) {
 	Props.SetIfShow(false);
 	int type = Props.GetType();
 	if (type == 0) {
-		//Player
+		Player.SetLife(Player.GetLife()+1);
+		Props.SetIfExist(false); 
 	}
 	else if (type == 1) {
 		Player.LevelUP();
+		Props.SetIfExist(false);
 	}
 	else if (type == 5) {
 		StageMap.SetGetShovel(Props.IfEffectExit());

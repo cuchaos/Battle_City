@@ -284,18 +284,6 @@ void CTank::ShowSpawnAnimation() {
 }
 
 /*Bullet*/
-void CTank::FireBullet() {
-	//if (clock() - _Last_time >= 1) {
-		if (_OriginAngle == Right || _OriginAngle == Left) {
-			_Bullet.SetBulletFire(_X, _Y + 25, _OriginAngle,_BulletFlySpeed);
-		}
-		else {
-			_Bullet.SetBulletFire(_X + 25, _Y, _OriginAngle, _BulletFlySpeed);
-		}
-		_Last_time = clock();
-		_IfFire = _Bullet.GetAlreadyFire();
-	//}
-}
 void CTank::SetBulletStatus(bool Status) {
 	if (_Bullet.GetAlreadyFire() == true && Status == false) {
 		_Bullet.SetIfBoom(true);

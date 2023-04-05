@@ -21,6 +21,7 @@ void GameProps::OnInit() {
 }
 void GameProps::SetGameProps() {
 	_IfShow = true;
+	_IfExist = true;
 	_IfCountDown = false;
 	_IfTouched = false;
 	//_Type = rand() % 8;
@@ -43,8 +44,15 @@ void GameProps::SetIfShow(bool Status) {
 bool GameProps::GetIfShow() {
 	return _IfShow;
 }
+
+void GameProps::SetIfExist(bool IfExist) {
+	_IfExist = IfExist;
+}
+bool GameProps::GetIfExist() {
+	return _IfExist;
+}
 void GameProps::OnShow() {
-	if (_IfShow) {
+	if (_IfShow && _IfExist) {
 		_Props.ShowBitmap();
 	}
 }

@@ -43,7 +43,8 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 			EnemyList[i].SetIfBattle(true);
 		}
 	}
-	if (CMovingBitmap::IsOverlap(_PlayerTank.GetTankBitmap(), Prop.GetPropBitmap()) || Prop.GetIfTouched() ) {
+	if ((CMovingBitmap::IsOverlap(_PlayerTank.GetTankBitmap(), Prop.GetPropBitmap()) || Prop.GetIfTouched()) 
+		&& Prop.GetIfExist()) {
 		event.TrigGetProps(Prop, Stage1, _PlayerTank);
 	}
 
@@ -179,7 +180,7 @@ void CGameStateRun::OnInit()                                  // 遊戲的初值
 					,{ 4, 4, 4, 4, 5, 1, 1, 1, 1, 1, 1, 4, 7, 7, 4, 1, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }//25
 	};
 	
-	Stage1.OnInit(tempstage5);
+	Stage1.OnInit(tempstage1);
 	
 	_MouseX = 0;
 	_MouseY = 0;
@@ -264,18 +265,19 @@ void CGameStateRun::OnShowText() {
 	pDC->SetTextColor(RGB(0, 180, 0));
 	_TimerFinish = clock();
 	CTextDraw::Print(pDC, 0, 0, (to_string(_TimerStart / CLOCKS_PER_SEC)+" "+ to_string(_TimerFinish )));
-	CTextDraw::Print(pDC, 0, 50, (to_string(EnemyList[0].isBreak())));
-	CTextDraw::Print(pDC, 0, 70, (to_string(EnemyList[1].isBreak())));
-	CTextDraw::Print(pDC, 0, 90, (to_string(EnemyList[2].isBreak())));
-	CTextDraw::Print(pDC, 0, 110, (to_string(EnemyList[3].isBreak())));
+	//CTextDraw::Print(pDC, 0, 50, (to_string(EnemyList[0].isBreak())));
+	//CTextDraw::Print(pDC, 0, 70, (to_string(EnemyList[1].isBreak())));
+	//CTextDraw::Print(pDC, 0, 90, (to_string(EnemyList[2].isBreak())));
+	//CTextDraw::Print(pDC, 0, 110, (to_string(EnemyList[3].isBreak())));
 	CTextDraw::Print(pDC, 0, 25, (to_string(_MouseX) + " " + to_string(_MouseY).c_str()));
 
-	
+	CTextDraw::Print(pDC, 0, 50, (to_string(_PlayerTank.GetLife())));
+	/*
 	vector<vector<int>> _tempcollision;
 	_tempcollision = Stage1.GetFrontGridsIndex(_PlayerTank._Bullet.GetNowFrontPlace());
 	CTextDraw::Print(pDC, 0, 50, (to_string(_tempcollision[0][0]) + "," + to_string(_tempcollision[0][1]).c_str()));
 	CTextDraw::Print(pDC, 0, 75, (to_string(_tempcollision[1][0]) + "," + to_string(_tempcollision[1][1]).c_str()));
-	
+	*/
 	ChooseStageScreen.OnShowText(pDC,fp);
 	CDDraw::ReleaseBackCDC();
 }
@@ -340,11 +342,6 @@ void CGameStateRun::TankCollisionMap(CTank *tank) {
 			tank->Move();
 	}
 	*/
-
-	/*if ((Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 2 || 
-			Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 2) && tank->GetIfGetShip() == true) {
-			tank->Move();
-		}*/
 
 	tank->Animation();
 }

@@ -130,6 +130,7 @@ namespace game_framework {
 		int _PlayerTankFrontX ;
 		int _PlayerTankFrontY ;
 		vector<vector<int>> _tempcollision;
+		//vector<vector<int>> _tempcollision;
 		Enemy _EnemyTank1, _EnemyTank4, _EnemyTank3, _EnemyTank2;
 		vector<Enemy> EnemyList = {};
 		//vector<int> EnemyTypeList = { 0,1,2,3 };

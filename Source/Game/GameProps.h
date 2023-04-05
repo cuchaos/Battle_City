@@ -6,22 +6,26 @@ namespace game_framework {
 		GameProps();
 		void OnInit();
 		void SetGameProps();
-		void OnShow();
+		void SetIfShow(bool IfShow);
+		void SetIfExist(bool IfExist);
 
 		int GetType();
-		void SetIfShow(bool IfShow);
 		bool GetIfShow();
 		bool GetIfTouched();
+		bool GetIfExist();
+
 
 		CMovingBitmap GetPropBitmap();
 
 		int IfEffectExit();
+		void OnShow();
 	private:
 		CMovingBitmap _Props;
 
 		clock_t _StartTime; 
 		bool _IfCountDown;
 		bool _IfTouched;
+		bool _IfExist;
 
 		int _X, _Y; //top left x,top y
 		bool _IfShow; // 甚麼時候要出現

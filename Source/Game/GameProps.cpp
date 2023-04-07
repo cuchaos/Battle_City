@@ -25,7 +25,7 @@ void GameProps::SetGameProps() {
 	_IfCountDown = false;
 	_IfTouched = false;
 	//_Type = rand() % 8;
-	_Type = 0;
+	_Type = 6;
 	_Props.SetFrameIndexOfBitmap(_Type);
 	_X = 100 + rand() % 768;
 	_Y = rand() % 768;
@@ -69,9 +69,12 @@ int GameProps::IfEffectExit() { // 1 is effect,-1 is no effect, 0 is 19second
 		_StartTime = clock();
 	}
 	if (_Type == 5) {
+		EffectTime = 21000;
+	}
+	if (_Type == 3) {
 		EffectTime = 10000;
 	}
-	if (EffectTime > clock() - _StartTime && clock() - _StartTime  >= EffectTime - 3000) {
+	if (_Type == 5 && EffectTime > clock() - _StartTime && clock() - _StartTime  >= EffectTime - 3000) {
 		return 0;
 	}
 	if (clock() - _StartTime >= EffectTime) {

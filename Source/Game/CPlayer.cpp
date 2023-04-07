@@ -19,6 +19,7 @@ CPlayer::CPlayer() : CTank(){
 	_KillEnemyList = {};
 	_OriginAngle = Up;
 	_TurnAngle = Up;
+
 	SetFaceDirection();
 }
 int CPlayer::GetPlayerScore() {
@@ -35,6 +36,26 @@ void CPlayer::LoadBitmap() {
 								"resources/Tank_Top_1.bmp"   ,"resources/Tank_Top_2.bmp", 
 								"resources/Tank_Bottom_1.bmp","resources/Tank_Bottom_2.bmp"},RGB(0,0,0));
 	_Bullet.LoadBitmap();
+}
+void CPlayer::FireBullet(int BulletOrder) {
+	if (BulletOrder == 1) {
+		if (_OriginAngle == Right || _OriginAngle == Left) {
+			_Bullet.SetBulletFire(_X, _Y + 25, _OriginAngle, _BulletFlySpeed);
+		}
+		else {
+			_Bullet.SetBulletFire(_X + 25, _Y, _OriginAngle, _BulletFlySpeed);
+		}
+		_IfFire = true;
+	}
+	else if(BulletOrder == 2){
+		if (_OriginAngle == Right || _OriginAngle == Left) {
+			_SecondBullet.SetBulletFire(_X, _Y + 25, _OriginAngle, _BulletFlySpeed);
+		}
+		else {
+			_SecondBullet.SetBulletFire(_X + 25, _Y, _OriginAngle, _BulletFlySpeed);
+		}
+		_IfSecondFire = true;
+	}
 }
 
 void CPlayer::KillEnemy(int type) {
@@ -57,8 +78,39 @@ void CPlayer::PlusPlayerScore(int score) {
 	_PlayerScore += score;
 }
 
+void CPlayer::SetBulletStatus(int BulletOrder, bool Status) { // 1 is first bullet , 2 is second bullet
+	if (BulletOrder == 1) {
+		if (_Bullet.GetAlreadyFire() == true && Status == false) {
+			_Bullet.SetIfBoom(true);
+		}
+		_Bullet.SetBulletAlreadyFire(Status);
+	}
+	else if (BulletOrder == 2) {
+		if (_SecondBullet.GetAlreadyFire() == true && Status == false) {
+			_SecondBullet.SetIfBoom(true);
+		}
+		_SecondBullet.SetBulletAlreadyFire(Status);
+	}
+}
+void CPlayer::SetIfFire(int FireOrder, bool Status) {
+	if (FireOrder == 1) {
+		_IfFire = Status;
+	}
+	else if(FireOrder == 2){
+		_IfSecondFire = Status;
+	}
+}
 void CPlayer::SetIfGetShip(bool Status) {
 	_IfGetShip = Status;
+}
+bool CPlayer::GetIfFire(int FireOrder) {
+	if (FireOrder == 1) {
+		return _IfFire;
+	}
+	else if (FireOrder == 2) {
+		return _IfSecondFire;
+	}
+	return false;
 }
 bool CPlayer::GetIfGetShip() {
 	return _IfGetShip;
@@ -67,11 +119,11 @@ void CPlayer::SetMoveOnIce(bool IfOnIce) {
 	
 }
 void CPlayer::LevelUP() {
-	if (_Level < 5) {
+	if (_Level < 4) {
 		_Level += 1;
 		if (_Level == 2) {
 			_AttackSpeedUP = true;
-			_BulletFlySpeed = 30;
+			_BulletFlySpeed = 24;
 		}
 		else if (_Level == 3) {
 			_DoubleAttack = true;
@@ -81,4 +133,24 @@ void CPlayer::LevelUP() {
 		}
 	}
 }
+
+void CPlayer::OnShow() {
+	if (_IfBattle && !isBreak()) {
+		if (!GetSpawnAnimationDone()) {
+			CTank::LoadBitmap();
+			ShowSpawnAnimation();
+		}
+		else {
+			_Tank.SetFrameIndexOfBitmap(_Frameindex);
+			_Tank.SetTopLeft(_X, _Y);
+			_Tank.ShowBitmap();
+		}
+		_Bullet.OnShow();
+	}
+	else if (isBreak() && !_isTankBrokenAnimationDone) {
+		_TankBrokenAnimation.SetTopLeft(_X, _Y);
+		TankbeHit();
+	}
+}
+
 

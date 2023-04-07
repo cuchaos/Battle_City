@@ -7,12 +7,14 @@ namespace game_framework {
 	{
 	public:
 		CTank();
+		~CTank();
 		int GetX1(); //Get top left 
 		int GetY1(); //Get top left 
 		int GetWidth();
 		int GetHeight();
 		int GetOriginAngle();
 		int GetLife();
+		int GetLevel();
 		bool GetEnemyisNeedRespawn();
 		void SetLife(int num);
 		bool isBreak();
@@ -20,7 +22,7 @@ namespace game_framework {
 		void Animation();							
 		void LocationPoint();				//位置校正
 		void Move();						//移動
-		void OnShow();						//SHOW
+		//virtual void OnShow();				//SHOW
 		void SetXY(int x, int y);			//座標設定
 		void TurnFace(UINT nChar);			//調整圖片方向
 		void SetFaceDirection();
@@ -28,19 +30,19 @@ namespace game_framework {
 		vector<vector<int>> GetTankFront();
 
 		// bullet
-		void FireBullet();
-		void SetBulletStatus(bool Status);
-		bool GetIfFire();
-		void SetIfFire(bool Status);
+		virtual void FireBullet(int BulletOrder) = 0;
+		virtual void SetBulletStatus(int BulletOrder,bool Status) = 0;
+		virtual void SetIfFire(int FireOrder, bool Status) = 0;
+		virtual bool GetIfFire(int FireOrder) = 0;
 		CBullet _Bullet;
 
+		//
 		void SetIfBattle(bool Battle);
 
 		void LoadBitmap();					//Load重生動畫
 		void ShowSpawnAnimation();			//Show重生動畫
 		bool GetSpawnAnimationDone();		//Get重生動畫播放完畢
 		
-		CMovingBitmap GetTankBulletBitmap();
 		CMovingBitmap GetTankBitmap();
 	protected:
 		enum Direction {

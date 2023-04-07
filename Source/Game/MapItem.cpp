@@ -70,28 +70,35 @@ MapItem::MapItem(int ItemType) { //傳某一個格子 type 進去
 		_OneGrid.SetTopLeft(484, 768);
 	}
 }
-void MapItem::ChangeGridState(int Direction,int Attack) { // direction  1 是磚牆左邊被打到(子彈往右飛) 
+void MapItem::ChangeGridState(int Direction,int TankLevel) { 
+	// direction  1 是磚牆左邊被打到(子彈往右飛) 
 	//, 2 是上面被打(子彈往下) , 3是右邊被打(子彈往左飛) , 4是 下面被打(子彈往上飛)
 	if (_Type == 4) {
-		if (_Health > 1) {  //如果是磚牆,生命值不變 (最高是2) 變圖片就好
-			_OneGrid.SetFrameIndexOfBitmap(Direction+1);
-			_Health -= Attack;
+		if (TankLevel < 4) {
+			if (_Health > 1) {  //如果是磚牆,生命值不變 (最高是2) 變圖片就好
+				_OneGrid.SetFrameIndexOfBitmap(Direction + 1);
+				_Health -= 1;
+			}
+			else {  //如果沒生命了變Type 1
+				_Type = 1;
+				_IfShoot = false;
+				_IfBreak = false;
+				_IfWalk = true;
+			}
 		}
-		else {  //如果沒生命了變Type 1
-			_Type = 1; 
+		else {
+			_Type = 1;
 			_IfShoot = false;
 			_IfBreak = false;
 			_IfWalk = true;
 		}
 	}
-	/*
-	else if (_Type == 5 && Attack > 3) { //如果ItemBuff = true (玩家的攻擊力夠)
+	else if (_Type == 5 && TankLevel == 4) { //如果Level = 4 (玩家的攻擊力夠)
 		_Type = 1;
 		_IfShoot = false;
 		_IfBreak = false;
 		_IfWalk = true;
 	}
-	*/
 }
 int MapItem::GetType() {
 	return _Type;

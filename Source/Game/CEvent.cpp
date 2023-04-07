@@ -41,7 +41,7 @@ void Event::TrigSetBattleMap(int& NowStage,Map& StageMap,int& EnemyNum, Menu& Ba
 void Event::TrigSetProps(GameProps& Props) {
 	Props.SetGameProps();
 }
-void Event::TrigGetProps(GameProps& Props,Map& StageMap,CPlayer& Player) {
+void Event::TrigGetProps(GameProps& Props,Map& StageMap,CPlayer& Player,vector<Enemy>& AllEnemy) {
 	Props.SetIfShow(false);
 	int type = Props.GetType();
 	if (type == 0) {
@@ -52,8 +52,27 @@ void Event::TrigGetProps(GameProps& Props,Map& StageMap,CPlayer& Player) {
 		Player.LevelUP();
 		Props.SetIfExist(false);
 	}
+	else if (type == 2) {
+		for (int i = 0; i < 4; i++) {
+			AllEnemy[i].SetLife(0);
+		}
+		Props.SetIfExist(false);
+	}
+	else if (type == 3) {
+		for (int i = 0; i < 4; i++) {
+			AllEnemy[i].SetIfGetTimeStop(true);
+			AllEnemy[i].SetGetTimeStop(Props.IfEffectExit());
+		}
+	}
 	else if (type == 5) {
 		StageMap.SetGetShovel(Props.IfEffectExit());
+	}
+	else if (type == 6) {
+		int NowLevel = Player.GetLevel();
+		for (int i = NowLevel; i < 5; i++) {
+			Player.LevelUP();
+		}
+		Props.SetIfExist(false);
 	}
 	else if (type == 7) {
 		Player.SetIfGetShip(true);

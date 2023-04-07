@@ -13,6 +13,7 @@
 using namespace game_framework;
 
 Enemy::Enemy() : CTank() {
+	_IfGetTimeStop = false;
 	_EnemyType = 0;
 	_X = Width * 14 + 100;
 	_Y = Height * 0;
@@ -62,6 +63,21 @@ void Enemy::SetEnemyType(int num) {
 }
 void Enemy::SetOriginAngle(int direction) {
 	_OriginAngle = direction;
+}
+void Enemy::SetIfGetTimeStop(bool IfGetTimeStop) {
+	_IfGetTimeStop = IfGetTimeStop;
+}
+
+void Enemy::SetGetTimeStop(int Status) {
+	if (Status == -1) {
+		_IfGetTimeStop = false;
+	}
+}
+bool Enemy::GetIfGetTimeStop() {
+	return _IfGetTimeStop;
+}
+CMovingBitmap Enemy::GetEnemyBitmap() {
+	return _Tank;
 }
 void Enemy::EnemyRandomDirection(){
 	_RandomDirection = rand() % 4;		// 隨機移動四個方向
@@ -113,9 +129,42 @@ void Enemy::LoadBitmap() {
 	}
 	_Bullet.LoadBitmap();
 }
-//void Enemy::EnemyRespawn(int type) {
-//	SetEnemyType(type);
-//	SetEnemyInit();
-//	//SetIfBattle(true);
-//	LoadBitmap();
-//}
+void Enemy::FireBullet(int BulletOrder) {
+	if (_OriginAngle == Right || _OriginAngle == Left) {
+		_Bullet.SetBulletFire(_X, _Y + 25, _OriginAngle, _BulletFlySpeed);
+	}
+	else {
+		_Bullet.SetBulletFire(_X + 25, _Y, _OriginAngle, _BulletFlySpeed);
+	}
+	_IfFire = _Bullet.GetAlreadyFire();
+}
+void Enemy::SetBulletStatus(int BulletOrder, bool Status) {
+	if (_Bullet.GetAlreadyFire() == true && Status == false) {
+		_Bullet.SetIfBoom(true);
+	}
+	_Bullet.SetBulletAlreadyFire(Status);
+}
+void Enemy::SetIfFire(int FireOrder, bool Status) {
+	_IfFire = Status;
+}
+bool Enemy::GetIfFire(int FireOrder) {
+	return _IfFire;
+}
+void Enemy::OnShow() {
+	if (_IfBattle && !isBreak()) {
+		if (!GetSpawnAnimationDone()) {
+			CTank::LoadBitmap();
+			ShowSpawnAnimation();
+		}
+		else {
+			_Tank.SetFrameIndexOfBitmap(_Frameindex);
+			_Tank.SetTopLeft(_X, _Y);
+			_Tank.ShowBitmap();
+		}
+		_Bullet.OnShow();
+	}
+	else if (isBreak() && !_isTankBrokenAnimationDone) {
+		_TankBrokenAnimation.SetTopLeft(_X, _Y);
+		TankbeHit();
+	}
+}

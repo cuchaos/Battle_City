@@ -114,10 +114,13 @@ namespace game_framework {
 		void OnMove();									// 移動遊戲元素
 		void OnShow();									// 顯示這個狀態的遊戲畫面
 		void PlayerTankMove(CPlayer *tank);
-		void EnemyTankMove(Enemy *tank);
+		void EnemyTankMove(Enemy *tank,int TankIndex);
 		void TankCollisionMap(CTank *tank);
-		void TankShoot(CTank *tank);
-		void BulletHitCollision(CPlayer *player,vector<Enemy>& enemy);
+		
+		bool ShootCollision(CBullet Bullet,int TankLevel); 
+		void PlayerShoot(CPlayer *tank);
+		void EnemyShoot(Enemy *tank);
+
 		int _NowStage;
 		int _EnemyNum;
 		Event event;
@@ -134,8 +137,8 @@ namespace game_framework {
 		//vector<vector<int>> _tempcollision;
 		Enemy _EnemyTank1, _EnemyTank4, _EnemyTank3, _EnemyTank2;
 		vector<Enemy> EnemyList = {};
+		vector<clock_t> EnemyFireLastTime = {};
 		//vector<int> EnemyTypeList = { 0,1,2,3 };
-
 	};
 
 	/////////////////////////////////////////////////////////////////////////////

@@ -36,6 +36,9 @@ CTank::CTank() :Width(32), Height(32) {
 	_isTankBrokenAnimationDone = false;
 	_isNeedRespawn = false;
 }
+CTank::~CTank() {
+
+}
 int CTank::GetX1(){
 	return _X;
 }
@@ -50,6 +53,9 @@ int CTank::GetLife() {
 }
 void CTank::SetLife(int num) {
 	_Life = num;
+}
+int CTank::GetLevel() {
+	return _Level;
 }
 bool CTank::isBreak() {
 	if (_Life == 0){
@@ -154,32 +160,28 @@ void CTank::LocationPoint() {
 	SetXY( _NowGrid[0]*Width+100 , _NowGrid[1]*Height );
 	for (int i = 0; i < 2; i++) _OffsetXY[i] = 0;			//轉向後坦克的定位回正 偏移數值歸零
 } 
-
+/*
 void CTank::OnShow() {
+	
 	if (_IfBattle && !isBreak()) {
-		if (!CTank::GetSpawnAnimationDone()) {
-			CTank::LoadBitmap();
-			CTank::ShowSpawnAnimation();
+		if (!GetSpawnAnimationDone()) {
+			LoadBitmap();
+			ShowSpawnAnimation();
 		}
-		else if(CTank::GetSpawnAnimationDone()){
+		else {
 			_Tank.SetFrameIndexOfBitmap(_Frameindex);
 			_Tank.SetTopLeft(_X, _Y);
 			_Tank.ShowBitmap();
 		}
 		_Bullet.OnShow();
 	}
-	/*else if (isBreak() && _IfBattle){
-		_Tank.UnshowBitmap();
-		_FrameTime = 0;
-		_IfBattle = false;
-		_isNeedRespawn = true;
-		_TankBrokenAnimation.SetTopLeft(_X, _Y);
-	}*/
 	else if (isBreak() && !_isTankBrokenAnimationDone) {
 		_TankBrokenAnimation.SetTopLeft(_X, _Y);
 		TankbeHit();
 	}
+	
 }
+*/
 
 
 /*Tank Front & Direction*/
@@ -284,30 +286,7 @@ void CTank::ShowSpawnAnimation() {
 }
 
 /*Bullet*/
-void CTank::SetBulletStatus(bool Status) {
-	if (_Bullet.GetAlreadyFire() == true && Status == false) {
-		_Bullet.SetIfBoom(true);
-	}
-	_Bullet.SetBulletAlreadyFire(Status);
-}
-void CTank::SetIfFire(bool Status) {
-	_IfFire = Status;
-}
-void CTank::FireBullet() {
-	if (clock() - _Last_time >= 10) {
-		if (_OriginAngle == Right || _OriginAngle == Left) {
-			_Bullet.SetBulletFire(_X, _Y + 25, _OriginAngle, _BulletFlySpeed);
-		}
-		else {
-			_Bullet.SetBulletFire(_X + 25, _Y, _OriginAngle, _BulletFlySpeed);
-		}
-		_Last_time = clock();
-		_IfFire = _Bullet.GetAlreadyFire();
-	}
-}
-bool CTank::GetIfFire() {
-	return _IfFire;
-}
+
 //Tank
 
 
@@ -318,9 +297,6 @@ int CTank::GetWidth() {
 	return _Tank.GetWidth();
 }
 
-CMovingBitmap CTank::GetTankBulletBitmap() {
-	return _Bullet.GetBulletBitmap();
-}
 CMovingBitmap CTank::GetTankBitmap() {
 	return _Tank;
 }

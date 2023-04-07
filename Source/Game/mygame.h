@@ -117,7 +117,7 @@ namespace game_framework {
 		void EnemyTankMove(Enemy *tank);
 		void TankCollisionMap(CTank *tank);
 		void TankShoot(CTank *tank);
-		void BulletHitCollision(CPlayer *player,vector<Enemy> &enemy);
+		void BulletHitCollision(CPlayer *player,vector<Enemy>& enemy);
 		int _NowStage;
 		int _EnemyNum;
 		Event event;

@@ -336,11 +336,11 @@ void CGameStateRun::TankCollisionMap(CTank *tank) {
 }
 void CGameStateRun::BulletHitCollision(CPlayer *tank, vector<Enemy> &enemy) {
 	for (auto& enemyTank:enemy){
-		/*if (CMovingBitmap::IsOverlap(tank->GetTankBitmap(),enemyTank.GetTankBulletBitmap())){
-			tank->SetLife(0);
-		}
-		else*/ if (CMovingBitmap::IsOverlap(tank->GetTankBulletBitmap(), enemyTank.GetTankBitmap()))	{
+		if (CMovingBitmap::IsOverlap(tank->GetTankBulletBitmap(), enemyTank.GetTankBitmap())) {
 			enemyTank.SetLife(0);
+		}
+		else if (CMovingBitmap::IsOverlap(enemyTank.GetTankBulletBitmap(), tank->GetTankBitmap())) {
+			tank->SetLife(0);
 		}
 		else if (CMovingBitmap::IsOverlap(tank->GetTankBulletBitmap(), enemyTank.GetTankBulletBitmap())){
 			tank->SetBulletStatus(false);

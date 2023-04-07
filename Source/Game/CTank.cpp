@@ -334,9 +334,9 @@ int CTank::GetBulletWidth() {
 	return _Bullet.GetWidth();
 }
 
-CMovingBitmap CTank::GetTankBitmap() {
-	return _Tank;
-}
 CMovingBitmap CTank::GetTankBulletBitmap() {
 	return _Bullet.GetBulletBitmap();
+}
+CMovingBitmap CTank::GetTankBitmap() {
+	return _Tank;
 }

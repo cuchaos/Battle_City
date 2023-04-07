@@ -13,11 +13,23 @@ namespace game_framework {
 		void SetEnemyHaveItem();				// 設定有道具
 		void SetEnemyType(int _num);			// 設定敵人類型
 		void SetEnemyInit();					// 設定初始化
+		void SetGetTimeStop(int Status);
+		void SetIfGetTimeStop(bool IfGetTimeStop);
 		void LoadBitmap();						
 		void SetOriginAngle(int _direction);	// 設定轉向方向 
 		void EnemyRandomDirection();			// 隨機設定前進方向
 		void EnemyRespawn(int type);
+		// bullet
 
+		void FireBullet(int BulletOrder) override;
+		void SetBulletStatus(int BulletOrder,bool Status) override;
+		void SetIfFire(int FireOrder, bool Status) override;
+		bool GetIfFire(int FireOrder) override;
+
+		bool GetIfGetTimeStop();
+		CMovingBitmap GetEnemyBitmap();
+
+		void OnShow();
 	private:
 		int _EnemyType;
 		int _EnemyScore;
@@ -25,6 +37,7 @@ namespace game_framework {
 		clock_t _TimeFinish, _TimeStart;		// 計時器 (結束-開始 = 經過時間)
 		bool _EnemyHaveItem;					// 道具
 		
+		bool _IfGetTimeStop;
 	};
 
 }

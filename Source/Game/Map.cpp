@@ -144,8 +144,8 @@ bool Map::GetIfBoardEdge(int Nowx, int Nowy,int NowHeight,int NowWidth,int NowDi
 	return true;
 }
 
-void Map::ShootWall(int Direction, int Attack,int x,int y) { //vector<CTank>
-	_Stage[x][y].ChangeGridState(Direction, Attack);
+void Map::ShootWall(int Direction, int TankLevel,int x,int y) { 
+	_Stage[x][y].ChangeGridState(Direction, TankLevel);
 }
 
 void Map::SetGetShovel(int EffectTime) {

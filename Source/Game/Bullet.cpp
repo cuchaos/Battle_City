@@ -34,6 +34,7 @@ void CBullet::SetBulletFire(int TankX,int TankY,int TankDirect,int BulletSpeed) 
 	if (_AlreadyFire == false) {
 		_Bulletimage.SetFrameIndexOfBitmap(TankDirect);
 		_AlreadyFire = true;
+		_BulletSpeed = BulletSpeed;
 		_Direction = TankDirect;
 		_NowBackPlace[0][0] = TankX;
 		_NowBackPlace[0][1] = TankY;
@@ -60,24 +61,25 @@ void CBullet::SetBulletFire(int TankX,int TankY,int TankDirect,int BulletSpeed) 
 		
 		_Bulletimage.SetTopLeft(_NowBackPlace[0][0], _NowBackPlace[0][1]);
 	}
-	else {
-		_NowBackPlace[0][0] += _Move[_Direction][0] * BulletSpeed;
-		_NowBackPlace[0][1] += _Move[_Direction][1] * BulletSpeed;
-		_NowBackPlace[1][0] += _Move[_Direction][0] * BulletSpeed;
-		_NowBackPlace[1][1] += _Move[_Direction][1] * BulletSpeed;
+}
+void CBullet::BulletFly() {
+	_NowBackPlace[0][0] += _Move[_Direction][0] * _BulletSpeed;
+	_NowBackPlace[0][1] += _Move[_Direction][1] * _BulletSpeed;
+	_NowBackPlace[1][0] += _Move[_Direction][0] * _BulletSpeed;
+	_NowBackPlace[1][1] += _Move[_Direction][1] * _BulletSpeed;
 
-		_NowFrontPlace[0][0] += _Move[_Direction][0] * BulletSpeed;
-		_NowFrontPlace[0][1] += _Move[_Direction][1] * BulletSpeed;
-		_NowFrontPlace[1][0] += _Move[_Direction][0] * BulletSpeed;
-		_NowFrontPlace[1][1] += _Move[_Direction][1] * BulletSpeed;
-	
-		_Bulletimage.SetTopLeft(_NowBackPlace[0][0], _NowBackPlace[0][1]);
-	}
+	_NowFrontPlace[0][0] += _Move[_Direction][0] * _BulletSpeed;
+	_NowFrontPlace[0][1] += _Move[_Direction][1] * _BulletSpeed;
+	_NowFrontPlace[1][0] += _Move[_Direction][0] * _BulletSpeed;
+	_NowFrontPlace[1][1] += _Move[_Direction][1] * _BulletSpeed;
+
+	_Bulletimage.SetTopLeft(_NowBackPlace[0][0], _NowBackPlace[0][1]);
+
 	if (_IfBoom == false) {
 		if (_Direction == Right || _Direction == Left) {
 			_Boom.SetTopLeft(_NowBackPlace[0][0], _NowBackPlace[0][1] - 18);
 		}
-		else{
+		else {
 			_Boom.SetTopLeft(_NowBackPlace[0][0] - 18, _NowBackPlace[0][1]);
 		}
 	}
@@ -121,7 +123,4 @@ bool CBullet::GetIfBoom() {
 void CBullet::SetIfBoom(bool Status) {
 	_Boom.ToggleAnimation();
 	_IfBoom = Status;
-}
-CMovingBitmap CBullet::GetBulletBitmap() {
-	return _Bulletimage;
 }

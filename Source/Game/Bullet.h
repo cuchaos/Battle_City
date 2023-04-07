@@ -18,6 +18,7 @@ namespace game_framework {
 		vector<vector<int>> GetNowFrontPlace();
 		int GetHeight();
 		int GetWidth();
+		CMovingBitmap GetBulletBitmap();
 	private:
 		enum Move {
 			Right, Down, Left, Up

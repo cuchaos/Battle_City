@@ -117,6 +117,7 @@ namespace game_framework {
 		void EnemyTankMove(Enemy *tank);
 		void TankCollisionMap(CTank *tank);
 		void TankShoot(CTank *tank);
+		void BulletHitCollision(CPlayer *player,vector<Enemy>& enemy);
 		int _NowStage;
 		int _EnemyNum;
 		Event event;
@@ -134,6 +135,7 @@ namespace game_framework {
 		Enemy _EnemyTank1, _EnemyTank4, _EnemyTank3, _EnemyTank2;
 		vector<Enemy> EnemyList = {};
 		//vector<int> EnemyTypeList = { 0,1,2,3 };
+
 	};
 
 	/////////////////////////////////////////////////////////////////////////////

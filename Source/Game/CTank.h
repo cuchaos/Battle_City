@@ -40,6 +40,7 @@ namespace game_framework {
 		void ShowSpawnAnimation();			//Show重生動畫
 		bool GetSpawnAnimationDone();		//Get重生動畫播放完畢
 		
+		CMovingBitmap GetTankBulletBitmap();
 		CMovingBitmap GetTankBitmap();
 	protected:
 		enum Direction {

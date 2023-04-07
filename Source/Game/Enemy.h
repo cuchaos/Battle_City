@@ -17,6 +17,7 @@ namespace game_framework {
 		void SetOriginAngle(int _direction);	// 設定轉向方向 
 		void EnemyRandomDirection();			// 隨機設定前進方向
 		void EnemyRespawn(int type);
+
 	private:
 		int _EnemyType;
 		int _EnemyScore;

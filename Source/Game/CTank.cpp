@@ -157,11 +157,11 @@ void CTank::LocationPoint() {
 
 void CTank::OnShow() {
 	if (_IfBattle && !isBreak()) {
-		if (!GetSpawnAnimationDone()) {
-			LoadBitmap();
-			ShowSpawnAnimation();
+		if (!CTank::GetSpawnAnimationDone()) {
+			CTank::LoadBitmap();
+			CTank::ShowSpawnAnimation();
 		}
-		else {
+		else if(CTank::GetSpawnAnimationDone()){
 			_Tank.SetFrameIndexOfBitmap(_Frameindex);
 			_Tank.SetTopLeft(_X, _Y);
 			_Tank.ShowBitmap();
@@ -318,6 +318,9 @@ int CTank::GetWidth() {
 	return _Tank.GetWidth();
 }
 
+CMovingBitmap CTank::GetTankBulletBitmap() {
+	return _Bullet.GetBulletBitmap();
+}
 CMovingBitmap CTank::GetTankBitmap() {
 	return _Tank;
 }

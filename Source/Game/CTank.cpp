@@ -290,7 +290,12 @@ void CTank::ShowSpawnAnimation() {
 }
 
 /*Bullet*/
-
+void CTank::SetBulletOwner(int who) {
+	_Bullet.SetOwner(who);
+}
+int CTank::GetBulletOwner() {
+	return _Bullet.GetOwner();
+}
 //Tank
 
 
@@ -303,4 +308,7 @@ int CTank::GetWidth() {
 
 CMovingBitmap CTank::GetTankBitmap() {
 	return _Tank;
+}
+CMovingBitmap CTank::GetBulletBitmap() {
+	return _Bullet.GetBitmap();
 }

@@ -36,7 +36,9 @@ namespace game_framework {
 		virtual void SetIfFire(int FireOrder, bool Status) = 0;
 		virtual bool GetIfFire(int FireOrder) = 0;
 		CBullet _Bullet;
-
+		void SetBulletOwner(int who);
+		int GetBulletOwner();
+		CMovingBitmap GetBulletBitmap();
 		//
 		void SetIfBattle(bool Battle);
 
@@ -45,6 +47,7 @@ namespace game_framework {
 		bool GetSpawnAnimationDone();		//Get重生動畫播放完畢
 		
 		CMovingBitmap GetTankBitmap();
+
 	protected:
 		enum Direction {
 			Right,

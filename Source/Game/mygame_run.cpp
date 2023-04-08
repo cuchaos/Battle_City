@@ -180,7 +180,7 @@ void CGameStateRun::OnInit()                                  // 遊戲的初值
 					,{ 4, 4, 4, 4, 5, 1, 1, 1, 1, 1, 1, 4, 7, 7, 4, 1, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }//25
 	};
 	
-	Stage1.OnInit(tempstage1);
+	Stage1.OnInit(tempstage5);
 	
 	_MouseX = 0;
 	_MouseY = 0;

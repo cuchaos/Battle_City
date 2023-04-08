@@ -20,6 +20,7 @@ CBullet::CBullet() {
 	_AlreadyFire = false;
 	_NowBackPlace = { {0,0},{0,0} };
 	_NowFrontPlace = { {0,0},{0,0} };
+	_Owner = 0;
 }
 
 void CBullet::LoadBitmap() {
@@ -88,7 +89,6 @@ void CBullet::OnShow() {
 	if (_AlreadyFire == true) {
 		_Bulletimage.ShowBitmap();
 	}
-
 	if (_IfBoom == true) {
 		if (_Boom.IsAnimationDone() == false) {
 			_Boom.ShowBitmap();
@@ -97,7 +97,6 @@ void CBullet::OnShow() {
 			_IfBoom = false;
 		}
 	}
-	
 }
 void CBullet::SetBulletAlreadyFire(bool BulletAlreadyFire) {
 	_AlreadyFire = BulletAlreadyFire;
@@ -123,4 +122,15 @@ bool CBullet::GetIfBoom() {
 void CBullet::SetIfBoom(bool Status) {
 	_Boom.ToggleAnimation();
 	_IfBoom = Status;
+}
+
+void CBullet::SetOwner(int who) {
+	_Owner = who;
+}
+int CBullet::GetOwner() {
+	return _Owner;
+}
+
+CMovingBitmap CBullet::GetBitmap() {
+	return _Bulletimage;
 }

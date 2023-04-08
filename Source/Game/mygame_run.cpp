@@ -273,12 +273,6 @@ void CGameStateRun::OnShowText() {
 	CTextDraw::Print(pDC, 0, 25, (to_string(_MouseX) + " " + to_string(_MouseY).c_str()));
 
 	CTextDraw::Print(pDC, 0, 50, (to_string(_PlayerTank.GetLevel())));
-	/*
-	vector<vector<int>> _tempcollision;
-	_tempcollision = Stage1.GetFrontGridsIndex(_PlayerTank._Bullet.GetNowFrontPlace());
-	CTextDraw::Print(pDC, 0, 50, (to_string(_tempcollision[0][0]) + "," + to_string(_tempcollision[0][1]).c_str()));
-	CTextDraw::Print(pDC, 0, 75, (to_string(_tempcollision[1][0]) + "," + to_string(_tempcollision[1][1]).c_str()));
-	*/
 	ChooseStageScreen.OnShowText(pDC,fp);
 	CDDraw::ReleaseBackCDC();
 }

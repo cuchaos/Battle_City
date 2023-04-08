@@ -18,6 +18,7 @@ CBullet::CBullet() {
 	//"resources/Bullet0.bmp","resources/Bullet1.bmp","resources/Bullet2.bmp","resources/Bullet3.bmp"
 	//_Boom.LoadBitmapByString({ "resources/Boom0.bmp","resources/Boom1.bmp","resources/Boom2.bmp" }, RGB(0, 0, 0));
 	_AlreadyFire = false;
+	_IfBoom = false;
 	_NowBackPlace = { {0,0},{0,0} };
 	_NowFrontPlace = { {0,0},{0,0} };
 }
@@ -47,6 +48,8 @@ void CBullet::SetBulletFire(int TankX,int TankY,int TankDirect,int BulletSpeed) 
 
 			_NowFrontPlace[1][0] = _NowFrontPlace[0][0];
 			_NowFrontPlace[1][1] = TankY + _Bulletimage.GetHeight();
+
+			_Boom.SetTopLeft(_NowBackPlace[0][0], _NowBackPlace[0][1] - 18);
 		}
 		else if(_Direction == Down || _Direction == Up){
 			_NowBackPlace[1][0] = TankX + _Bulletimage.GetWidth();
@@ -57,8 +60,9 @@ void CBullet::SetBulletFire(int TankX,int TankY,int TankDirect,int BulletSpeed) 
 
 			_NowFrontPlace[1][0] = TankX + _Bulletimage.GetWidth();
 			_NowFrontPlace[1][1] = _NowFrontPlace[0][1];
+
+			_Boom.SetTopLeft(_NowBackPlace[0][0] - 18, _NowBackPlace[0][1]);
 		}
-		
 		_Bulletimage.SetTopLeft(_NowBackPlace[0][0], _NowBackPlace[0][1]);
 	}
 }

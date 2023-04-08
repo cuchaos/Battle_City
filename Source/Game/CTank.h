@@ -14,6 +14,7 @@ namespace game_framework {
 		int GetHeight();
 		int GetOriginAngle();
 		int GetLife();
+		bool GetIfGetShip();
 		int GetLevel();
 		bool GetEnemyisNeedRespawn();
 		void SetLife(int num);
@@ -60,6 +61,7 @@ namespace game_framework {
 			ArmorTank,
 			HeavyTank,
 		};
+		bool _IfGetShip;
 		bool _IfBattle; //the var that decide onshow
 		bool _IfFire;
 		clock_t _Last_time; // last time that bullet move; (we can consider it as delay)

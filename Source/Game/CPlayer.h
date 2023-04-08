@@ -14,7 +14,6 @@ namespace game_framework {
 		void LevelUP();
 
 		int GetPlayerScore();
-		bool GetIfGetShip();
 
 		void SetIfGetShip(bool Status);
 		void SetMoveOnIce(bool IfOnIce);
@@ -28,8 +27,6 @@ namespace game_framework {
 		void OnShow();
 	private:
 		bool _IfSecondFire;
-
-		bool _IfGetShip;
 
 		int _Invicible;
 		int _PlayerScore;

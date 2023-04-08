@@ -342,32 +342,6 @@ bool CGameStateRun::ShootCollision(CBullet Bullet,int TankLevel) {
 		return true;
 	}
 	return false;
-	/*
-	if (tank->GetIfFire()) {
-		if (Stage1.GetIfBoardEdge(tank->_Bullet.GetNowBackPlace()[0][0], tank->_Bullet.GetNowBackPlace()[0][1]
-			, tank->_Bullet.GetHeight(), tank->_Bullet.GetWidth(), tank->_Bullet.GetDirection()) == true) {
-			_tempcollision = Stage1.GetFrontGridsIndex(tank->_Bullet.GetNowFrontPlace());
-			if (Stage1.GetMapItemInfo(_tempcollision[0][1], _tempcollision[0][0], 1) == true 
-				|| Stage1.GetMapItemInfo(_tempcollision[1][1], _tempcollision[1][0], 1) == true) { 
-				if (Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 4) {
-					Stage1.ShootWall(tank->_Bullet.GetDirection(), 1, _tempcollision[0][1], _tempcollision[0][0]);
-				}
-				if (Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 4) {
-					Stage1.ShootWall(tank->_Bullet.GetDirection(), 1, _tempcollision[1][1], _tempcollision[1][0]);
-				}
-				tank->SetBulletStatus(1,false);
-				tank->SetIfFire(false);
-			}
-		}
-		else {
-			tank->SetBulletStatus(1,false);
-			tank->SetIfFire(false);
-		}
-	}
-	if (tank->_Bullet.GetAlreadyFire()) {
-		tank->_Bullet.BulletFly();
-	}
-	*/
 }
 void CGameStateRun::TankCollisionMap(CTank *tank) {
 	tank->TankFront();

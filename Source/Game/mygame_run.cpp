@@ -205,6 +205,9 @@ void CGameStateRun::OnInit()                                  // 遊戲的初值
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	if (nChar == 0x5A || nChar == 0x58) {
+		if (_PlayerTank.GetLevel() > 3 && _PlayerTank.GetIfFire(1) == true) {
+			_PlayerTank.FireBullet(2);
+		}
 		_PlayerTank.FireBullet(1);
 	}
 	if (nChar == VK_DOWN)	_isHoldDownKey = true;
@@ -309,6 +312,15 @@ void CGameStateRun::PlayerShoot(CPlayer *tank) {
 		}
 		else {
 			tank->_Bullet.BulletFly();
+		}
+	}
+	if (tank->GetIfFire(2)) {
+		if (ShootCollision(tank->_SecondBullet, tank->GetLevel()) == true) {
+			tank->SetBulletStatus(2, false);
+			tank->SetIfFire(2, false);
+		}
+		else {
+			tank->_SecondBullet.BulletFly();
 		}
 	}
 }

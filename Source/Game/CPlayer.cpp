@@ -20,6 +20,7 @@ CPlayer::CPlayer() : CTank(){
 	_OriginAngle = Up;
 	_TurnAngle = Up;
 
+	_IfSecondFire = false;
 	SetFaceDirection();
 }
 int CPlayer::GetPlayerScore() {
@@ -36,9 +37,10 @@ void CPlayer::LoadBitmap() {
 								"resources/Tank_Top_1.bmp"   ,"resources/Tank_Top_2.bmp", 
 								"resources/Tank_Bottom_1.bmp","resources/Tank_Bottom_2.bmp"},RGB(0,0,0));
 	_Bullet.LoadBitmap();
+	_SecondBullet.LoadBitmap();
 }
 void CPlayer::FireBullet(int BulletOrder) {
-	if (BulletOrder == 1) {
+	if (BulletOrder == 1 && _Bullet.GetIfBoom() == false) {
 		if (_OriginAngle == Right || _OriginAngle == Left) {
 			_Bullet.SetBulletFire(_X, _Y + 25, _OriginAngle, _BulletFlySpeed);
 		}
@@ -47,7 +49,7 @@ void CPlayer::FireBullet(int BulletOrder) {
 		}
 		_IfFire = true;
 	}
-	else if(BulletOrder == 2){
+	else if(BulletOrder == 2 && _SecondBullet.GetIfBoom() == false){
 		if (_OriginAngle == Right || _OriginAngle == Left) {
 			_SecondBullet.SetBulletFire(_X, _Y + 25, _OriginAngle, _BulletFlySpeed);
 		}
@@ -123,7 +125,7 @@ void CPlayer::LevelUP() {
 		_Level += 1;
 		if (_Level == 2) {
 			_AttackSpeedUP = true;
-			_BulletFlySpeed = 24;
+			_BulletFlySpeed = 20;
 		}
 		else if (_Level == 3) {
 			_DoubleAttack = true;
@@ -146,6 +148,7 @@ void CPlayer::OnShow() {
 			_Tank.ShowBitmap();
 		}
 		_Bullet.OnShow();
+		_SecondBullet.OnShow();
 	}
 	else if (isBreak() && !_isTankBrokenAnimationDone) {
 		_TankBrokenAnimation.SetTopLeft(_X, _Y);

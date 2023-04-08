@@ -114,9 +114,6 @@ bool CPlayer::GetIfFire(int FireOrder) {
 	}
 	return false;
 }
-bool CPlayer::GetIfGetShip() {
-	return _IfGetShip;
-}
 void CPlayer::SetMoveOnIce(bool IfOnIce) {
 	
 }

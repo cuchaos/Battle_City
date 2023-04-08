@@ -28,6 +28,7 @@ CTank::CTank() :Width(32), Height(32) {
 	_DoubleAttack = false;
 	_IfFire = false;
 	_IfBattle = false;
+	_IfGetShip = false;
 	_FrontXY = { {0,0},{0,0} };						// 移動方向前方兩格子的XY
 	_NowGrid = { (_X-100) / Width, _Y / Height };	// 坦克現在的格子
 	_OffsetXY = { 0,0 };							// 偏移的XY距離
@@ -50,6 +51,9 @@ int CTank::GetOriginAngle() {
 }
 int CTank::GetLife() {
 	return _Life;
+}
+bool CTank::GetIfGetShip() {
+	return _IfGetShip;
 }
 void CTank::SetLife(int num) {
 	_Life = num;

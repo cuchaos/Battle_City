@@ -358,17 +358,21 @@ bool CGameStateRun::ShootCollision(CBullet Bullet,int TankLevel) {
 void CGameStateRun::TankCollisionMap(CTank *tank) {
 	tank->TankFront();
 	_tempcollision = Stage1.GetFrontGridsIndex(tank->GetTankFront());
-	if ((Stage1.GetMapItemInfo(_tempcollision[0][1], _tempcollision[0][0], 0) && Stage1.GetMapItemInfo(_tempcollision[1][1], _tempcollision[1][0], 0)) && \
+	if ((Stage1.GetMapItemInfo(_tempcollision[0][1], _tempcollision[0][0], 0) && Stage1.GetMapItemInfo(_tempcollision[1][1], _tempcollision[1][0], 0)) && 
 		Stage1.GetIfBoardEdge(tank->GetX1(), tank->GetY1(), tank->GetHeight(), tank->GetWidth(), tank->GetOriginAngle())) {
 		tank->Move();
 	}
-
-	/*
-	if ((Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 2 || 
-			Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 2) && tank->GetIfGetShip() == true) {
+	if (((Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 2 ||
+		Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 2) &&
+		Stage1.GetIfBoardEdge(tank->GetX1(), tank->GetY1(), tank->GetHeight(), tank->GetWidth(), tank->GetOriginAngle()))) {
+		if ((Stage1.GetMapItemInfo(_tempcollision[0][1], _tempcollision[0][0], 0) ||
+			Stage1.GetMapItemInfo(_tempcollision[1][1], _tempcollision[1][0], 0))) {
 			tank->Move();
+		}
+		else if (Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 2 &&
+			Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 2) {
+			tank->Move();
+		}
 	}
-	*/
-
 	tank->Animation();
 }

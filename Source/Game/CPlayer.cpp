@@ -80,7 +80,7 @@ void CPlayer::PlusPlayerScore(int score) {
 	_PlayerScore += score;
 }
 
-void CPlayer::SetBulletStatus(int BulletOrder, bool Status) { // 1 is first bullet , 2 is second bullet
+void CPlayer::SetBulletStatus(int BulletOrder, bool Status) { // 1 is first bullet , 2 is second bullet 
 	if (BulletOrder == 1) {
 		if (_Bullet.GetAlreadyFire() == true && Status == false) {
 			_Bullet.SetIfBoom(true);

@@ -205,6 +205,9 @@ void CGameStateRun::OnInit()                                  // 遊戲的初值
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	if (nChar == 0x5A || nChar == 0x58) {
+		if (_PlayerTank.GetLevel() > 3 && _PlayerTank.GetIfFire(1) == true) {
+			_PlayerTank.FireBullet(2);
+		}
 		_PlayerTank.FireBullet(1);
 	}
 	if (nChar == VK_DOWN)	_isHoldDownKey = true;
@@ -317,6 +320,15 @@ void CGameStateRun::PlayerShoot(CPlayer *tank) {
 			tank->_Bullet.BulletFly();
 		}
 	}
+	if (tank->GetIfFire(2)) {
+		if (ShootCollision(tank->_SecondBullet, tank->GetLevel()) == true) {
+			tank->SetBulletStatus(2, false);
+			tank->SetIfFire(2, false);
+		}
+		else {
+			tank->_SecondBullet.BulletFly();
+		}
+	}
 }
 void CGameStateRun::EnemyShoot(Enemy *tank) {
 	if (tank->GetIfFire(1)) {
@@ -348,32 +360,6 @@ bool CGameStateRun::ShootCollision(CBullet Bullet,int TankLevel) {
 		return true;
 	}
 	return false;
-	/*
-	if (tank->GetIfFire()) {
-		if (Stage1.GetIfBoardEdge(tank->_Bullet.GetNowBackPlace()[0][0], tank->_Bullet.GetNowBackPlace()[0][1]
-			, tank->_Bullet.GetHeight(), tank->_Bullet.GetWidth(), tank->_Bullet.GetDirection()) == true) {
-			_tempcollision = Stage1.GetFrontGridsIndex(tank->_Bullet.GetNowFrontPlace());
-			if (Stage1.GetMapItemInfo(_tempcollision[0][1], _tempcollision[0][0], 1) == true 
-				|| Stage1.GetMapItemInfo(_tempcollision[1][1], _tempcollision[1][0], 1) == true) { 
-				if (Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 4) {
-					Stage1.ShootWall(tank->_Bullet.GetDirection(), 1, _tempcollision[0][1], _tempcollision[0][0]);
-				}
-				if (Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 4) {
-					Stage1.ShootWall(tank->_Bullet.GetDirection(), 1, _tempcollision[1][1], _tempcollision[1][0]);
-				}
-				tank->SetBulletStatus(1,false);
-				tank->SetIfFire(false);
-			}
-		}
-		else {
-			tank->SetBulletStatus(1,false);
-			tank->SetIfFire(false);
-		}
-	}
-	if (tank->_Bullet.GetAlreadyFire()) {
-		tank->_Bullet.BulletFly();
-	}
-	*/
 }
 void CGameStateRun::TankCollisionMap(CTank *tank) {
 	tank->TankFront();

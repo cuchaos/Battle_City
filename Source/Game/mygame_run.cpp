@@ -52,7 +52,7 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 	}
 	PlayerTankMove(&_PlayerTank);
 	for (int i = 0; i < 4; i++) {
-		if (_TimerFinish >= 11000 && !(EnemyList[0].isBreak())) {
+		if (16000 >= _TimerFinish &&_TimerFinish >= 15000 && !(EnemyList[0].isBreak())) {
 			EnemyList[0].SetLife(0);
 			/*EnemyList[0].TankbeHit();*/
 			//if (!EnemyList[0].GetSpawnAnimationDone()){
@@ -283,7 +283,7 @@ void CGameStateRun::PlayerTankMove(CPlayer *tank) {
 		_isHoldLeftKey == true || \
 		_isHoldDownKey == true || \
 		_isHoldUpKey == true) && \
-		tank->GetSpawnAnimationDone())
+		tank->GetSpawnAnimationDone() && !tank->isBreak())
 	{
 		tank->TurnFace(_HoldKey);
 		TankCollisionMap(tank);

@@ -34,7 +34,7 @@ CTank::CTank() :Width(32), Height(32) {
 	_OffsetXY = { 0,0 };							// 偏移的XY距離
 	_SpawnAnimationDone = false;					// 重生動畫結束撥放
 	_BulletFlySpeed = 15;
-	_isTankBrokenAnimationDone = false;
+	//_isTankBrokenAnimationDone = true;
 	_isNeedRespawn = false;
 }
 CTank::~CTank() {
@@ -57,18 +57,12 @@ bool CTank::GetIfGetShip() {
 }
 void CTank::SetLife(int num) {
 	_Life = num;
+	if (_Life ==0){
+		_isTankBrokenAnimationDone = false;
+	}
 }
 int CTank::GetLevel() {
 	return _Level;
-}
-bool CTank::isBreak() {
-	if (_Life == 0){
-		return true;
-	}
-	return false;
-}
-bool CTank::GetEnemyisNeedRespawn() {
-	return _isNeedRespawn;
 }
 void CTank::SetXY(int _x, int _y) {
 	_X = _x;
@@ -111,11 +105,21 @@ void CTank::Move() {
 	}
 }
 
+bool CTank::GetEnemyisNeedRespawn() {
+	return _isNeedRespawn;
+}
+bool CTank::isBreak() {
+	if (_Life == 0){
+		return true;
+	}
+	return false;
+}
 void CTank::TankbeHit() {
 	if (_FrameTime == 26){
+		//_Life = 1;
 		_isTankBrokenAnimationDone = true;
 		_SpawnAnimationDone = false;
-		_isNeedRespawn = true;
+		//_isNeedRespawn = true;
 	}
 	else {
 		if (_FrameTime > 26){
@@ -284,6 +288,8 @@ void CTank::ShowSpawnAnimation() {
 	_FrameTime += 1;
 	if (_FrameTime == 60) {
 		_SpawnAnimationDone = true;
+		_isNeedRespawn = false;
+		_Life = 1;
 	}
 	_SpawnAnimation.SetTopLeft(_X, _Y);
 	_SpawnAnimation.ShowBitmap();

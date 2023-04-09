@@ -134,7 +134,7 @@ void CPlayer::LevelUP() {
 }
 
 void CPlayer::OnShow() {
-	if (_IfBattle && !isBreak()) {
+	if (_IfBattle && !isBreak() && !_isNeedRespawn) {
 		if (!GetSpawnAnimationDone()) {
 			CTank::LoadBitmap();
 			ShowSpawnAnimation();

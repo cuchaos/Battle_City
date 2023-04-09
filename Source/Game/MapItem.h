@@ -7,6 +7,7 @@ namespace game_framework {
 		MapItem(int Type);
 		void SetTopLeft(int x, int y);
 		void OnShow();
+		void GrassOnsShow();
 		void ChangeGridState(int Direction,int Attack); // 子彈方向(磚牆)
 
 		bool GetIfShoot();

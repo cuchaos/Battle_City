@@ -180,11 +180,12 @@ void CGameStateRun::OnInit()                                  // 遊戲的初值
 					,{ 4, 4, 4, 4, 5, 1, 1, 1, 1, 1, 1, 4, 7, 7, 4, 1, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }//25
 	};
 	
-	Stage1.OnInit(tempstage5);
+	Stage1.OnInit(tempstage17);
 	
 	_MouseX = 0;
 	_MouseY = 0;
-	
+	_IfOnIce = false;
+	_OnIceCountDown = 0;
 	_PlayerTank.LoadBitmap();
 	_PlayerTankFrontX = 0;
 	_PlayerTankFrontY = 0;
@@ -260,6 +261,9 @@ void CGameStateRun::OnShow()
 	for (int i = 0; i < 4; i++) {
 		EnemyList[i].OnShow();
 	}
+	if (Stage1.GetIfGrassInMap()) {
+Stage1.OnShowGrass();
+	}
 	OnShowText();
 }
 void CGameStateRun::OnShowText() {
@@ -268,7 +272,7 @@ void CGameStateRun::OnShowText() {
 	pDC->SetBkMode(TRANSPARENT);
 	pDC->SetTextColor(RGB(0, 180, 0));
 	_TimerFinish = clock();
-	CTextDraw::Print(pDC, 0, 0, (to_string(_TimerStart / CLOCKS_PER_SEC)+" "+ to_string(_TimerFinish )));
+	CTextDraw::Print(pDC, 0, 0, (to_string(_TimerStart / CLOCKS_PER_SEC) + " " + to_string(_TimerFinish)));
 	//CTextDraw::Print(pDC, 0, 50, (to_string(EnemyList[0].isBreak())));
 	//CTextDraw::Print(pDC, 0, 70, (to_string(EnemyList[1].isBreak())));
 	//CTextDraw::Print(pDC, 0, 90, (to_string(EnemyList[2].isBreak())));
@@ -276,25 +280,29 @@ void CGameStateRun::OnShowText() {
 	CTextDraw::Print(pDC, 0, 25, (to_string(_MouseX) + " " + to_string(_MouseY).c_str()));
 
 	CTextDraw::Print(pDC, 0, 50, (to_string(_PlayerTank.GetLevel())));
-	ChooseStageScreen.OnShowText(pDC,fp);
+	ChooseStageScreen.OnShowText(pDC, fp);
 	CDDraw::ReleaseBackCDC();
 }
 
 void CGameStateRun::PlayerTankMove(CPlayer *tank) {
-	if ((_isHoldRightKey == true || \
-		_isHoldLeftKey == true || \
-		_isHoldDownKey == true || \
-		_isHoldUpKey == true) && \
+	if ((_isHoldRightKey == true || 
+		_isHoldLeftKey == true || 
+		_isHoldDownKey == true || 
+		_isHoldUpKey == true) && 
 		tank->GetSpawnAnimationDone())
 	{
 		tank->TurnFace(_HoldKey);
 		TankCollisionMap(tank);
 	}
+	else if(tank->GetSpawnAnimationDone() && _IfOnIce && _OnIceCountDown > 0) {
+		_OnIceCountDown -= 2;
+		TankCollisionMap(tank);
+	}
 	PlayerShoot(tank);
 }
 
-void CGameStateRun::EnemyTankMove(Enemy *tank,int TankIndex) {
-	if (tank->GetSpawnAnimationDone()){
+void CGameStateRun::EnemyTankMove(Enemy *tank, int TankIndex) {
+	if (tank->GetSpawnAnimationDone()) {
 		tank->EnemyRandomDirection();
 		TankCollisionMap(tank);
 		if (tank->GetIfFire(1) == false && clock() - EnemyFireLastTime[TankIndex] >= 1000) {
@@ -306,9 +314,9 @@ void CGameStateRun::EnemyTankMove(Enemy *tank,int TankIndex) {
 }
 void CGameStateRun::PlayerShoot(CPlayer *tank) {
 	if (tank->GetIfFire(1)) {
-		if (ShootCollision(tank->_Bullet,tank->GetLevel()) == true) {
+		if (ShootCollision(tank->_Bullet, tank->GetLevel()) == true) {
 			tank->SetBulletStatus(1, false);
-			tank->SetIfFire(1,false);
+			tank->SetIfFire(1, false);
 		}
 		else {
 			tank->_Bullet.BulletFly();
@@ -335,7 +343,7 @@ void CGameStateRun::EnemyShoot(Enemy *tank) {
 		}
 	}
 }
-bool CGameStateRun::ShootCollision(CBullet Bullet,int TankLevel) {
+bool CGameStateRun::ShootCollision(CBullet Bullet, int TankLevel) {
 	if (Stage1.GetIfBoardEdge(Bullet.GetNowBackPlace()[0][0], Bullet.GetNowBackPlace()[0][1]
 		, Bullet.GetHeight(), Bullet.GetWidth(), Bullet.GetDirection()) == true) {
 		_tempcollision = Stage1.GetFrontGridsIndex(Bullet.GetNowFrontPlace());
@@ -358,20 +366,33 @@ bool CGameStateRun::ShootCollision(CBullet Bullet,int TankLevel) {
 void CGameStateRun::TankCollisionMap(CTank *tank) {
 	tank->TankFront();
 	_tempcollision = Stage1.GetFrontGridsIndex(tank->GetTankFront());
-	if ((Stage1.GetMapItemInfo(_tempcollision[0][1], _tempcollision[0][0], 0) && Stage1.GetMapItemInfo(_tempcollision[1][1], _tempcollision[1][0], 0)) && 
-		Stage1.GetIfBoardEdge(tank->GetX1(), tank->GetY1(), tank->GetHeight(), tank->GetWidth(), tank->GetOriginAngle())) {
-		tank->Move();
-	}
-	if (((Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 2 ||
-		Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 2) &&
-		Stage1.GetIfBoardEdge(tank->GetX1(), tank->GetY1(), tank->GetHeight(), tank->GetWidth(), tank->GetOriginAngle()))) {
-		if ((Stage1.GetMapItemInfo(_tempcollision[0][1], _tempcollision[0][0], 0) ||
+	if(Stage1.GetIfBoardEdge(tank->GetX1(), tank->GetY1(), tank->GetHeight(), tank->GetWidth(), tank->GetOriginAngle())) {
+		if ((Stage1.GetMapItemInfo(_tempcollision[0][1], _tempcollision[0][0], 0) && 
 			Stage1.GetMapItemInfo(_tempcollision[1][1], _tempcollision[1][0], 0))) {
 			tank->Move();
+			/*
+			if ((Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 3 &&
+				Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 3)) {
+				if (_IfOnIce == false) {
+					_IfOnIce = true;
+					_OnIceCountDown = 64;
+				}
+			}
+			else {
+				_IfOnIce = false;
+			}
+			*/
 		}
-		else if (Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 2 &&
-			Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 2) {
-			tank->Move();
+		if (((Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 2 ||
+			Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 2))) {
+			if ((Stage1.GetMapItemInfo(_tempcollision[0][1], _tempcollision[0][0], 0) ||
+				Stage1.GetMapItemInfo(_tempcollision[1][1], _tempcollision[1][0], 0))) {
+				tank->Move();
+			}
+			else if (Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 2 &&
+				Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 2) {
+				tank->Move();
+			}
 		}
 	}
 	tank->Animation();

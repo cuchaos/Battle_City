@@ -293,7 +293,6 @@ void CTank::ShowSpawnAnimation() {
 
 //Tank
 
-
 int CTank::GetHeight() {
 	return _Tank.GetHeight();
 }

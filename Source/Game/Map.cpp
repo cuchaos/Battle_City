@@ -19,6 +19,7 @@ void Map::OnInit(vector<vector<int>> stage) {
 	_IfShowMap = false;
 	_IfGetShovel = false;
 	_IfShovelShine = false;
+	_IfGrassInMap = false;
 	_BlackGrid.LoadBitmapByString({ "resources/BlackGrid.bmp" }, RGB(105, 105, 105));
 	_BlackGrid.SetTopLeft(100, 0);
 	for (int i = 0; i < 26; i++) {
@@ -27,6 +28,9 @@ void Map::OnInit(vector<vector<int>> stage) {
 			temp.push_back(MapItem(stage[i][j]));
 			if (stage[i][j] != 1 && stage[i][j] != 7) {
 				temp[j].SetTopLeft(j * 32 + 100, i * 32);
+			}
+			if (stage[i][j] == 6) {
+				_IfGrassInMap = true;
 			}
 		}
 		_Stage.push_back(temp);
@@ -62,10 +66,15 @@ void Map::OnInit(vector<vector<int>> stage) {
 void Map::SetIfShowMap(bool Status) {
 	_IfShowMap = Status;
 }
-bool Map::GetIfShowMap() {
-	return _IfShowMap;
+void Map::OnShowGrass() {
+	if (_IfShowMap) {
+		for (int i = 0; i < 26; i++) {
+			for (int j = 0; j < 26; j++) {
+				_Stage[i][j].GrassOnsShow();
+			}
+		}
+	}
 }
-
 void Map::OnShow() {
 	if (_IfShowMap) {
 		_BlackGrid.ShowBitmap();
@@ -104,7 +113,12 @@ bool Map::GetMapItemInfo(int x, int y, int gettype) {
 int Map::GetType(int x, int y) {
 	return _Stage[x][y].GetType();
 }
-
+bool Map::GetIfShowMap() {
+	return _IfShowMap;
+}
+bool Map::GetIfGrassInMap() {
+	return _IfGrassInMap;
+}
 vector<vector<int>> Map::GetFrontGridsIndex(vector<vector<int>> GridXY) { // u should give the two of pixel xy in front of your object
 	vector<vector<int>> FrontIndex = { {0,0},{0,0} };
 	FrontIndex[0][0] = (GridXY[0][0] - 100)/ 32;

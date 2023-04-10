@@ -12,7 +12,7 @@ namespace game_framework {
 		void SpawnAfter5Second();
 		void PlusPlayerScore(int score);
 		void LevelUP();
-
+		void PlayerInit();
 		int GetPlayerScore();
 
 		void SetIfGetShip(bool Status);

@@ -12,14 +12,18 @@
 using namespace game_framework;
 
 CPlayer::CPlayer() : CTank(){
+	_PlayerScore = 0;
+	PlayerInit();
+}
+void CPlayer::PlayerInit() {
 	_IfGetShip = false;
 	_X = Width * 8 + 100;
 	_Y = Height * 24;
-	_PlayerScore = 0;
+	_Life = 1;
 	_KillEnemyList = {};
 	_OriginAngle = Up;
 	_TurnAngle = Up;
-
+	_NowGrid = { (_X - 100) / Width, _Y / Height };
 	_IfSecondFire = false;
 	SetFaceDirection();
 }
@@ -134,22 +138,23 @@ void CPlayer::LevelUP() {
 }
 
 void CPlayer::OnShow() {
-	if (_IfBattle && !isBreak() && !_isNeedRespawn) {
-		if (!GetSpawnAnimationDone()) {
+	if (_IfBattle) {
+		if (_TankState == Spawn) {
+			PlayerInit();
 			CTank::LoadBitmap();
 			ShowSpawnAnimation();
 		}
-		else {
+		else if (_TankState == Live) {
 			_Tank.SetFrameIndexOfBitmap(_Frameindex);
 			_Tank.SetTopLeft(_X, _Y);
 			_Tank.ShowBitmap();
+			_Bullet.OnShow();
+			_SecondBullet.OnShow();
 		}
-		_Bullet.OnShow();
-		_SecondBullet.OnShow();
-	}
-	else if (isBreak() && !_isTankBrokenAnimationDone) {
-		_TankBrokenAnimation.SetTopLeft(_X, _Y);
-		TankbeHit();
+		else if (_TankState == Death) {
+			_TankBrokenAnimation.SetTopLeft(_X, _Y);
+			TankbeHit();
+		}
 	}
 }
 

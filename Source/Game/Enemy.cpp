@@ -42,6 +42,7 @@ void Enemy::SetEnemyInit() {
 	_OriginAngle = Down;
 	_TurnAngle = Down;
 	_NowGrid = { (_X - 100) / Width, _Y / Height };
+	_Life = 1;
 	SetFaceDirection();
 	if (_EnemyType == LightTank){
 		_EnemyScore = 100;						// 坦克分數
@@ -153,19 +154,21 @@ bool Enemy::GetIfFire(int FireOrder) {
 	return _IfFire;
 }
 void Enemy::OnShow() {
-	if (_IfBattle /*&& !isBreak()*/) {
-		if (!GetSpawnAnimationDone() && _isTankBrokenAnimationDone) {
+	if (_IfBattle) {
+		if (_TankState == Spawn) {
 			SetEnemyInit();
 			CTank::LoadBitmap();
+			//_Tank.SetTopLeft(_X,_Y);
 			ShowSpawnAnimation();
 		}
-		else if(!isBreak()) {
+		else if(_TankState == Live) {
+			//Enemy::LoadBitmap();
 			_Tank.SetFrameIndexOfBitmap(_Frameindex);
 			_Tank.SetTopLeft(_X, _Y);
 			_Tank.ShowBitmap();
 			_Bullet.OnShow();
 		}
-		else if (isBreak() && !_isTankBrokenAnimationDone) {
+		else if (_TankState == Death) {
 			_TankBrokenAnimation.SetTopLeft(_X, _Y);
 			TankbeHit();
 		}

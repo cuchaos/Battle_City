@@ -16,7 +16,6 @@ namespace game_framework {
 		int GetLife();
 		bool GetIfGetShip();
 		int GetLevel();
-		bool GetEnemyisNeedRespawn();
 		void SetLife(int num);
 		bool isBreak();
 		void TankFront();					//坦克前方的格子做定位
@@ -44,8 +43,7 @@ namespace game_framework {
 
 		void LoadBitmap();					//Load重生動畫
 		void ShowSpawnAnimation();			//Show重生動畫
-		bool GetSpawnAnimationDone();		//Get重生動畫播放完畢
-		
+		int GetTankState();
 		CMovingBitmap GetTankBitmap();
 
 	protected:
@@ -61,17 +59,20 @@ namespace game_framework {
 			ArmorTank,
 			HeavyTank,
 		};
+		enum TankState{
+			Spawn,
+			Live,
+			Death,
+		};
+		int _TankState;
 		bool _IfGetShip;
 		bool _IfBattle; //the var that decide onshow
 		bool _IfFire;
 		clock_t _Last_time; // last time that bullet move; (we can consider it as delay)
 		int _BulletFlySpeed;
-		bool _isNeedRespawn;
 		CMovingBitmap _Tank;
 		CMovingBitmap _SpawnAnimation;
 		CMovingBitmap _TankBrokenAnimation;
-		bool _SpawnAnimationDone;
-		bool _isTankBrokenAnimationDone;
 		int Width,Height;							//OneGrid寬,高
 		int _X,_Y;									//地圖座標								
 		int _FrameTime,_Frameindex,_FrameSecond;	//動畫計時器,動畫初始禎,計時秒數

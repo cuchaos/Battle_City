@@ -108,6 +108,11 @@ namespace game_framework {
 			Left,
 			Up,
 		};
+		enum TankState {
+			Spawn,
+			Live,
+			Death,
+		};
 		void OnShowText();
 		int _MouseX;
 		int _MouseY;

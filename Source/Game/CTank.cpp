@@ -277,3 +277,11 @@ CMovingBitmap CTank::GetTankBitmap() {
 CMovingBitmap CTank::GetBulletBitmap() {
 	return _Bullet.GetBitmap();
 }
+
+void CTank::SetTankBulletBroken(bool broken) {
+	_Bullet.SetBulletBroken(broken);
+}
+
+bool CTank::GetTankBulletBroken() {
+	return _Bullet.GetBulletBroken();
+}

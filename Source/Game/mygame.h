@@ -119,14 +119,13 @@ namespace game_framework {
 		void OnMove();									// 移動遊戲元素
 		void OnShow();									// 顯示這個狀態的遊戲畫面
 		void PlayerTankMove(CPlayer *tank);
-		void EnemyTankMove(Enemy *tank,int TankIndex);
+		void EnemyTankMove(Enemy *tank);
 		void TankCollisionMap(CTank *tank);
 		
 		bool ShootCollision(CBullet Bullet,int TankLevel); 
 		void BulletCollision(CPlayer *tank,vector<Enemy> &enemyList);
 		void PlayerShoot(CPlayer *tank);
 		void EnemyShoot(Enemy *tank);
-		
 
 		int _NowStage;
 		int _EnemyNum;

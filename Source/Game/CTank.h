@@ -45,6 +45,8 @@ namespace game_framework {
 		void ShowSpawnAnimation();			//Show重生動畫
 		int GetTankState();
 		CMovingBitmap GetTankBitmap();
+		void SetTankBulletBroken(bool broken);
+		bool GetTankBulletBroken();
 
 	protected:
 		enum Direction {

@@ -21,10 +21,13 @@ namespace game_framework {
 		void SetOwner(int who);
 		int GetOwner();
 		CMovingBitmap GetBitmap();
+		bool GetBulletBroken();
+		void SetBulletBroken(bool broken);
 	private:
 		enum Move {
 			Right, Down, Left, Up
 		};
+		bool _BulletBroken;
 		int _Owner;					// player =1, enemy =0
 		bool _AlreadyFire;
 		bool _IfBoom;

@@ -30,12 +30,10 @@ CTank::CTank() :Width(32), Height(32) {
 	_IfBattle = false;
 	_IfGetShip = false;
 	_FrontXY = { {0,0},{0,0} };						// 移動方向前方兩格子的XY
-	_NowGrid = { (_X-100) / Width, _Y / Height };	// 坦克現在的格子
+	/*_NowGrid = { (_X-100) / Width, _Y / Height };*/	// 坦克現在的格子
 	_OffsetXY = { 0,0 };							// 偏移的XY距離
-	_SpawnAnimationDone = false;					// 重生動畫結束撥放
 	_BulletFlySpeed = 15;
-	_isTankBrokenAnimationDone = false;
-	_isNeedRespawn = false;
+	_TankState = Spawn;
 }
 CTank::~CTank() {
 
@@ -56,19 +54,18 @@ bool CTank::GetIfGetShip() {
 	return _IfGetShip;
 }
 void CTank::SetLife(int num) {
-	_Life = num;
+	if (_Life > 0){
+		_Life = num;
+	}
+	if (_Life ==0){
+		_TankState = Death;
+	}
 }
 int CTank::GetLevel() {
 	return _Level;
 }
-bool CTank::isBreak() {
-	if (_Life == 0){
-		return true;
-	}
-	return false;
-}
-bool CTank::GetEnemyisNeedRespawn() {
-	return _isNeedRespawn;
+int CTank::GetTankState() {
+	return _TankState;
 }
 void CTank::SetXY(int _x, int _y) {
 	_X = _x;
@@ -113,19 +110,13 @@ void CTank::Move() {
 
 void CTank::TankbeHit() {
 	if (_FrameTime == 26){
-		_isTankBrokenAnimationDone = true;
-		_SpawnAnimationDone = false;
-		_isNeedRespawn = true;
+		_TankState = Spawn;
 	}
 	else {
 		if (_FrameTime > 26){
 			_FrameTime = 0;
 		}
-		else {
-			/*if (_FrameTime % 26 == 0) {
-				_TankBrokenAnimation.SetFrameIndexOfBitmap(0);
-			}
-			else*/ 
+		else { 
 			if (_FrameTime % 26 == 5) {
 				_TankBrokenAnimation.SetFrameIndexOfBitmap(1);
 			}
@@ -164,29 +155,6 @@ void CTank::LocationPoint() {
 	SetXY( _NowGrid[0]*Width+100 , _NowGrid[1]*Height );
 	for (int i = 0; i < 2; i++) _OffsetXY[i] = 0;			//轉向後坦克的定位回正 偏移數值歸零
 } 
-/*
-void CTank::OnShow() {
-	
-	if (_IfBattle && !isBreak()) {
-		if (!GetSpawnAnimationDone()) {
-			LoadBitmap();
-			ShowSpawnAnimation();
-		}
-		else {
-			_Tank.SetFrameIndexOfBitmap(_Frameindex);
-			_Tank.SetTopLeft(_X, _Y);
-			_Tank.ShowBitmap();
-		}
-		_Bullet.OnShow();
-	}
-	else if (isBreak() && !_isTankBrokenAnimationDone) {
-		_TankBrokenAnimation.SetTopLeft(_X, _Y);
-		TankbeHit();
-	}
-	
-}
-*/
-
 
 /*Tank Front & Direction*/
 void CTank::SetFaceDirection() {
@@ -254,9 +222,6 @@ vector<vector<int>> CTank::GetTankFront(){
 	return _FrontXY;
 }
 /*Tank Spawn*/
-bool CTank::GetSpawnAnimationDone() {
-	return _SpawnAnimationDone;
-}
 void CTank::LoadBitmap() {
 	_SpawnAnimation.LoadBitmapByString({"resources/Spawn_1.bmp",
 										"resources/Spawn_2.bmp",
@@ -283,14 +248,19 @@ void CTank::ShowSpawnAnimation() {
 	}
 	_FrameTime += 1;
 	if (_FrameTime == 60) {
-		_SpawnAnimationDone = true;
+		_TankState = Live;
 	}
 	_SpawnAnimation.SetTopLeft(_X, _Y);
 	_SpawnAnimation.ShowBitmap();
 }
 
 /*Bullet*/
-
+void CTank::SetBulletOwner(int who) {
+	_Bullet.SetOwner(who);
+}
+int CTank::GetBulletOwner() {
+	return _Bullet.GetOwner();
+}
 //Tank
 
 int CTank::GetHeight() {
@@ -303,3 +273,14 @@ int CTank::GetWidth() {
 CMovingBitmap CTank::GetTankBitmap() {
 	return _Tank;
 }
+CMovingBitmap CTank::GetBulletBitmap() {
+	return _Bullet.GetBitmap();
+}
+//
+//void CTank::SetTankBulletBroken(bool broken) {
+//	_Bullet.SetBulletBroken(broken);
+//}
+//
+//bool CTank::GetTankBulletBroken() {
+//	return _Bullet.GetBulletBroken();
+//}

@@ -61,13 +61,11 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 			EnemyTankMove(&EnemyList[i]);
 			if (EnemyList[i].GetIfFire(1) == false && clock() - EnemyFireLastTime[i] >= 1000) {
 				EnemyList[i].FireBullet(1);
-				/*EnemyList[i].SetTankBulletBroken(false);*/
 				EnemyFireLastTime[i] = clock();
 			}
 			EnemyShoot(&EnemyList[i]);
 		}
 	}
-	//BulletCollision(&_PlayerTank, EnemyList);
 	_TimerFinish = clock();
 	
 
@@ -235,7 +233,7 @@ void CGameStateRun::PlayerShoot(CPlayer *tank) {
 		}
 		else if (BulletBulletCollision()) {
 		}
-		else /*if(!tank->GetTankBulletBroken())*/{
+		else{
 			tank->_Bullet.BulletFly();
 		}
 	}
@@ -243,7 +241,7 @@ void CGameStateRun::PlayerShoot(CPlayer *tank) {
 		if (ShootCollision(tank->_SecondBullet, tank->GetLevel()) == true) {
 			tank->SetBulletStatus(2, false);
 			tank->SetIfFire(2, false);
-			/*tank->SetTankBulletBroken(true);*/
+			
 		}
 		else if (PlayerBulletCollision()) {
 			tank->SetBulletStatus(1, false);
@@ -251,7 +249,7 @@ void CGameStateRun::PlayerShoot(CPlayer *tank) {
 		}
 		else if (BulletBulletCollision()) {
 		}
-		else/* if (!tank->GetTankBulletBroken())*/ {
+		else{
 			tank->_SecondBullet.BulletFly();
 		}
 	}
@@ -262,7 +260,7 @@ void CGameStateRun::EnemyShoot(Enemy *tank) {
 		if (ShootCollision(tank->_Bullet, tank->GetLevel())) {
 			tank->SetBulletStatus(1, false);
 			tank->SetIfFire(1, false);
-			/*tank->SetTankBulletBroken(true);*/
+			
 		}
 		else if (EnemyBulletCollision()) {
 			tank->SetBulletStatus(1, false);
@@ -270,7 +268,7 @@ void CGameStateRun::EnemyShoot(Enemy *tank) {
 		}
 		else if (BulletBulletCollision()) {
 		}
-		else /*if (!tank->GetTankBulletBroken()) */{
+		else {
 			tank->_Bullet.BulletFly();
 		}
 	}
@@ -298,8 +296,8 @@ bool CGameStateRun::ShootCollision(CBullet Bullet, int TankLevel) {
 void CGameStateRun::TankCollisionMap(CTank *tank) {
 	tank->TankFront();
 	_tempcollision = Stage1.GetFrontGridsIndex(tank->GetTankFront());
-	if(Stage1.GetIfBoardEdge(tank->GetX1(), tank->GetY1(), tank->GetHeight(), tank->GetWidth(), tank->GetOriginAngle())) {
-		if ((Stage1.GetMapItemInfo(_tempcollision[0][1], _tempcollision[0][0], 0) && 
+	if (Stage1.GetIfBoardEdge(tank->GetX1(), tank->GetY1(), tank->GetHeight(), tank->GetWidth(), tank->GetOriginAngle())) {
+		if ((Stage1.GetMapItemInfo(_tempcollision[0][1], _tempcollision[0][0], 0) &&
 			Stage1.GetMapItemInfo(_tempcollision[1][1], _tempcollision[1][0], 0))) {
 			tank->Move();
 		}
@@ -315,6 +313,8 @@ void CGameStateRun::TankCollisionMap(CTank *tank) {
 					tank->Move();
 				}
 			}
+		}
+	}
 	tank->Animation();
 }
 bool CGameStateRun::PlayerBulletCollision(){
@@ -322,11 +322,7 @@ bool CGameStateRun::PlayerBulletCollision(){
 		if (CMovingBitmap::IsOverlap(_PlayerTank.GetBulletBitmap(), enemy.GetTankBitmap()) \
 			&& _PlayerTank.GetBulletOwner() == 1 \
 			&& enemy.GetTankState() == Live\
-			/*&& _PlayerTank.GetIfFire(1)*/) {
-			//enemy.SetLife(enemy.GetLife() - 1);
-			/*_PlayerTank.SetBulletStatus(1, false);
-			_PlayerTank.SetIfFire(1, false);
-			_PlayerTank.SetTankBulletBroken(true);*/
+			&& _PlayerTank.GetIfFire(1)) {
 			enemy.SetLife(0);
 			return true;
 		}
@@ -338,11 +334,7 @@ bool CGameStateRun::EnemyBulletCollision() {
 		if (CMovingBitmap::IsOverlap(enemy.GetBulletBitmap(), _PlayerTank.GetTankBitmap()) \
 			&& enemy.GetBulletOwner() == 2 \
 			&& _PlayerTank.GetTankState() == Live\
-			/*&& enemy.GetIfFire(1)*/) {
-			//_PlayerTank.SetLife(_PlayerTank.GetLife() - 1);
-			//enemy.SetBulletStatus(1, false);
-			//enemy.SetIfFire(1, false);
-			//enemy.SetTankBulletBroken(true);
+			&& enemy.GetIfFire(1)) {
 			_PlayerTank.SetLife(0);
 			return true;
 		}

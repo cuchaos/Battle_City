@@ -21,6 +21,7 @@ CBullet::CBullet() {
 	_IfBoom = false;
 	_NowBackPlace = { {0,0},{0,0} };
 	_NowFrontPlace = { {0,0},{0,0} };
+	_BulletBroken = false;
 	_Owner = 0;
 }
 
@@ -138,3 +139,11 @@ int CBullet::GetOwner() {
 CMovingBitmap CBullet::GetBitmap() {
 	return _Bulletimage;
 }
+
+//
+//bool CBullet::GetBulletBroken() {
+//	return _BulletBroken;
+//}
+//void CBullet::SetBulletBroken(bool broken) {
+//	_BulletBroken = broken;
+//}

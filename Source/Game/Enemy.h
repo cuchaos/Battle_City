@@ -18,7 +18,7 @@ namespace game_framework {
 		void LoadBitmap();						
 		void SetOriginAngle(int _direction);	// 設定轉向方向 
 		void EnemyRandomDirection();			// 隨機設定前進方向
-		void EnemyRespawn(int type);
+		//void EnemyRespawn(int type);
 		// bullet
 
 		void FireBullet(int BulletOrder) override;

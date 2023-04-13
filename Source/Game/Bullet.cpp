@@ -140,10 +140,10 @@ CMovingBitmap CBullet::GetBitmap() {
 	return _Bulletimage;
 }
 
-
-bool CBullet::GetBulletBroken() {
-	return _BulletBroken;
-}
-void CBullet::SetBulletBroken(bool broken) {
-	_BulletBroken = broken;
-}
+//
+//bool CBullet::GetBulletBroken() {
+//	return _BulletBroken;
+//}
+//void CBullet::SetBulletBroken(bool broken) {
+//	_BulletBroken = broken;
+//}

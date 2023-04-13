@@ -57,7 +57,7 @@ void CTank::SetLife(int num) {
 	if (_Life > 0){
 		_Life = num;
 	}
-	else if (_Life ==0){
+	if (_Life ==0){
 		_TankState = Death;
 	}
 }
@@ -277,11 +277,11 @@ CMovingBitmap CTank::GetTankBitmap() {
 CMovingBitmap CTank::GetBulletBitmap() {
 	return _Bullet.GetBitmap();
 }
-
-void CTank::SetTankBulletBroken(bool broken) {
-	_Bullet.SetBulletBroken(broken);
-}
-
-bool CTank::GetTankBulletBroken() {
-	return _Bullet.GetBulletBroken();
-}
+//
+//void CTank::SetTankBulletBroken(bool broken) {
+//	_Bullet.SetBulletBroken(broken);
+//}
+//
+//bool CTank::GetTankBulletBroken() {
+//	return _Bullet.GetBulletBroken();
+//}

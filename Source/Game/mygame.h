@@ -123,7 +123,9 @@ namespace game_framework {
 		void TankCollisionMap(CTank *tank);
 		
 		bool ShootCollision(CBullet Bullet,int TankLevel); 
-		void BulletCollision(CPlayer *tank,vector<Enemy> &enemyList);
+		bool PlayerBulletCollision();
+		bool EnemyBulletCollision();
+		bool BulletBulletCollision();
 		void PlayerShoot(CPlayer *tank);
 		void EnemyShoot(Enemy *tank);
 

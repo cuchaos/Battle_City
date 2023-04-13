@@ -56,13 +56,13 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 			EnemyTankMove(&EnemyList[i]);
 			if (EnemyList[i].GetIfFire(1) == false && clock() - EnemyFireLastTime[i] >= 1000) {
 				EnemyList[i].FireBullet(1);
-				EnemyList[i].SetTankBulletBroken(false);
+				/*EnemyList[i].SetTankBulletBroken(false);*/
 				EnemyFireLastTime[i] = clock();
 			}
 			EnemyShoot(&EnemyList[i]);
 		}
 	}
-	BulletCollision(&_PlayerTank, EnemyList);
+	//BulletCollision(&_PlayerTank, EnemyList);
 	_TimerFinish = clock();
 	
 
@@ -212,7 +212,7 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		}
 		/*else if (){
 		}*/
-		_PlayerTank.SetTankBulletBroken(false);
+		/*_PlayerTank.SetTankBulletBroken(false);*/
 		_PlayerTank.FireBullet(1);
 	}
 	if (nChar == VK_DOWN)	_isHoldDownKey = true;
@@ -303,9 +303,15 @@ void CGameStateRun::PlayerShoot(CPlayer *tank) {
 		if (ShootCollision(tank->_Bullet,tank->GetLevel())) {
 			tank->SetBulletStatus(1, false);
 			tank->SetIfFire(1,false);
-			tank->SetTankBulletBroken(true);
+			/*tank->SetTankBulletBroken(true);*/
 		}
-		else if(!tank->GetTankBulletBroken()){
+		else if (PlayerBulletCollision()){
+			tank->SetBulletStatus(1, false);
+			tank->SetIfFire(1, false);
+		}
+		else if (BulletBulletCollision()) {
+		}
+		else /*if(!tank->GetTankBulletBroken())*/{
 			tank->_Bullet.BulletFly();
 		}
 	}
@@ -313,9 +319,15 @@ void CGameStateRun::PlayerShoot(CPlayer *tank) {
 		if (ShootCollision(tank->_SecondBullet, tank->GetLevel()) == true) {
 			tank->SetBulletStatus(2, false);
 			tank->SetIfFire(2, false);
-			tank->SetTankBulletBroken(true);
+			/*tank->SetTankBulletBroken(true);*/
 		}
-		else if (!tank->GetTankBulletBroken()) {
+		else if (PlayerBulletCollision()) {
+			tank->SetBulletStatus(1, false);
+			tank->SetIfFire(1, false);
+		}
+		else if (BulletBulletCollision()) {
+		}
+		else/* if (!tank->GetTankBulletBroken())*/ {
 			tank->_SecondBullet.BulletFly();
 		}
 	}
@@ -326,9 +338,15 @@ void CGameStateRun::EnemyShoot(Enemy *tank) {
 		if (ShootCollision(tank->_Bullet, tank->GetLevel())) {
 			tank->SetBulletStatus(1, false);
 			tank->SetIfFire(1, false);
-			tank->SetTankBulletBroken(true);
+			/*tank->SetTankBulletBroken(true);*/
 		}
-		else if (!tank->GetTankBulletBroken()) {
+		else if (EnemyBulletCollision()) {
+			tank->SetBulletStatus(1, false);
+			tank->SetIfFire(1, false);
+		}
+		else if (BulletBulletCollision()) {
+		}
+		else /*if (!tank->GetTankBulletBroken()) */{
 			tank->_Bullet.BulletFly();
 		}
 	}
@@ -363,36 +381,47 @@ void CGameStateRun::TankCollisionMap(CTank *tank) {
 	tank->Animation();
 }
 
-void CGameStateRun::BulletCollision(CPlayer *tank,vector<Enemy> &enemyList){
-	for (auto& enemy:enemyList){
-		if (CMovingBitmap::IsOverlap(tank->GetBulletBitmap(), enemy.GetTankBitmap()) \
-			&& tank->GetBulletOwner() == 1 \
+bool CGameStateRun::PlayerBulletCollision(){
+	for (auto& enemy : EnemyList) {
+		if (CMovingBitmap::IsOverlap(_PlayerTank.GetBulletBitmap(), enemy.GetTankBitmap()) \
+			&& _PlayerTank.GetBulletOwner() == 1 \
 			&& enemy.GetTankState() == Live\
-			&& tank->GetIfFire(1)) {
+			/*&& _PlayerTank.GetIfFire(1)*/) {
 			//enemy.SetLife(enemy.GetLife() - 1);
-			tank->SetBulletStatus(1, false);
-			tank->SetIfFire(1, false);
-			tank->SetTankBulletBroken(true);
+			/*_PlayerTank.SetBulletStatus(1, false);
+			_PlayerTank.SetIfFire(1, false);
+			_PlayerTank.SetTankBulletBroken(true);*/
 			enemy.SetLife(0);
-			
-		}
-		else if (CMovingBitmap::IsOverlap(enemy.GetBulletBitmap(), tank->GetTankBitmap()) \
-			&& enemy.GetBulletOwner() == 2 \
-			&& tank->GetTankState() == Live\
-			&& enemy.GetIfFire(1)) {
-			//tank->SetLife(tank->GetLife() - 1);
-			enemy.SetBulletStatus(1, false);
-			enemy.SetIfFire(1, false);
-			enemy.SetTankBulletBroken(true);
-			tank->SetLife(0);
-		}
-		else if (CMovingBitmap::IsOverlap(tank->GetBulletBitmap(), enemy.GetBulletBitmap()) && enemy.GetIfFire(1) && tank->GetIfFire(1)) {
-			enemy.SetBulletStatus(1, false);
-			enemy.SetIfFire(1, false);
-			enemy.SetTankBulletBroken(true);
-			tank->SetBulletStatus(1, false);
-			tank->SetIfFire(1, false);
-			tank->SetTankBulletBroken(true);
+			return true;
 		}
 	}
+	return false;
+}
+bool CGameStateRun::EnemyBulletCollision() {
+	for (auto& enemy : EnemyList) {
+		if (CMovingBitmap::IsOverlap(enemy.GetBulletBitmap(), _PlayerTank.GetTankBitmap()) \
+			&& enemy.GetBulletOwner() == 2 \
+			&& _PlayerTank.GetTankState() == Live\
+			/*&& enemy.GetIfFire(1)*/) {
+			//_PlayerTank.SetLife(_PlayerTank.GetLife() - 1);
+			//enemy.SetBulletStatus(1, false);
+			//enemy.SetIfFire(1, false);
+			//enemy.SetTankBulletBroken(true);
+			_PlayerTank.SetLife(0);
+			return true;
+		}
+	}
+	return false;
+}
+bool CGameStateRun::BulletBulletCollision() {
+	for (auto& enemy : EnemyList) {
+		if (CMovingBitmap::IsOverlap(_PlayerTank.GetBulletBitmap(), enemy.GetBulletBitmap()) && enemy.GetIfFire(1) && _PlayerTank.GetIfFire(1)) {
+			_PlayerTank.SetBulletStatus(1, false);
+			_PlayerTank.SetIfFire(1, false);
+			enemy.SetBulletStatus(1, false);
+			enemy.SetIfFire(1, false);
+			return true;
+		}
+	}
+	return false;
 }

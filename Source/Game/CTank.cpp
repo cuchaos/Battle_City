@@ -22,7 +22,7 @@ CTank::CTank() :Width(32), Height(32) {
 	_Frameindex = 4;						// 動畫偵 (0 is east,1 south, 2 west,3 north)*2
 	_FrameSecond = 2;						// 動畫變換速度
 	_LocationDistance = Height/4;			// 定位點距離
-	_MovementSpeed = 2;						// 移動速度
+	_MovementSpeed = 4;						// 移動速度
 	_AttackSpeedUP = false;
 	_CanBreakIron = false;
 	_DoubleAttack = false;

@@ -130,7 +130,8 @@ namespace game_framework {
 
 		CPlayer _PlayerTank;
 		bool _isHoldUpKey, _isHoldDownKey, _isHoldRightKey, _isHoldLeftKey;
-		bool _IfOnIce;
+		bool _IfBattling; //the var that depend on Map and Gray Menu and tank and props show 
+		
 		int _OnIceCountDown; // If we on ice,we should go without any keydown,this is 
 							// the go on counter 2 Grid,so is 64 pixel
 		int _HoldKey;

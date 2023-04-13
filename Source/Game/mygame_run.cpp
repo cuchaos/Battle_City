@@ -33,16 +33,21 @@ void CGameStateRun::OnBeginState()
 
 void CGameStateRun::OnMove()                            // 移動遊戲元素
 {
-	if (_NowStage == -1) { // NowStage == -1  代表正在選 , == 0 代表正在戰鬥(已經選地圖了), == 1 ~ 35代表已經選完了
+	if (_NowStage == -1 && !_IfBattling) { // NowStage == -1  代表正在選, == 1 ~ 35代表已經選完了
 		event.TrigSelectingStage(ChooseStageScreen);
+		return;
 	}
-	if (_NowStage >= 1) {
-		event.TrigSetBattleMap(_NowStage,Stage1, _EnemyNum,ChooseStageScreen);
+	
+	if (_NowStage >= 1 && !_IfBattling) {
+		event.TrigSetBattleMap(_AllStage[_NowStage-1],Stage1, _EnemyNum,ChooseStageScreen);
+		_IfBattling = true;
 		_PlayerTank.SetIfBattle(true);
 		for (int i = 0; i < 4; i++) {
 			EnemyList[i].SetIfBattle(true);
 		}
+		return;
 	}
+
 	if ((CMovingBitmap::IsOverlap(_PlayerTank.GetTankBitmap(), Prop.GetPropBitmap()) || Prop.GetIfTouched())
 		&& Prop.GetIfExist()) {
 		event.TrigGetProps(Prop, Stage1, _PlayerTank,EnemyList);
@@ -69,122 +74,12 @@ void CGameStateRun::OnInit()                                  // 遊戲的初值
 {
 	srand((unsigned)time(NULL));
 	_NowStage = -1;
+	_IfBattling = false;
 	ChooseStageScreen.LoadBitMap();
-	vector<vector<int>> tempstage1,tempstage2,tempstage5,tempstage17;
-	tempstage1= { { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
-	,{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
-	,{ 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }
-	,{ 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }
-	,{ 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }
-	,{ 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }
-	,{ 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 5, 5, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }
-	,{ 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 5, 5, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }
-	,{ 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }
-	,{ 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }
-	,{ 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }
-	,{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
-	,{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
-	,{ 4, 4, 1, 1, 4, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 1, 1, 4, 4 }
-	,{ 5, 5, 1, 1, 4, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 1, 1, 5, 5 }
-	,{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
-	,{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
-	,{ 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 4, 4, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }
-	,{ 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }
-	,{ 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }
-	,{ 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }
-	,{ 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }
-	,{ 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }
-	,{ 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 1, 4, 4, 4, 4, 1, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }
-	,{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 7, 7, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
-	,{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 7, 7, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
-	};
-	tempstage2 = { { 1, 1, 1, 1, 1, 1, 5, 5, 1, 1, 1, 1, 1, 1, 5, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
-,{ 1, 1, 1, 1, 1, 1, 5, 5, 1, 1, 1, 1, 1, 1, 5, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
-,{ 1, 1, 4, 4, 1, 1, 5, 5, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }
-,{ 1, 1, 4, 4, 1, 1, 5, 5, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }
-,{ 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 1, 1, 4, 4, 5, 5, 4, 4, 1, 1 }
-,{ 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 1, 1, 4, 4, 5, 5, 4, 4, 1, 1 }
-,{ 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 1, 1, 1, 1, 1, 1 }
-,{ 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 1, 1, 1, 1, 1, 1 }
-,{ 6, 6, 1, 1, 1, 1, 4, 4, 1, 1, 1, 1, 5, 5, 1, 1, 1, 1, 4, 4, 6, 6, 4, 4, 5, 5 }
-,{ 6, 6, 1, 1, 1, 1, 4, 4, 1, 1, 1, 1, 5, 5, 1, 1, 1, 1, 4, 4, 6, 6, 4, 4, 5, 5 }
-,{ 6, 6, 6, 6, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 1, 1, 5, 5, 1, 1, 6, 6, 1, 1, 1, 1 }
-,{ 6, 6, 6, 6, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 1, 1, 5, 5, 1, 1, 6, 6, 1, 1, 1, 1 }
-,{ 1, 1, 4, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 5, 5, 1, 1, 1, 1, 6, 6, 4, 4, 1, 1 }
-,{ 1, 1, 4, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 5, 5, 1, 1, 1, 1, 6, 6, 4, 4, 1, 1 }
-,{ 1, 1, 1, 1, 1, 1, 5, 5, 6, 6, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }
-,{ 1, 1, 1, 1, 1, 1, 5, 5, 6, 6, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }
-,{ 5, 5, 4, 4, 1, 1, 5, 5, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1 }
-,{ 5, 5, 4, 4, 1, 1, 5, 5, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1 }
-,{ 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 4, 4, 4, 4, 1, 1, 4, 4, 5, 5, 4, 4, 1, 1 }
-,{ 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 4, 4, 4, 4, 1, 1, 4, 4, 5, 5, 4, 4, 1, 1 }
-,{ 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 4, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
-,{ 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 4, 4, 4, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
-,{ 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }
-,{ 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 1, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }
-,{ 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 1, 4, 7, 7, 4, 1, 1, 1, 4, 4, 4, 4, 4, 4, 1, 1 }
-,{ 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 1, 4, 7, 7, 4, 1, 1, 1, 4, 4, 4, 4, 4, 4, 1, 1 }
-	};
-	tempstage5 = { { 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
-,{ 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
-,{ 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 5, 5, 5, 5, 5, 5, 1, 1, 1, 1 } 
-,{ 5, 5, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 1, 1, 1, 1 }
-,{ 5, 5, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
-,{ 5, 5, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
-,{ 4, 4, 1, 1, 4, 4, 4, 4, 4, 4, 1, 1, 4, 4, 4, 4, 1, 1, 2, 2, 2, 2, 1, 1, 2, 2 }
-,{ 4, 4, 1, 1, 4, 4, 4, 4, 4, 4, 1, 1, 4, 4, 4, 4, 1, 1, 2, 2, 2, 2, 1, 1, 2, 2 }
-,{ 4, 4, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1 }
-,{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1 }
-,{ 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 4, 4, 4, 4 }
-,{ 1, 1, 1, 1, 4, 4, 1, 1, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 4, 4, 4, 4 }
-,{ 4, 4, 4, 4, 1, 1, 1, 1, 2, 2, 4, 4, 1, 1, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1 } 
-,{ 4, 4, 4, 4, 1, 1, 1, 1, 2, 2, 4, 4, 1, 1, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
-,{ 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 1, 1, 1 }
-,{ 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 1, 1, 1 }
-,{ 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 1, 1, 5, 5, 1, 1, 4, 4, 1, 1, 1, 5, 1, 1, 1, 1 }
-,{ 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 1, 1, 5, 5, 1, 1, 4, 4, 1, 1, 1, 5, 1, 1, 1, 1 }
-,{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 4, 4, 4, 4 }
-,{ 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 4, 4, 4, 4 }
-,{ 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1 }
-,{ 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 1, 1, 1, 1, 1, 1 }
-,{ 4, 4, 4, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 1, 1, 1, 1 } 
-,{ 4, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 1, 1, 1, 1, 1, 4, 4, 1, 1, 1, 1 }
-,{ 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 7, 7, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
-,{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 7, 7, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
-	};
-	tempstage17 = { { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
-					,{ 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 1, 1 }
-					,{ 1, 1, 4, 4, 1, 1, 4, 4, 4, 4, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 1, 1 }//2
-					,{ 1, 1, 4, 4, 1, 1, 4, 4, 4, 4, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 1, 1 }
-					,{ 1, 1, 4, 4, 1, 1, 1, 1, 4, 4, 1, 1, 5, 5, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1 }
-					,{ 1, 1, 4, 4, 1, 1, 1, 1, 4, 4, 1, 1, 5, 5, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1 }//5
-					,{ 3, 3, 3, 3, 3, 3, 5, 1, 4, 4, 1, 1, 1, 1, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1 }
-					,{ 3, 3, 3, 3, 3, 3, 5, 1, 4, 4, 1, 1, 1, 1, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1 }
-					,{ 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1 }//8
-					,{ 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1 }
-					,{ 1, 1, 1, 1, 1, 5, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 1, 4, 4, 1, 1, 1, 5, 5, 5, 5 }
-					,{ 1, 1, 1, 1, 1, 5, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 1, 4, 4, 1, 1, 1, 1, 1, 1, 1 }//11
-					,{ 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4 }
-					,{ 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4 }
-					,{ 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 5, 1, 1, 1, 1, 1, 1, 1 }//14
-					,{ 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 5, 1, 1, 1, 1, 1, 1, 1 }
-					,{ 1, 1, 4, 4, 4, 4, 4, 4, 1, 1, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 1, 1, 4, 4, 1, 1 }
-					,{ 1, 1, 4, 4, 4, 4, 4, 4, 1, 1, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 1, 1, 4, 4, 1, 1 }//17
-					,{ 3, 3, 3, 3, 3, 3, 4, 4, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }
-					,{ 3, 3, 3, 3, 3, 3, 4, 4, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }
-					,{ 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 5, 5, 1, 1, 5, 5, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1 }//20
-					,{ 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 1, 1 }
-					,{ 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1 }
-					,{ 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 1, 4, 4, 4, 4, 1, 1, 1, 4, 4, 1, 1, 1, 1, 1, 1 }//23
-					,{ 4, 4, 4, 4, 5, 1, 1, 1, 1, 1, 1, 4, 7, 7, 4, 1, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }
-					,{ 4, 4, 4, 4, 5, 1, 1, 1, 1, 1, 1, 4, 7, 7, 4, 1, 1, 1, 4, 4, 1, 1, 4, 4, 1, 1 }//25
-	};
-	
-	Stage1.OnInit(tempstage17);
+	_isHoldDownKey = _isHoldUpKey = _isHoldLeftKey = _isHoldRightKey = false;
 	
 	_MouseX = 0;
 	_MouseY = 0;
-	_IfOnIce = false;
 	_OnIceCountDown = 0;
 	_PlayerTank.LoadBitmap();
 	_PlayerTankFrontX = 0;
@@ -205,28 +100,41 @@ void CGameStateRun::OnInit()                                  // 遊戲的初值
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	if (nChar == 0x5A || nChar == 0x58) {
-		if (_PlayerTank.GetLevel() > 3 && _PlayerTank.GetIfFire(1) == true) {
-			_PlayerTank.FireBullet(2);
+	if (_IfBattling) {
+		if (nChar == 0x5A || nChar == 0x58) {
+			if (_PlayerTank.GetLevel() > 3 && _PlayerTank.GetIfFire(1) == true) {
+				_PlayerTank.FireBullet(2);
+			}
+			_PlayerTank.FireBullet(1);
 		}
-		_PlayerTank.FireBullet(1);
+
+		if (nChar == VK_DOWN)	_isHoldDownKey = true;
+		if (nChar == VK_UP)		_isHoldUpKey = true;
+		if (nChar == VK_LEFT)	_isHoldLeftKey = true;
+		if (nChar == VK_RIGHT)	_isHoldLeftKey = true;
+		if (nChar == VK_DOWN || nChar == VK_RIGHT || nChar == VK_LEFT || nChar == VK_UP) _HoldKey = nChar;
+	}	
+	else {
+		_NowStage = ChooseStageScreen.OnKeyDown(nChar, nRepCnt, nFlags);
 	}
-	if (nChar == VK_DOWN)	_isHoldDownKey = true;
-	if (nChar == VK_UP)		_isHoldUpKey   = true;
-	if (nChar == VK_LEFT)	_isHoldLeftKey = true;
-	if (nChar == VK_RIGHT)	_isHoldLeftKey = true;
-	if (nChar == VK_DOWN || nChar == VK_RIGHT|| nChar == VK_LEFT|| nChar == VK_UP) _HoldKey = nChar;
-	_NowStage = ChooseStageScreen.OnKeyDown(nChar, nRepCnt, nFlags);
-	
-	
 }
 
 void CGameStateRun::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	if (nChar == VK_DOWN)	_isHoldDownKey = false;
-	if (nChar == VK_UP)		_isHoldUpKey   = false;
-	if (nChar == VK_LEFT)	_isHoldLeftKey = false;
-	if (nChar == VK_RIGHT)	_isHoldLeftKey = false;
+	if (_IfBattling) {
+		if (nChar == VK_DOWN)	_isHoldDownKey = false;
+		if (nChar == VK_UP)		_isHoldUpKey = false;
+		if (nChar == VK_LEFT)	_isHoldLeftKey = false;
+		if (nChar == VK_RIGHT)	_isHoldLeftKey = false;
+
+		if (!_isHoldDownKey && !_isHoldUpKey && !_isHoldLeftKey && !_isHoldRightKey) {
+			_tempcollision = Stage1.GetFrontGridsIndex(_PlayerTank.GetTankFront());
+			if (Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 3 &&
+				Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 3) {
+				_OnIceCountDown = 64;
+			}
+		}
+	}
 }
 
 void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
@@ -255,14 +163,16 @@ void CGameStateRun::OnRButtonUp(UINT nFlags, CPoint point)    // 處理滑鼠的
 void CGameStateRun::OnShow()
 {
 	ChooseStageScreen.OnShow();
-	Stage1.OnShow();
-	Prop.OnShow();
-	_PlayerTank.OnShow();
-	for (int i = 0; i < 4; i++) {
-		EnemyList[i].OnShow();
-	}
-	if (Stage1.GetIfGrassInMap()) {
-Stage1.OnShowGrass();
+	if (_IfBattling) {
+		Stage1.OnShow();
+		Prop.OnShow();
+		_PlayerTank.OnShow();
+		for (int i = 0; i < 4; i++) {
+			EnemyList[i].OnShow();
+		}
+		if (Stage1.GetIfGrassInMap()) {
+			Stage1.OnShowGrass();
+		}
 	}
 	OnShowText();
 }
@@ -279,7 +189,10 @@ void CGameStateRun::OnShowText() {
 	//CTextDraw::Print(pDC, 0, 110, (to_string(EnemyList[3].isBreak())));
 	CTextDraw::Print(pDC, 0, 25, (to_string(_MouseX) + " " + to_string(_MouseY).c_str()));
 
-	CTextDraw::Print(pDC, 0, 50, (to_string(_PlayerTank.GetLevel())));
+	CTextDraw::Print(pDC, 0, 50, (to_string(_OnIceCountDown).c_str()));
+	CTextDraw::Print(pDC, 0, 75, ("    " + to_string(_isHoldUpKey)));
+	CTextDraw::Print(pDC, 0, 95, (to_string(_isHoldLeftKey) + " " + to_string(_isHoldRightKey)));
+	CTextDraw::Print(pDC, 0, 115, ("    " + to_string(_isHoldDownKey)));
 	ChooseStageScreen.OnShowText(pDC, fp);
 	CDDraw::ReleaseBackCDC();
 }
@@ -294,9 +207,10 @@ void CGameStateRun::PlayerTankMove(CPlayer *tank) {
 		tank->TurnFace(_HoldKey);
 		TankCollisionMap(tank);
 	}
-	else if(tank->GetSpawnAnimationDone() && _IfOnIce && _OnIceCountDown > 0) {
-		_OnIceCountDown -= 2;
+	else if ( _OnIceCountDown > 0) {
+		tank->TurnFace(_HoldKey);
 		TankCollisionMap(tank);
+		_OnIceCountDown -= 4;
 	}
 	PlayerShoot(tank);
 }
@@ -370,28 +284,18 @@ void CGameStateRun::TankCollisionMap(CTank *tank) {
 		if ((Stage1.GetMapItemInfo(_tempcollision[0][1], _tempcollision[0][0], 0) && 
 			Stage1.GetMapItemInfo(_tempcollision[1][1], _tempcollision[1][0], 0))) {
 			tank->Move();
-			/*
-			if ((Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 3 &&
-				Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 3)) {
-				if (_IfOnIce == false) {
-					_IfOnIce = true;
-					_OnIceCountDown = 64;
-				}
-			}
-			else {
-				_IfOnIce = false;
-			}
-			*/
 		}
-		if (((Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 2 ||
-			Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 2))) {
-			if ((Stage1.GetMapItemInfo(_tempcollision[0][1], _tempcollision[0][0], 0) ||
-				Stage1.GetMapItemInfo(_tempcollision[1][1], _tempcollision[1][0], 0))) {
-				tank->Move();
-			}
-			else if (Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 2 &&
-				Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 2) {
-				tank->Move();
+		if (tank->GetIfGetShip()) {
+			if (((Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 2 ||
+				Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 2))) {
+				if ((Stage1.GetMapItemInfo(_tempcollision[0][1], _tempcollision[0][0], 0) ||
+					Stage1.GetMapItemInfo(_tempcollision[1][1], _tempcollision[1][0], 0))) {
+					tank->Move();
+				}
+				else if (Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 2 &&
+					Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 2) {
+					tank->Move();
+				}
 			}
 		}
 	}

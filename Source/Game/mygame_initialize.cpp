@@ -6,6 +6,7 @@
 #include "../Library/gameutil.h"
 #include "../Library/gamecore.h"
 #include <string>
+#include <fstream>
 #include "mygame.h"
 
 using namespace game_framework;
@@ -34,6 +35,37 @@ void CGameStateInit::OnInit()
 	_Lobby.LoadBitMap();
 	_MouseX = 0;
 	_MouseY = 0;
+
+	ifstream myfile;
+	myfile.open("MapRawData.txt");
+	string content;
+	for (int i = 0; i < 35; i++) { // give every stage row and col clean
+		vector<vector<int>> temp_2D;
+		for (int j = 0; j < 26; j++) {
+			vector<int> temp_1D;
+			for (int k = 0; k < 26; k++) {
+				temp_1D.push_back(-1);
+			}
+			temp_2D.push_back(temp_1D);
+		}
+		_AllStage.push_back(temp_2D);
+	}
+
+	for (int i = 0; i < 35; i++) {
+		getline(myfile, content); // we have a space in front of every stage
+		for (int j = 0; j < 26; j++) {  //have 26 row
+			getline(myfile, content);
+			//cout<<content<<endl;
+			int col = 0;
+			for (int k = 0; k < (int)content.size(); k++) {
+				if (content[k] != ',' && content[k] != '{' && content[k] != '}') {
+					_AllStage[i][j][col] = content[k] - '0';
+					col++;
+				}
+			}
+		}
+		getline(myfile, content);
+	}
 }
 
 void CGameStateInit::OnBeginState()
@@ -69,6 +101,5 @@ void CGameStateInit::OnShowText() {
 	pDC->SetTextColor(RGB(0, 180, 0));
 	CTextDraw::Print(pDC, 0, 0, (to_string(_MouseX) + " " + to_string(_MouseY).c_str()));
 	//_Lobby.OnShowText(pDC, fp);
-
 	CDDraw::ReleaseBackCDC();
 }

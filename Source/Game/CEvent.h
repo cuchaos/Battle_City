@@ -11,7 +11,7 @@ namespace game_framework {
 		Event();
 		static void TrigLobbyMenu(Menu& LobbyMenu); // If u lose your 3 health,or first time login,you will go lobby (include select)
 		static void TrigSelectingStage(Menu& GrayMenu); //use this func when choosing stage,and battle 
-		static void TrigSetBattleMap(int& NowStage,Map& StageMap,int& EnemyNum, Menu& BattleMenu);
+		static void TrigSetBattleMap(vector<vector<int>>& Stage,Map& StageMap,int& EnemyNum, Menu& BattleMenu);
 		static void TrigSetProps(GameProps& Props);
 		static void TrigGetProps(GameProps& Props, Map& StageMap, CPlayer& Player,vector<Enemy>& AllEnemy); // lost a enemy class
 	private:

@@ -32,10 +32,10 @@ void Event::TrigSelectingStage(Menu& GrayScreen) {
 	}
 }
 
-void Event::TrigSetBattleMap(int& NowStage,Map& StageMap,int& EnemyNum, Menu& BattleMenu) {
+void Event::TrigSetBattleMap(vector<vector<int>>& Stage,Map& StageMap,int& EnemyNum, Menu& BattleMenu) {
+	StageMap.OnInit(Stage);
 	StageMap.SetIfShowMap(true);
 	BattleMenu.SetBattleing(true);
-	NowStage = 0;
 	EnemyNum = 20;
 }
 void Event::TrigSetProps(GameProps& Props) {

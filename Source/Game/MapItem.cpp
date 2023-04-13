@@ -118,12 +118,17 @@ void MapItem::SetTopLeft(int x, int y) {
 		_ShovelAnimaetion.SetTopLeft(x, y);
 	}
 }
+void MapItem::GrassOnsShow() {
+	if (_Type == 6) {
+		_OneGrid.ShowBitmap();
+	}
+}
 void MapItem::OnShow() {
 	if (_IfGetShovel) {
 		_ShovelAnimaetion.ShowBitmap();
 		return;
 	}
-	if (_Type != 1) {
+	if (_Type != 1 && _Type != 6) {
 		_OneGrid.ShowBitmap();
 	}
 	

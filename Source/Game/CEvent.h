@@ -14,6 +14,7 @@ namespace game_framework {
 		static void TrigSetBattleMap(vector<vector<int>>& Stage,Map& StageMap,int& EnemyNum, Menu& BattleMenu);
 		static void TrigSetProps(GameProps& Props);
 		static void TrigGetProps(GameProps& Props, Map& StageMap, CPlayer& Player,vector<Enemy>& AllEnemy); // lost a enemy class
+		static void TrigUnshowProps(GameProps& Props);
 	private:
 		bool _IfStart; // the attribute that can decide the Battle start or not
 	};

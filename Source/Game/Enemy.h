@@ -18,18 +18,17 @@ namespace game_framework {
 		void LoadBitmap();						
 		void SetOriginAngle(int _direction);	// 設定轉向方向 
 		void EnemyRandomDirection();			// 隨機設定前進方向
-		//void EnemyRespawn(int type);
 		// bullet
 
 		void FireBullet(int BulletOrder) override;
 		void SetBulletStatus(int BulletOrder,bool Status) override;
 		void SetIfFire(int FireOrder, bool Status) override;
 		bool GetIfFire(int FireOrder) override;
-
+		int GetEnemyType();
 		bool GetIfGetTimeStop();
 		CMovingBitmap GetEnemyBitmap();
-
-		void OnShow();
+		void SetFaceDirection() override;
+		void OnShow() override;
 	private:
 		int _EnemyType;
 		int _EnemyScore;

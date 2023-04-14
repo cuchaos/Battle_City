@@ -118,6 +118,20 @@ bool CPlayer::GetIfFire(int FireOrder) {
 	}
 	return false;
 }
+void CPlayer::SetFaceDirection() {
+	if (_OriginAngle == Right) {
+		_Frameindex = 0 ;
+	}
+	else if (_OriginAngle == Left) {
+		_Frameindex = 2 ;
+	}
+	else if (_OriginAngle == Up) {
+		_Frameindex = 4 ;
+	}
+	else if (_OriginAngle == Down) {
+		_Frameindex = 6 ;
+	}
+}
 void CPlayer::SetMoveOnIce(bool IfOnIce) {
 	
 }

@@ -28,6 +28,7 @@ namespace game_framework {
 	/////////////////////////////////////////////////////////////////////////////
 	int CGameState::_1POr2P = -1;
 	vector<vector<vector<int>>> CGameState::_AllStage = {};
+	vector<vector<int>> CGameState::_AllStageEnemy = {};
 	CGame CGame::instance;
 
 	CGame::CGame()

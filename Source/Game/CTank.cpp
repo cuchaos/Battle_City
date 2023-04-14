@@ -57,7 +57,7 @@ void CTank::SetLife(int num) {
 	if (_Life > 0){
 		_Life = num;
 	}
-	if (_Life ==0){
+	if (_Life == 0){
 		_TankState = Death;
 	}
 }

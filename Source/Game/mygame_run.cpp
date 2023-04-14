@@ -209,10 +209,22 @@ void CGameStateRun::OnShowText() {
 	CTextDraw::Print(pDC, 0, 75, (to_string(EnemyList[1].isEnemyHaveItem())));
 	CTextDraw::Print(pDC, 0, 100, (to_string(EnemyList[2].isEnemyHaveItem())));
 	CTextDraw::Print(pDC, 0, 125, (to_string(EnemyList[3].isEnemyHaveItem())));
+	//CTextDraw::Print(pDC, 0, 25, (to_string(_PlayerTank.GetX1()) + " " + to_string(_PlayerTank.GetY1())));
+
+	//CTextDraw::Print(pDC, 0, 50, (to_string(_PlayerTank.GetLife() )));
+	/*CTextDraw::Print(pDC, 0, 25, (to_string(_MouseX) + " " + to_string(_MouseY).c_str()));
+
+	//CTextDraw::Print(pDC, 0, 50, (to_string(_OnIceCountDown).c_str()));
+	//CTextDraw::Print(pDC, 0, 75, ("    " + to_string(_isHoldUpKey)));
+	//CTextDraw::Print(pDC, 0, 95, (to_string(_isHoldLeftKey) + " " + to_string(_isHoldRightKey)));
+	//CTextDraw::Print(pDC, 0, 115, ("    " + to_string(_isHoldDownKey)));
+	CTextDraw::Print(pDC, 0, 50, (to_string(_OnIceCountDown).c_str()));
+	CTextDraw::Print(pDC, 0, 75, ("    " + to_string(_isHoldUpKey)));
+	CTextDraw::Print(pDC, 0, 95, (to_string(_isHoldLeftKey) + " " + to_string(_isHoldRightKey)));
+	CTextDraw::Print(pDC, 0, 115, ("    " + to_string(_isHoldDownKey)));*/
 	ChooseStageScreen.OnShowText(pDC, fp);
 	CDDraw::ReleaseBackCDC();
 }
-
 void CGameStateRun::PlayerTankMove(CPlayer *tank) {
 	if ((_isHoldRightKey == true || 
 		_isHoldLeftKey == true || 
@@ -229,7 +241,6 @@ void CGameStateRun::PlayerTankMove(CPlayer *tank) {
 		_OnIceCountDown -= 4;
 	}
 }
-
 void CGameStateRun::EnemyTankMove(Enemy *tank) {
 	tank->EnemyRandomDirection();
 	TankCollisionMap(tank);
@@ -267,9 +278,11 @@ void CGameStateRun::AllBulletCollision() {
 			}
 			else {
 				if (CMovingBitmap::IsOverlap(_AllBullet[i]->GetBitmap(), _PlayerTank.GetTankBitmap())
-						//&& _PlayerTank.GetBulletOwner() == 1
-						&& EnemyList[i-2].GetTankState() == Live) {
+						&& _PlayerTank.GetTankState() == Live) {
 						_PlayerTank.SetLife(0);
+						EnemyList[i - 2].SetBulletStatus(1, false);
+						EnemyList[i - 2].SetIfFire(1,false);
+						continue;
 				}
 				if (ShootCollision(*_AllBullet[i], EnemyList[i-2].GetLevel())) {
 					EnemyList[i - 2].SetBulletStatus(1, false);

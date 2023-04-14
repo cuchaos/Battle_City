@@ -50,7 +50,6 @@ void CGameStateInit::OnInit()
 		}
 		_AllStage.push_back(temp_2D);
 	}
-
 	for (int i = 0; i < 35; i++) {
 		getline(myfile, content); // we have a space in front of every stage
 		for (int j = 0; j < 26; j++) {  //have 26 row
@@ -66,6 +65,17 @@ void CGameStateInit::OnInit()
 		}
 		getline(myfile, content);
 	}
+	/*
+	myfile.open("EnemyTankData.txt");
+	for (int i = 0; i < 35; i++) {
+		vector<int> temp;
+		getline(myfile, content); 
+		string num;
+		for (int j = 0; j < (int)content.size(); j++) {
+			
+		}
+	}
+	*/
 }
 
 void CGameStateInit::OnBeginState()

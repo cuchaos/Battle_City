@@ -17,7 +17,7 @@ namespace game_framework {
 		bool GetIfGetShip();
 		int GetLevel();
 		void SetLife(int num);
-		void TankFront();					//坦克前方的格子做定位	
+		void TankFront();					//坦克前方的格子做定位
 		void LocationPoint();				//位置校正
 		void Move();						//移動
 		void SetXY(int x, int y);			//座標設定

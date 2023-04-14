@@ -21,8 +21,7 @@ namespace game_framework {
 		void SetOwner(int who);
 		int GetOwner();
 		CMovingBitmap GetBitmap();
-		bool GetBulletBroken();
-		void SetBulletBroken(bool broken);
+		
 	private:
 		enum Move {
 			Right, Down, Left, Up

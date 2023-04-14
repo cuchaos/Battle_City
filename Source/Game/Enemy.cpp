@@ -22,6 +22,7 @@ Enemy::Enemy() : CTank() {
 	_NowGrid = { (_X - 100) / Width, _Y / Height };
 	_TimeStart = clock();
 	_TimeFinish = clock();
+	_Setinit = false;
 	SetFaceDirection();
 }
 int Enemy::GetEnemyScore() {
@@ -37,7 +38,7 @@ void Enemy::SetEnemyHaveItem() {
 }
 
 void Enemy::SetEnemyInit() {
-	_X = Width * 14 + 100;
+	_X = Width * (rand()%4+11) + 100;
 	_Y = Height * 0;
 	_OriginAngle = Down;
 	_TurnAngle = Down;
@@ -60,6 +61,7 @@ void Enemy::SetEnemyInit() {
 		_EnemyScore = 400;						
 	}
 	//SetFaceDirection();
+	_Setinit = true;
 }
 void Enemy::SetEnemyType(int num) {
 	_EnemyType = num;
@@ -106,32 +108,44 @@ void Enemy::EnemyRandomDirection(){
 	}
 }
 void Enemy::LoadBitmap() {
-	if (_EnemyType == LightTank){
-		_Tank.LoadBitmapByString({  "resources/Enemy_LightTank_Right1.bmp" ,"resources/Enemy_LightTank_Right2.bmp",
+	_Tank.LoadBitmapByString({ //LightTank
+								"resources/Enemy_LightTank_Right1.bmp" ,"resources/Enemy_LightTank_Right2.bmp",
 									"resources/Enemy_LightTank_Left1.bmp"  ,"resources/Enemy_LightTank_Left2.bmp",
 									"resources/Enemy_LightTank_Top1.bmp"   ,"resources/Enemy_LightTank_Top2.bmp",
-									"resources/Enemy_LightTank_Bottom1.bmp","resources/Enemy_LightTank_Bottom2.bmp" }, RGB(0, 0, 0));
-	}
-	else if (_EnemyType == QuickTank){
-		_Tank.LoadBitmapByString({ "resources/Enemy_QuickTank_Right1.bmp" ,"resources/Enemy_QuickTank_Right2.bmp",
+									"resources/Enemy_LightTank_Bottom1.bmp","resources/Enemy_LightTank_Bottom2.bmp",
+								//QuickTank
+								"resources/Enemy_QuickTank_Right1.bmp" ,"resources/Enemy_QuickTank_Right2.bmp",
 									"resources/Enemy_QuickTank_Left1.bmp"  ,"resources/Enemy_QuickTank_Left2.bmp",
 									"resources/Enemy_QuickTank_Top1.bmp"   ,"resources/Enemy_QuickTank_Top2.bmp",
-									"resources/Enemy_QuickTank_Bottom1.bmp","resources/Enemy_QuickTank_Bottom2.bmp" }, RGB(0, 0, 0));
-	}
-	else if (_EnemyType == ArmorTank) {
-		_Tank.LoadBitmapByString({ "resources/Enemy_ArmorTank_Right1.bmp" ,"resources/Enemy_ArmorTank_Right2.bmp",
+									"resources/Enemy_QuickTank_Bottom1.bmp","resources/Enemy_QuickTank_Bottom2.bmp" ,
+								//ArmorTank
+								"resources/Enemy_ArmorTank_Right1.bmp" ,"resources/Enemy_ArmorTank_Right2.bmp",
 									"resources/Enemy_ArmorTank_Left1.bmp"  ,"resources/Enemy_ArmorTank_Left2.bmp",
 									"resources/Enemy_ArmorTank_Top1.bmp"   ,"resources/Enemy_ArmorTank_Top2.bmp",
-									"resources/Enemy_ArmorTank_Bottom1.bmp","resources/Enemy_ArmorTank_Bottom2.bmp" }, RGB(0, 0, 0));
-	}
-	else if (_EnemyType == HeavyTank) {
-		_Tank.LoadBitmapByString({ "resources/Enemy_HeavyTank_Right1.bmp" ,"resources/Enemy_HeavyTank_Right2.bmp",
+									"resources/Enemy_ArmorTank_Bottom1.bmp","resources/Enemy_ArmorTank_Bottom2.bmp",
+								//HeavyTank
+								"resources/Enemy_HeavyTank_Right1.bmp" ,"resources/Enemy_HeavyTank_Right2.bmp",
 									"resources/Enemy_HeavyTank_Left1.bmp"  ,"resources/Enemy_HeavyTank_Left2.bmp",
 									"resources/Enemy_HeavyTank_Top1.bmp"   ,"resources/Enemy_HeavyTank_Top2.bmp",
 									"resources/Enemy_HeavyTank_Bottom1.bmp","resources/Enemy_HeavyTank_Bottom2.bmp" }, RGB(0, 0, 0));
-	}
 	_Bullet.LoadBitmap();
 }
+
+void Enemy::SetFaceDirection() {
+	if (_OriginAngle == Right) {
+		_Frameindex = 0 +_EnemyType * 8;
+	}
+	else if (_OriginAngle == Left) {
+		_Frameindex = 2 + _EnemyType * 8;
+	}
+	else if (_OriginAngle == Up) {
+		_Frameindex = 4 + _EnemyType * 8;
+	}
+	else if (_OriginAngle == Down) {
+		_Frameindex = 6 + _EnemyType * 8;
+	}
+}
+
 void Enemy::FireBullet(int BulletOrder) {
 	if (_OriginAngle == Right || _OriginAngle == Left) {
 		_Bullet.SetBulletFire(_X, _Y + 25, _OriginAngle, _BulletFlySpeed);
@@ -153,16 +167,20 @@ void Enemy::SetIfFire(int FireOrder, bool Status) {
 bool Enemy::GetIfFire(int FireOrder) {
 	return _IfFire;
 }
+int Enemy::GetEnemyType() {
+	return _EnemyType;
+}
 void Enemy::OnShow() {
 	if (_IfBattle) {
 		if (_TankState == Spawn) {
-			SetEnemyInit();
+			if (!_Setinit) {
+				//SetEnemyType();
+				SetEnemyInit();
+			}
 			CTank::LoadBitmap();
-			//_Tank.SetTopLeft(_X,_Y);
 			ShowSpawnAnimation();
 		}
 		else if(_TankState == Live) {
-			//Enemy::LoadBitmap();
 			_Tank.SetFrameIndexOfBitmap(_Frameindex);
 			_Tank.SetTopLeft(_X, _Y);
 			_Tank.ShowBitmap();
@@ -174,3 +192,4 @@ void Enemy::OnShow() {
 		}
 	}
 }
+	

@@ -17,17 +17,17 @@ namespace game_framework {
 		bool GetIfGetShip();
 		int GetLevel();
 		void SetLife(int num);
-		bool isBreak();
-		void TankFront();					//坦克前方的格子做定位
-		void Animation();							
+		void TankFront();					//坦克前方的格子做定位	
 		void LocationPoint();				//位置校正
 		void Move();						//移動
-		//virtual void OnShow();				//SHOW
 		void SetXY(int x, int y);			//座標設定
 		void TurnFace(UINT nChar);			//調整圖片方向
-		void SetFaceDirection();
 		void TankbeHit();
+		void Animation();
 		vector<vector<int>> GetTankFront();
+
+		// virtual Direction (LoadBitmapIndex)
+		virtual void SetFaceDirection() = 0;
 
 		// bullet
 		virtual void FireBullet(int BulletOrder) = 0;
@@ -39,16 +39,15 @@ namespace game_framework {
 		int GetBulletOwner();
 		CMovingBitmap GetBulletBitmap();
 		//
+		virtual void OnShow() = 0;				//SHOW
 		void SetIfBattle(bool Battle);
-
 		void LoadBitmap();					//Load重生動畫
 		void ShowSpawnAnimation();			//Show重生動畫
 		int GetTankState();
 		CMovingBitmap GetTankBitmap();
-		void SetTankBulletBroken(bool broken);
-		bool GetTankBulletBroken();
 
 	protected:
+
 		enum Direction {
 			Right,
 			Down,
@@ -66,6 +65,7 @@ namespace game_framework {
 			Live,
 			Death,
 		};
+		bool _Setinit;
 		int _TankState;
 		bool _IfGetShip;
 		bool _IfBattle; //the var that decide onshow

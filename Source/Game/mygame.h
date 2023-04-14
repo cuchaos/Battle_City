@@ -123,12 +123,15 @@ namespace game_framework {
 		void TankCollisionMap(CTank *tank);
 		
 		bool ShootCollision(CBullet Bullet,int TankLevel); 
-		bool PlayerBulletCollision();
-		bool EnemyBulletCollision();
-		bool BulletBulletCollision();
-		void PlayerShoot(CPlayer *tank);
-		void EnemyShoot(Enemy *tank);
+		//bool PlayerBulletCollision();
+		//bool EnemyBulletCollision();
+		//bool BulletBulletCollision();
+		//void PlayerShoot(CPlayer *tank);
+		//void EnemyShoot(Enemy *tank);
 
+		void AllBulletFly();
+		void AllBulletCollision();
+		vector<CBullet*> _AllBullet; // index 0 and 1 is player's , index >= 2 is enemy's
 		int _NowStage;
 		int _EnemyNum;
 		Event event;

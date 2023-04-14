@@ -82,6 +82,7 @@ bool Enemy::GetIfGetTimeStop() {
 CMovingBitmap Enemy::GetEnemyBitmap() {
 	return _Tank;
 }
+
 void Enemy::EnemyRandomDirection(){
 	_RandomDirection = rand() % 4;		// 隨機移動四個方向
 	_RandomMoveTime = rand() % 5 + 1;	// 移動時間 1~6sec

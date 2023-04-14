@@ -17,7 +17,6 @@ namespace game_framework {
 		bool GetIfGetShip();
 		int GetLevel();
 		void SetLife(int num);
-		bool isBreak();
 		void TankFront();					//坦克前方的格子做定位
 		void Animation();							
 		void LocationPoint();				//位置校正
@@ -45,8 +44,6 @@ namespace game_framework {
 		void ShowSpawnAnimation();			//Show重生動畫
 		int GetTankState();
 		CMovingBitmap GetTankBitmap();
-		void SetTankBulletBroken(bool broken);
-		bool GetTankBulletBroken();
 
 	protected:
 		enum Direction {

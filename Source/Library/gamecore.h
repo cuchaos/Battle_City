@@ -131,6 +131,7 @@ namespace game_framework {
 	public:
 		static int _1POr2P; // the argument that decide 1 player or 2player
 		static vector<vector<vector<int>>> _AllStage;
+		static vector<vector<int>> _AllStageEnemy;
 		CGameState(CGame *g);
 		void OnDraw();			// Template Method
 		void OnCycle();			// Template Method

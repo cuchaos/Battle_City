@@ -23,8 +23,8 @@ namespace game_framework {
 		bool GetIfFire(int FireOrder) override;
 		void FireBullet(int BulletOrder) override;
 		CBullet _SecondBullet;
-
-		void OnShow();
+		void SetFaceDirection() override;
+		void OnShow() override;
 	private:
 		bool _IfSecondFire;
 

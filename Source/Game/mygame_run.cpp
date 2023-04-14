@@ -60,9 +60,13 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 			EnemyTankMove(&EnemyList[i]);
 			if (EnemyList[i].GetIfFire(1) == false && clock() - EnemyFireLastTime[i] >= 1000) {
 				EnemyList[i].FireBullet(1);
-				/*EnemyList[i].SetTankBulletBroken(false);*/
 				EnemyFireLastTime[i] = clock();
 			}
+		}
+		else if (EnemyList[i].GetTankState() == Spawn) {
+			//EnemyList[i].SetEnemyType(3);
+			/*EnemyList[i].SetEnemyInit();
+			EnemyList[i].LoadBitmap();*/
 		}
 	}
 	AllBulletCollision();
@@ -124,7 +128,7 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		if (nChar == VK_DOWN)	_isHoldDownKey = true;
 		if (nChar == VK_UP)		_isHoldUpKey = true;
 		if (nChar == VK_LEFT)	_isHoldLeftKey = true;
-		if (nChar == VK_RIGHT)	_isHoldLeftKey = true;
+		if (nChar == VK_RIGHT)	_isHoldRightKey = true;
 		if (nChar == VK_DOWN || nChar == VK_RIGHT || nChar == VK_LEFT || nChar == VK_UP) _HoldKey = nChar;
 	}	
 	else {
@@ -138,7 +142,7 @@ void CGameStateRun::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 		if (nChar == VK_DOWN)	_isHoldDownKey = false;
 		if (nChar == VK_UP)		_isHoldUpKey = false;
 		if (nChar == VK_LEFT)	_isHoldLeftKey = false;
-		if (nChar == VK_RIGHT)	_isHoldLeftKey = false;
+		if (nChar == VK_RIGHT)	_isHoldRightKey = false;
 
 		if (!_isHoldDownKey && !_isHoldUpKey && !_isHoldLeftKey && !_isHoldRightKey) {
 			_tempcollision = Stage1.GetFrontGridsIndex(_PlayerTank.GetTankFront());
@@ -202,12 +206,21 @@ void CGameStateRun::OnShowText() {
 	//CTextDraw::Print(pDC, 0, 110, (to_string(EnemyList[3].isBreak())));
 
 	CTextDraw::Print(pDC, 0, 0, (to_string(_TimerStart / CLOCKS_PER_SEC)+" "+ to_string(_TimerFinish )));
-	CTextDraw::Print(pDC, 0, 25, (to_string(_MouseX) + " " + to_string(_MouseY).c_str()));
+	CTextDraw::Print(pDC, 0, 25, (to_string(_PlayerTank.GetX1()) + " " + to_string(_PlayerTank.GetY1())));
+	CTextDraw::Print(pDC, 0, 50, (to_string(EnemyList[0].GetEnemyType())));
+	CTextDraw::Print(pDC, 0, 75, (to_string(EnemyList[1].GetEnemyType())));
+	CTextDraw::Print(pDC, 0, 100, (to_string(EnemyList[2].GetEnemyType())));
+	CTextDraw::Print(pDC, 0, 125, (to_string(EnemyList[3].GetEnemyType())));
+	/*CTextDraw::Print(pDC, 0, 25, (to_string(_MouseX) + " " + to_string(_MouseY).c_str()));
 
 	//CTextDraw::Print(pDC, 0, 50, (to_string(_OnIceCountDown).c_str()));
 	//CTextDraw::Print(pDC, 0, 75, ("    " + to_string(_isHoldUpKey)));
 	//CTextDraw::Print(pDC, 0, 95, (to_string(_isHoldLeftKey) + " " + to_string(_isHoldRightKey)));
 	//CTextDraw::Print(pDC, 0, 115, ("    " + to_string(_isHoldDownKey)));
+	CTextDraw::Print(pDC, 0, 50, (to_string(_OnIceCountDown).c_str()));
+	CTextDraw::Print(pDC, 0, 75, ("    " + to_string(_isHoldUpKey)));
+	CTextDraw::Print(pDC, 0, 95, (to_string(_isHoldLeftKey) + " " + to_string(_isHoldRightKey)));
+	CTextDraw::Print(pDC, 0, 115, ("    " + to_string(_isHoldDownKey)));*/
 	ChooseStageScreen.OnShowText(pDC, fp);
 	CDDraw::ReleaseBackCDC();
 }
@@ -233,7 +246,6 @@ void CGameStateRun::EnemyTankMove(Enemy *tank) {
 	tank->EnemyRandomDirection();
 	TankCollisionMap(tank);
 }
-
 void CGameStateRun::AllBulletCollision() {
 	for (int i = 0; i < 6; i++) {
 		if (_AllBullet[i]->GetAlreadyFire()) {

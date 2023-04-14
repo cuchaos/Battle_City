@@ -111,6 +111,7 @@ void CTank::Move() {
 void CTank::TankbeHit() {
 	if (_FrameTime == 26){
 		_TankState = Spawn;
+		_Setinit = false;
 	}
 	else {
 		if (_FrameTime > 26){
@@ -156,21 +157,7 @@ void CTank::LocationPoint() {
 	for (int i = 0; i < 2; i++) _OffsetXY[i] = 0;			//轉向後坦克的定位回正 偏移數值歸零
 } 
 
-/*Tank Front & Direction*/
-void CTank::SetFaceDirection() {
-	if (_OriginAngle == Right) {
-		_Frameindex = 0;
-	}
-	else if (_OriginAngle == Left) {
-		_Frameindex = 2;
-	}
-	else if (_OriginAngle == Up) {
-		_Frameindex = 4;
-	}
-	else if (_OriginAngle == Down) {
-		_Frameindex = 6;
-	}
-}
+/*Tank Front */
 void CTank::TurnFace(UINT nChar) {
 	if (nChar == VK_RIGHT) {
 		_TurnAngle = Right;
@@ -190,7 +177,6 @@ void CTank::TurnFace(UINT nChar) {
 		SetFaceDirection();
 		_FrameTime= 0;
 	}
-	//_Tank.SetFrameIndexOfBitmap(_Frameindex);
 }
 void CTank::TankFront() {		// 對坦克前方的兩格格子做XY定位
 	if (_OriginAngle == Right) {
@@ -276,11 +262,3 @@ CMovingBitmap CTank::GetTankBitmap() {
 CMovingBitmap CTank::GetBulletBitmap() {
 	return _Bullet.GetBitmap();
 }
-//
-//void CTank::SetTankBulletBroken(bool broken) {
-//	_Bullet.SetBulletBroken(broken);
-//}
-//
-//bool CTank::GetTankBulletBroken() {
-//	return _Bullet.GetBulletBroken();
-//}

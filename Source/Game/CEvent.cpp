@@ -41,6 +41,10 @@ void Event::TrigSetBattleMap(vector<vector<int>>& Stage,Map& StageMap,int& Enemy
 void Event::TrigSetProps(GameProps& Props) {
 	Props.SetGameProps();
 }
+void Event::TrigUnshowProps(GameProps& Props) {
+	Props.SetIfExist(false);
+	Props.SetIfShow(false);
+}
 void Event::TrigGetProps(GameProps& Props,Map& StageMap,CPlayer& Player,vector<Enemy>& AllEnemy) {
 	Props.SetIfShow(false);
 	int type = Props.GetType();

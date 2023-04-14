@@ -128,7 +128,7 @@ namespace game_framework {
 		//bool BulletBulletCollision();
 		//void PlayerShoot(CPlayer *tank);
 		//void EnemyShoot(Enemy *tank);
-
+		
 		void AllBulletFly();
 		void AllBulletCollision();
 		vector<CBullet*> _AllBullet; // index 0 and 1 is player's , index >= 2 is enemy's
@@ -138,7 +138,7 @@ namespace game_framework {
 		GameProps Prop;
 		Menu ChooseStageScreen;
 		clock_t _TimerStart,_TimerFinish;
-
+		int _EnemyQuantity;
 		CPlayer _PlayerTank;
 		bool _isHoldUpKey, _isHoldDownKey, _isHoldRightKey, _isHoldLeftKey;
 		bool _IfBattling; //the var that depend on Map and Gray Menu and tank and props show 

@@ -13,17 +13,18 @@
 using namespace game_framework;
 
 Enemy::Enemy() : CTank() {
-	_IfGetTimeStop = false;
-	_EnemyType = 0;
-	_X = Width * 14 + 100;
+	//_EnemyType = 0;
+	/*_X = Width * 14 + 100;
 	_Y = Height * 0;
 	_OriginAngle = Down;
 	_TurnAngle = Down;
-	_NowGrid = { (_X - 100) / Width, _Y / Height };
+	_NowGrid = { (_X - 100) / Width, _Y / Height };*/
+	_IfGetTimeStop = false;
 	_TimeStart = clock();
 	_TimeFinish = clock();
 	_Setinit = false;
-	SetFaceDirection();
+	_EnemyHaveItem = false;
+	//SetFaceDirection();
 }
 int Enemy::GetEnemyScore() {
 	return _EnemyScore;
@@ -33,16 +34,17 @@ bool Enemy::isEnemyHaveItem() {
 	return _EnemyHaveItem;
 }
 
-void Enemy::SetEnemyHaveItem() {
-	_EnemyHaveItem = true;
+void Enemy::SetEnemyHaveItem(bool has) {
+	_EnemyHaveItem = has;
 }
 
 void Enemy::SetEnemyInit() {
-	_X = Width * (rand()%4+11) + 100;
+	_X = Width * (rand()%4*8) + 100;
 	_Y = Height * 0;
 	_OriginAngle = Down;
 	_TurnAngle = Down;
 	_NowGrid = { (_X - 100) / Width, _Y / Height };
+	_OffsetXY = { 0,0 };
 	_Life = 1;
 	SetFaceDirection();
 	if (_EnemyType == LightTank){
@@ -84,7 +86,9 @@ bool Enemy::GetIfGetTimeStop() {
 CMovingBitmap Enemy::GetEnemyBitmap() {
 	return _Tank;
 }
-
+bool Enemy::GetEnemySetInit() {
+	return _Setinit;
+}
 void Enemy::EnemyRandomDirection(){
 	_RandomDirection = rand() % 4;		// 隨機移動四個方向
 	_RandomMoveTime = rand() % 5 + 1;	// 移動時間 1~6sec

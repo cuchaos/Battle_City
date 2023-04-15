@@ -13,6 +13,13 @@ using namespace game_framework;
 
 CPlayer::CPlayer() : CTank(){
 	_PlayerScore = 0;
+	_KillEnemyList = {};
+	_Level = 1;
+	_AttackSpeedUP = false;
+	_CanBreakIron = false;
+	_DoubleAttack = false; 
+	_IfGetShip = false; 
+	_TankState = Spawn;
 	PlayerInit();
 }
 void CPlayer::PlayerInit() {
@@ -20,10 +27,10 @@ void CPlayer::PlayerInit() {
 	_X = Width * 8 + 100;
 	_Y = Height * 24;
 	_Life = 1;
-	_KillEnemyList = {};
 	_OriginAngle = Up;
 	_TurnAngle = Up;
 	_NowGrid = { (_X - 100) / Width, _Y / Height };
+	_OffsetXY = { 0,0 };
 	_IfSecondFire = false;
 	SetFaceDirection();
 }
@@ -154,7 +161,11 @@ void CPlayer::LevelUP() {
 void CPlayer::OnShow() {
 	if (_IfBattle) {
 		if (_TankState == Spawn) {
-			PlayerInit();
+			if (!_Setinit) {
+				//SetEnemyType();
+				//SetEnemyInit();
+				PlayerInit();
+			}
 			CTank::LoadBitmap();
 			ShowSpawnAnimation();
 		}

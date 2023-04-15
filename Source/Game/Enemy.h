@@ -10,7 +10,7 @@ namespace game_framework {
 		int GetEnemyScore();
 		bool isEnemyHaveItem();					// 是否有道具
 		
-		void SetEnemyHaveItem();				// 設定有道具
+		void SetEnemyHaveItem(bool has);				// 設定有道具
 		void SetEnemyType(int _num);			// 設定敵人類型
 		void SetEnemyInit();					// 設定初始化
 		void SetGetTimeStop(int Status);
@@ -25,6 +25,7 @@ namespace game_framework {
 		void SetIfFire(int FireOrder, bool Status) override;
 		bool GetIfFire(int FireOrder) override;
 		int GetEnemyType();
+		bool GetEnemySetInit();
 		bool GetIfGetTimeStop();
 		CMovingBitmap GetEnemyBitmap();
 		void SetFaceDirection() override;

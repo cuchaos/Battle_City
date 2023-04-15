@@ -65,17 +65,39 @@ void CGameStateInit::OnInit()
 		}
 		getline(myfile, content);
 	}
-	/*
+	myfile.close();
 	myfile.open("EnemyTankData.txt");
 	for (int i = 0; i < 35; i++) {
-		vector<int> temp;
-		getline(myfile, content); 
-		string num;
-		for (int j = 0; j < (int)content.size(); j++) {
-			
+		vector<int> temp = { 0,0,0,0 };
+		_AllStageEnemy.push_back(temp);
+		getline(myfile, content);
+		int lastindex = content.size() - 2;
+		int vectorindex = 3;
+		for (int j = content.size() - 2; j > -1; j--) {
+			if (content[j] == ' ' || j == 0) {
+				int temp_count = 0;
+				int temp_first = 0;
+				if (j == 0) {
+					temp_first = j;
+				}
+				else {
+					temp_first = j + 1;
+				}
+				for (int k = temp_first; k <= lastindex; k++) {
+					if (k != lastindex) {
+						temp_count += 10 * (content[k] - '0');
+						continue;
+					}
+					temp_count += content[k] - '0';
+				}
+				_AllStageEnemy[i][vectorindex] = temp_count;
+				lastindex = j - 1;
+				vectorindex -= 1;
+			}
 		}
+		getline(myfile, content);
 	}
-	*/
+	myfile.close();
 }
 
 void CGameStateInit::OnBeginState()

@@ -13,7 +13,7 @@ using namespace game_framework;
 
 CPlayer::CPlayer() : CTank(){
 	_PlayerScore = 0;
-	_KillEnemyList = {};
+	_KillEnemyList = {0,0,0,0};
 	_Level = 1;
 	_AttackSpeedUP = false;
 	_CanBreakIron = false;

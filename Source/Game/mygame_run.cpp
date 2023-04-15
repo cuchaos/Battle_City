@@ -40,6 +40,18 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 	
 	if (_NowStage >= 1 && !_IfBattling) {
 		event.TrigSetBattleMap(_AllStage[_NowStage-1],Stage1, _EnemyNum,ChooseStageScreen);
+		EnemyTypeList.assign(_AllStageEnemy[_NowStage - 1].begin(), _AllStageEnemy[_NowStage - 1].end());
+		for (int i = 0; i < 4; i++){
+			tempIndex = rand() % 4;
+			while (EnemyTypeList[tempIndex] == 0) {
+				tempIndex = rand() % 4;
+				if (EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0) {
+					break;
+				}
+			}
+			EnemyTypeList[tempIndex] -= 1;
+			EnemyList[i].SetEnemyType(tempIndex);
+		}
 		_IfBattling = true;
 		_PlayerTank.SetIfBattle(true);
 		for (int i = 0; i < 4; i++) {
@@ -64,19 +76,34 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 			}
 		}
 		else if (EnemyList[i].GetTankState() == Spawn && !EnemyList[i].GetEnemySetInit()) {
-			EnemyList[i].SetEnemyType(rand()%4);
+			tempIndex = rand() % 4;
+			while (EnemyTypeList[tempIndex] == 0) {
+				tempIndex = rand() % 4;
+				if (EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0) {
+					break;
+				}
+			}
+			EnemyTypeList[tempIndex] -= 1;
+			EnemyList[i].SetEnemyType(tempIndex);
 			_EnemyQuantity += 1;
 			if (_EnemyQuantity % 4 == 1){
 				event.TrigUnshowProps(Prop);
 				EnemyList[i].SetEnemyHaveItem(true);
 			}
 		}
+		else if (EnemyList[i].GetTankState() == Death){
+			if (EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0) {
+				EnemyList[i].SetIfBattle(false);
+			}
+		}
 	}
 	AllBulletCollision();
 	AllBulletFly();
 	_TimerFinish = clock();
-	
-
+	if (EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0 &&
+		EnemyList[0].GetTankState() == Death && EnemyList[1].GetTankState() == Death && EnemyList[2].GetTankState() == Death && EnemyList[3].GetTankState() == Death) {
+		GotoGameState(GAME_STATE_OVER);
+	}
 }
 void CGameStateRun::OnInit()                                  // 遊戲的初值及圖形設定
 {
@@ -99,8 +126,6 @@ void CGameStateRun::OnInit()                                  // 遊戲的初值
 	EnemyList.push_back(_EnemyTank3);
 	EnemyList.push_back(_EnemyTank4);
 	for (int i = 0; i < 4; i++){
-		EnemyList[i].SetEnemyType(i);
-		EnemyList[i].SetEnemyInit();
 		EnemyList[i].LoadBitmap();
 		EnemyFireLastTime.push_back(clock());
 	}
@@ -203,25 +228,18 @@ void CGameStateRun::OnShowText() {
 	pDC->SetTextColor(RGB(0, 180, 0));
 	_TimerFinish = clock();
 	CTextDraw::Print(pDC, 0, 0, (to_string(_TimerStart / CLOCKS_PER_SEC) + " " + to_string(_TimerFinish)));
-	CTextDraw::Print(pDC, 0, 0, (to_string(_TimerStart / CLOCKS_PER_SEC)+" "+ to_string(_TimerFinish )));
 	CTextDraw::Print(pDC, 0, 25, (to_string(_EnemyQuantity)));
-	CTextDraw::Print(pDC, 0, 50, (to_string(EnemyList[0].isEnemyHaveItem())));
+	/*CTextDraw::Print(pDC, 0, 50, (to_string(EnemyList[0].isEnemyHaveItem())));
 	CTextDraw::Print(pDC, 0, 75, (to_string(EnemyList[1].isEnemyHaveItem())));
 	CTextDraw::Print(pDC, 0, 100, (to_string(EnemyList[2].isEnemyHaveItem())));
-	CTextDraw::Print(pDC, 0, 125, (to_string(EnemyList[3].isEnemyHaveItem())));
-	//CTextDraw::Print(pDC, 0, 25, (to_string(_PlayerTank.GetX1()) + " " + to_string(_PlayerTank.GetY1())));
-
-	//CTextDraw::Print(pDC, 0, 50, (to_string(_PlayerTank.GetLife() )));
-	/*CTextDraw::Print(pDC, 0, 25, (to_string(_MouseX) + " " + to_string(_MouseY).c_str()));
-
-	//CTextDraw::Print(pDC, 0, 50, (to_string(_OnIceCountDown).c_str()));
-	//CTextDraw::Print(pDC, 0, 75, ("    " + to_string(_isHoldUpKey)));
-	//CTextDraw::Print(pDC, 0, 95, (to_string(_isHoldLeftKey) + " " + to_string(_isHoldRightKey)));
-	//CTextDraw::Print(pDC, 0, 115, ("    " + to_string(_isHoldDownKey)));
-	CTextDraw::Print(pDC, 0, 50, (to_string(_OnIceCountDown).c_str()));
-	CTextDraw::Print(pDC, 0, 75, ("    " + to_string(_isHoldUpKey)));
-	CTextDraw::Print(pDC, 0, 95, (to_string(_isHoldLeftKey) + " " + to_string(_isHoldRightKey)));
-	CTextDraw::Print(pDC, 0, 115, ("    " + to_string(_isHoldDownKey)));*/
+	CTextDraw::Print(pDC, 0, 125, (to_string(EnemyList[3].isEnemyHaveItem())));*/
+	if ((_NowStage - 1)>=0){
+		CTextDraw::Print(pDC, 0, 50, (to_string(EnemyTypeList[0]) + " " + to_string(_AllStageEnemy[_NowStage - 1][0])));
+		CTextDraw::Print(pDC, 0, 75, (to_string(EnemyTypeList[1]) + " " + to_string(_AllStageEnemy[_NowStage - 1][1])));
+		CTextDraw::Print(pDC, 0, 100, (to_string(EnemyTypeList[2]) + " " + to_string(_AllStageEnemy[_NowStage - 1][2])));
+		CTextDraw::Print(pDC, 0, 125, (to_string(EnemyTypeList[3]) + " " + to_string(_AllStageEnemy[_NowStage - 1][3])));
+	}
+	CTextDraw::Print(pDC, 0, 150, (to_string(_NowStage - 1)));
 	ChooseStageScreen.OnShowText(pDC, fp);
 	CDDraw::ReleaseBackCDC();
 }

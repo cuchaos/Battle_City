@@ -145,6 +145,7 @@ namespace game_framework {
 		
 		int _OnIceCountDown; // If we on ice,we should go without any keydown,this is 
 							// the go on counter 2 Grid,so is 64 pixel
+		int tempIndex;
 		int _HoldKey;
 		int _PlayerTankFrontX ;
 		int _PlayerTankFrontY ;
@@ -153,7 +154,7 @@ namespace game_framework {
 		Enemy _EnemyTank1, _EnemyTank4, _EnemyTank3, _EnemyTank2;
 		vector<Enemy> EnemyList = {};
 		vector<clock_t> EnemyFireLastTime = {};
-		//vector<int> EnemyTypeList = { 0,1,2,3 };
+		vector<int> EnemyTypeList = {0,0,0,0};
 	};
 
 	/////////////////////////////////////////////////////////////////////////////

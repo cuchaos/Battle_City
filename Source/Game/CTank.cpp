@@ -12,18 +12,6 @@
 using namespace game_framework;
 
 CTank::CTank() :Width(32), Height(32) {
-	/*_X = Width * 8 + 100;
-	_Y = Height * 24;*/
-	//_Level = 1;								// 等級
-	/*_Life = 1;*/								// 生命
-	//_OriginAngle = Up;						// 面對角度 0 is east,1 south, 2 west,3 north
-	//_TurnAngle = Up;						// 轉向角度
-	/*_AttackSpeedUP = false;
-	_CanBreakIron = false;
-	_DoubleAttack = false;*/
-	/*_IfGetShip = false;*/
-	/*_NowGrid = { (_X-100) / Width, _Y / Height };*/	// 坦克現在的格子
-	/*_OffsetXY = { 0,0 };*/							// 偏移的XY距離
 	_FrameTime = 0;							// 計時器
 	_Frameindex = 4;						// 動畫偵 (0 is east,1 south, 2 west,3 north)*2
 	_FrameSecond = 2;						// 動畫變換速度
@@ -110,8 +98,10 @@ void CTank::Move() {
 
 void CTank::TankbeHit() {
 	if (_FrameTime == 26){
-		_TankState = Spawn;
-		_Setinit = false;
+		if (true){
+			_TankState = Spawn;
+			_Setinit = false;
+		}
 	}
 	else {
 		if (_FrameTime > 26){

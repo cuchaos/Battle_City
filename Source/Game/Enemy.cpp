@@ -13,18 +13,12 @@
 using namespace game_framework;
 
 Enemy::Enemy() : CTank() {
-	//_EnemyType = 0;
-	/*_X = Width * 14 + 100;
-	_Y = Height * 0;
-	_OriginAngle = Down;
-	_TurnAngle = Down;
-	_NowGrid = { (_X - 100) / Width, _Y / Height };*/
 	_IfGetTimeStop = false;
 	_TimeStart = clock();
 	_TimeFinish = clock();
+	_EnemyType = 0;
 	_Setinit = false;
 	_EnemyHaveItem = false;
-	//SetFaceDirection();
 }
 int Enemy::GetEnemyScore() {
 	return _EnemyScore;
@@ -179,7 +173,6 @@ void Enemy::OnShow() {
 	if (_IfBattle) {
 		if (_TankState == Spawn) {
 			if (!_Setinit) {
-				//SetEnemyType();
 				SetEnemyInit();
 			}
 			CTank::LoadBitmap();

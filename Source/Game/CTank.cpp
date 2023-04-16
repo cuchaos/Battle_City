@@ -96,38 +96,38 @@ void CTank::Move() {
 	}
 }
 
-void CTank::TankbeHit() {
-	if (_FrameTime == 26){
-		if (true){
-			_TankState = Spawn;
-			_Setinit = false;
-		}
-	}
-	else {
-		if (_FrameTime > 26){
-			_FrameTime = 0;
-		}
-		else { 
-			if (_FrameTime % 26 == 5) {
-				_TankBrokenAnimation.SetFrameIndexOfBitmap(1);
-			}
-			else if (_FrameTime % 26 == 10) {
-				_TankBrokenAnimation.SetFrameIndexOfBitmap(2);
-			}
-			else if (_FrameTime % 26 == 15) {
-				_TankBrokenAnimation.SetFrameIndexOfBitmap(3);
-			}
-			else if (_FrameTime % 26 == 20) {
-				_TankBrokenAnimation.SetFrameIndexOfBitmap(4);
-			}
-			else if (_FrameTime % 26 == 25) {
-				_TankBrokenAnimation.SetFrameIndexOfBitmap(0);
-			}
-		}
-		_FrameTime += 1;
-		_TankBrokenAnimation.ShowBitmap();
-	}
-}
+//void CTank::TankbeHit() {
+//	if (_FrameTime == 26){
+//		if (true){
+//			_TankState = Spawn;
+//			_Setinit = false;
+//		}
+//	}
+//	else {
+//		if (_FrameTime > 26){
+//			_FrameTime = 0;
+//		}
+//		else { 
+//			if (_FrameTime % 26 == 5) {
+//				_TankBrokenAnimation.SetFrameIndexOfBitmap(1);
+//			}
+//			else if (_FrameTime % 26 == 10) {
+//				_TankBrokenAnimation.SetFrameIndexOfBitmap(2);
+//			}
+//			else if (_FrameTime % 26 == 15) {
+//				_TankBrokenAnimation.SetFrameIndexOfBitmap(3);
+//			}
+//			else if (_FrameTime % 26 == 20) {
+//				_TankBrokenAnimation.SetFrameIndexOfBitmap(4);
+//			}
+//			else if (_FrameTime % 26 == 25) {
+//				_TankBrokenAnimation.SetFrameIndexOfBitmap(0);
+//			}
+//		}
+//		_FrameTime += 1;
+//		_TankBrokenAnimation.ShowBitmap();
+//	}
+//}
 
 void CTank::Animation() {
 	if (_FrameTime%_FrameSecond==0){

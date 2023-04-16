@@ -121,7 +121,7 @@ namespace game_framework {
 		void PlayerTankMove(CPlayer *tank);
 		void EnemyTankMove(Enemy *tank);
 		void TankCollisionMap(CTank *tank);
-		
+		void RandomSpawnTank(int num);
 		bool ShootCollision(CBullet Bullet,int TankLevel); 
 		//bool PlayerBulletCollision();
 		//bool EnemyBulletCollision();
@@ -137,7 +137,7 @@ namespace game_framework {
 		Event event;
 		GameProps Prop;
 		Menu ChooseStageScreen;
-		clock_t _TimerStart,_TimerFinish;
+		clock_t _TimerSpawn,_TimerFinish;
 		int _EnemyQuantity;
 		CPlayer _PlayerTank;
 		bool _isHoldUpKey, _isHoldDownKey, _isHoldRightKey, _isHoldLeftKey;

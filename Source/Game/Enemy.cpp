@@ -144,7 +144,39 @@ void Enemy::SetFaceDirection() {
 		_Frameindex = 6 + _EnemyType * 8;
 	}
 }
-
+void Enemy::TankbeHit() {
+	if (_FrameTime == 26){
+		if (clock() - _SpawnClock >= 2500){
+			_TankState = Spawn;
+			_Setinit = false;
+		}
+	}
+	else {
+		if (_FrameTime > 26){
+			_FrameTime = 0;
+		}
+		else { 
+			if (_FrameTime % 26 == 5) {
+				_TankBrokenAnimation.SetFrameIndexOfBitmap(1);
+			}
+			else if (_FrameTime % 26 == 10) {
+				_TankBrokenAnimation.SetFrameIndexOfBitmap(2);
+			}
+			else if (_FrameTime % 26 == 15) {
+				_TankBrokenAnimation.SetFrameIndexOfBitmap(3);
+			}
+			else if (_FrameTime % 26 == 20) {
+				_TankBrokenAnimation.SetFrameIndexOfBitmap(4);
+			}
+			else if (_FrameTime % 26 == 25) {
+				_TankBrokenAnimation.SetFrameIndexOfBitmap(0);
+				_SpawnClock = clock();
+			}
+		}
+		_FrameTime += 1;
+		_TankBrokenAnimation.ShowBitmap();
+	}
+}
 void Enemy::FireBullet(int BulletOrder) {
 	if (_OriginAngle == Right || _OriginAngle == Left) {
 		_Bullet.SetBulletFire(_X, _Y + 25, _OriginAngle, _BulletFlySpeed);
@@ -169,6 +201,9 @@ bool Enemy::GetIfFire(int FireOrder) {
 int Enemy::GetEnemyType() {
 	return _EnemyType;
 }
+bool Enemy::GetIfBattle() {
+	return _IfBattle;
+}
 void Enemy::OnShow() {
 	if (_IfBattle) {
 		if (_TankState == Spawn) {
@@ -190,4 +225,5 @@ void Enemy::OnShow() {
 		}
 	}
 }
+
 	

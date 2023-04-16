@@ -41,25 +41,10 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 	if (_NowStage >= 1 && !_IfBattling) {
 		event.TrigSetBattleMap(_AllStage[_NowStage-1],Stage1, _EnemyNum,ChooseStageScreen);
 		EnemyTypeList.assign(_AllStageEnemy[_NowStage - 1].begin(), _AllStageEnemy[_NowStage - 1].end());
-		for (int i = 0; i < 4; i++){
-			tempIndex = rand() % 4;
-			while (EnemyTypeList[tempIndex] == 0) {
-				tempIndex = rand() % 4;
-				if (EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0) {
-					break;
-				}
-			}
-			EnemyTypeList[tempIndex] -= 1;
-			EnemyList[i].SetEnemyType(tempIndex);
-		}
 		_IfBattling = true;
 		_PlayerTank.SetIfBattle(true);
-		for (int i = 0; i < 4; i++) {
-			EnemyList[i].SetIfBattle(true);
-		}
 		return;
 	}
-
 	if ((CMovingBitmap::IsOverlap(_PlayerTank.GetTankBitmap(), Prop.GetPropBitmap()) || Prop.GetIfTouched())
 		&& Prop.GetIfExist()) {
 		event.TrigGetProps(Prop, Stage1, _PlayerTank,EnemyList);
@@ -68,32 +53,37 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 		PlayerTankMove(&_PlayerTank);
 	}
 	for (int i = 0; i < 4; i++) {
-		if(EnemyList[i].GetTankState() == Live && !EnemyList[i].GetIfGetTimeStop()) {
-			EnemyTankMove(&EnemyList[i]);
-			if (EnemyList[i].GetIfFire(1) == false && clock() - EnemyFireLastTime[i] >= 1000) {
-				EnemyList[i].FireBullet(1);
-				EnemyFireLastTime[i] = clock();
+		// 當Enemy 為 _IfBattle = false 而且 EnemyTypeList 都沒生成完畢
+		// 將Enemy 設定 _IfBattle = true 並重新計時
+		if (!EnemyList[i].GetIfBattle() && !(EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0)){
+			if (!EnemyList[i].GetIfBattle() && clock() - _TimerSpawn >= 2000) {
+				RandomSpawnTank(i);
+				EnemyList[i].SetIfBattle(true);
+				_TimerSpawn = clock();
 			}
 		}
-		else if (EnemyList[i].GetTankState() == Spawn && !EnemyList[i].GetEnemySetInit()) {
-			tempIndex = rand() % 4;
-			while (EnemyTypeList[tempIndex] == 0) {
-				tempIndex = rand() % 4;
-				if (EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0) {
-					break;
+		else if (EnemyList[i].GetIfBattle()){
+			if(EnemyList[i].GetTankState() == Live && !EnemyList[i].GetIfGetTimeStop()) {
+				EnemyTankMove(&EnemyList[i]);
+				if (EnemyList[i].GetIfFire(1) == false && clock() - EnemyFireLastTime[i] >= 1000) {
+					EnemyList[i].FireBullet(1);
+					EnemyFireLastTime[i] = clock();
 				}
 			}
-			EnemyTypeList[tempIndex] -= 1;
-			EnemyList[i].SetEnemyType(tempIndex);
-			_EnemyQuantity += 1;
-			if (_EnemyQuantity % 4 == 1){
-				event.TrigUnshowProps(Prop);
-				EnemyList[i].SetEnemyHaveItem(true);
+			else if (EnemyList[i].GetTankState() == Spawn && !EnemyList[i].GetEnemySetInit()) {
+				RandomSpawnTank(i);
+				_EnemyQuantity += 1;
+				if (_EnemyQuantity % 4 == 1){
+					event.TrigUnshowProps(Prop);
+					EnemyList[i].SetEnemyHaveItem(true);
+				}
 			}
-		}
-		else if (EnemyList[i].GetTankState() == Death){
-			if (EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0) {
-				EnemyList[i].SetIfBattle(false);
+			// 當TankState == Death 時 檢查EnemyTypeList 是否都生成完畢
+			// 都生成完畢則將Enemy設定為 _IfBattle = false 避免重生
+			else if (EnemyList[i].GetTankState() == Death){
+				if (EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0) {
+					EnemyList[i].SetIfBattle(false);
+				}
 			}
 		}
 	}
@@ -119,6 +109,7 @@ void CGameStateRun::OnInit()                                  // 遊戲的初值
 	_PlayerTank.LoadBitmap();
 	_PlayerTankFrontX = 0;
 	_PlayerTankFrontY = 0;
+	_TimerSpawn = clock();
 	Prop.OnInit();
 	//event.TrigSetProps(Prop);
 	EnemyList.push_back(_EnemyTank1);
@@ -227,7 +218,7 @@ void CGameStateRun::OnShowText() {
 	pDC->SetBkMode(TRANSPARENT);
 	pDC->SetTextColor(RGB(0, 180, 0));
 	_TimerFinish = clock();
-	CTextDraw::Print(pDC, 0, 0, (to_string(_TimerStart / CLOCKS_PER_SEC) + " " + to_string(_TimerFinish)));
+	CTextDraw::Print(pDC, 0, 0, (to_string(_TimerSpawn / CLOCKS_PER_SEC) + " " + to_string(_TimerFinish)));
 	CTextDraw::Print(pDC, 0, 25, (to_string(_EnemyQuantity)));
 	/*CTextDraw::Print(pDC, 0, 50, (to_string(EnemyList[0].isEnemyHaveItem())));
 	CTextDraw::Print(pDC, 0, 75, (to_string(EnemyList[1].isEnemyHaveItem())));
@@ -360,4 +351,20 @@ void CGameStateRun::TankCollisionMap(CTank *tank) {
 		}
 	}
 	tank->Animation();
+}
+
+// tempIndex先亂數決定要生成的TankType 
+//如果TankType已生成完畢就繼續亂數生成直到尚未生成完畢的Tank
+//生成完畢就break跳出while
+//尚未生成完畢重設定SetEnemyType
+void CGameStateRun::RandomSpawnTank(int num) {
+	tempIndex = rand() % 4;							
+	while (EnemyTypeList[tempIndex] == 0) {
+		tempIndex = rand() % 4;
+		if (EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0) {
+			break;
+		}
+	}
+	EnemyTypeList[tempIndex] -= 1;
+	EnemyList[num].SetEnemyType(tempIndex);
 }

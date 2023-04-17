@@ -32,7 +32,7 @@ namespace game_framework {
 		void SetFaceDirection() override;
 		void OnShow() override;
 		void TankbeHit() override;
-
+		void OnShowScore(CDC *pDC, CFont* &fp);
 	private:
 		int _EnemyType;
 		int _EnemyScore;

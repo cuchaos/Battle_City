@@ -53,6 +53,13 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 		PlayerTankMove(&_PlayerTank);
 	}
 	for (int i = 0; i < 4; i++) {
+		// 當TankState == Spawn 時 檢查EnemyTypeList 是否都生成完畢
+		// 都生成完畢則將Enemy設定為 _IfBattle = false 避免重生
+		if (EnemyList[i].GetTankState() == Spawn){
+			if (EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0) {
+				EnemyList[i].SetIfBattle(false);
+			}
+		}
 		// 當Enemy 為 _IfBattle = false 而且 EnemyTypeList 都沒生成完畢
 		// 將Enemy 設定 _IfBattle = true 並重新計時
 		if (!EnemyList[i].GetIfBattle() && !(EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0)){
@@ -78,20 +85,14 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 					EnemyList[i].SetEnemyHaveItem(true);
 				}
 			}
-			// 當TankState == Death 時 檢查EnemyTypeList 是否都生成完畢
-			// 都生成完畢則將Enemy設定為 _IfBattle = false 避免重生
-			else if (EnemyList[i].GetTankState() == Death){
-				if (EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0) {
-					EnemyList[i].SetIfBattle(false);
-				}
-			}
 		}
 	}
 	AllBulletCollision();
 	AllBulletFly();
 	_TimerFinish = clock();
 	if (EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0 &&
-		EnemyList[0].GetTankState() == Death && EnemyList[1].GetTankState() == Death && EnemyList[2].GetTankState() == Death && EnemyList[3].GetTankState() == Death) {
+		EnemyList[0].GetTankState() == Spawn && EnemyList[1].GetTankState() == Spawn && EnemyList[2].GetTankState() == Spawn && EnemyList[3].GetTankState() == Spawn &&
+		!(EnemyList[0].GetIfBattle()  && EnemyList[1].GetIfBattle() && EnemyList[2].GetIfBattle() && EnemyList[3].GetIfBattle())) {
 		GotoGameState(GAME_STATE_OVER);
 	}
 }
@@ -232,6 +233,11 @@ void CGameStateRun::OnShowText() {
 	}
 	CTextDraw::Print(pDC, 0, 150, (to_string(_NowStage - 1)));
 	ChooseStageScreen.OnShowText(pDC, fp);
+	for (int i = 0; i < 4; i++){
+		if (EnemyList[i].GetTankState() == Death) {
+			EnemyList[i].OnShowScore(pDC, fp);
+		}
+	}
 	CDDraw::ReleaseBackCDC();
 }
 void CGameStateRun::PlayerTankMove(CPlayer *tank) {

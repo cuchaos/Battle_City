@@ -7,6 +7,7 @@
 #include "../Library/gameutil.h"
 #include "../Library/gamecore.h"
 #include <random>
+#include <string>
 #include "Enemy.h"
 
 // Tank Child
@@ -226,4 +227,11 @@ void Enemy::OnShow() {
 	}
 }
 
-	
+void Enemy::OnShowScore(CDC *pDC, CFont* &fp) {
+	pDC->SetBkMode(TRANSPARENT);
+	pDC->SetTextColor(RGB(255, 255, 255));
+	CTextDraw::ChangeFontLog(pDC, 48, "STZhongsong", RGB(255,255,255));
+	if (clock() - _SpawnClock <= 500) {
+		CTextDraw::Print(pDC, _X, _Y, to_string(_EnemyScore));
+	}
+}

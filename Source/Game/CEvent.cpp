@@ -38,19 +38,23 @@ void Event::TrigSetBattleMap(vector<vector<int>>& Stage,Map& StageMap,int& Enemy
 	BattleMenu.SetBattleing(true);
 	EnemyNum = 20;
 }
-void Event::TrigSetProps(GameProps& Props) {
-	Props.SetGameProps();
+void Event::TrigReSetProps(vector<GameProps>& Props,int NowPropIndex) {
+	if (NowPropIndex >= 1) {
+		int _LastProps = Props[0].GetAllPropType().size() - 1;
+		if (!Props[_LastProps].GetIfTouched() && Props[_LastProps].GetIfExist()) {
+			Props[_LastProps].SetIfExist(false);
+		}
+	}
 }
-void Event::TrigUnshowProps(GameProps& Props) {
-	Props.SetIfExist(false);
-	Props.SetIfShow(false);
+void Event::TrigSetProps(vector<GameProps>& Props,int NowPropIndex) {
+	Props[NowPropIndex].SetGameProps();
 }
 void Event::TrigGetProps(GameProps& Props,Map& StageMap,CPlayer& Player,vector<Enemy>& AllEnemy) {
 	Props.SetIfShow(false);
 	int type = Props.GetType();
 	if (type == 0) {
-		Player.SetLife(Player.GetLife()+1);
-		Props.SetIfExist(false); 
+		Player.SetLife(Player.GetLife() + 1);
+		Props.SetIfExist(false);
 	}
 	else if (type == 1) {
 		Player.LevelUP();
@@ -81,4 +85,5 @@ void Event::TrigGetProps(GameProps& Props,Map& StageMap,CPlayer& Player,vector<E
 	else if (type == 7) {
 		Player.SetIfGetShip(true);
 	}
+
 }

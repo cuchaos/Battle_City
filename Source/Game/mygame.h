@@ -128,14 +128,17 @@ namespace game_framework {
 		//bool BulletBulletCollision();
 		//void PlayerShoot(CPlayer *tank);
 		//void EnemyShoot(Enemy *tank);
-		
+		Event event;
+
 		void AllBulletFly();
 		void AllBulletCollision();
 		vector<CBullet*> _AllBullet; // index 0 and 1 is player's , index >= 2 is enemy's
 		int _NowStage;
 		int _EnemyNum;
-		Event event;
-		GameProps Prop;
+
+		int _NowProp;  // the var that record Prop number
+		vector<GameProps> _Prop;
+		
 		Menu ChooseStageScreen;
 		clock_t _TimerStart,_TimerFinish;
 		int _EnemyQuantity;

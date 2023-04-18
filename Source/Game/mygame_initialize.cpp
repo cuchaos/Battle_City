@@ -71,9 +71,9 @@ void CGameStateInit::OnInit()
 		vector<int> temp = { 0,0,0,0 };
 		_AllStageEnemy.push_back(temp);
 		getline(myfile, content);
-		int lastindex = content.size() - 2;
+		int lastindex = content.size() - 1;
 		int vectorindex = 3;
-		for (int j = content.size() - 2; j > -1; j--) {
+		for (int j = content.size() - 1; j > -1; j--) {
 			if (content[j] == ' ' || j == 0) {
 				int temp_count = 0;
 				int temp_first = 0;

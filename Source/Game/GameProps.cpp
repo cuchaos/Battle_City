@@ -10,9 +10,16 @@
 #include <random>
 
 using namespace game_framework;
+
+vector<int> GameProps::_AllPropType = {};
 GameProps::GameProps() {
 }
 void GameProps::OnInit() {
+	_IfShow = false;
+	_IfExist = false;
+	_IfCountDown = false;
+	_IfTouched = false;
+	_Type = -1;
 	vector<string> filename;
 	for (int i = 0; i < 8; i++) {
 		filename.push_back("resources/Prop" + to_string(i) + ".bmp");
@@ -24,19 +31,43 @@ void GameProps::SetGameProps() {
 	_IfExist = true;
 	_IfCountDown = false;
 	_IfTouched = false;
-	//_Type = rand() % 8;
-	_Type = 3;
+	_Type = rand() % 8;
+	//_Type = 5;
 	_Props.SetFrameIndexOfBitmap(_Type);
 	_X = 100 + rand() % 768;
 	_Y = rand() % 768;
 	_Props.SetTopLeft(_X,_Y);
+	_AllPropType.push_back(_Type);
+	_NowIndex = _AllPropType.size() - 1;
 }
-
+void GameProps::SetIfCountDown(bool State) {
+	_IfCountDown = State;
+}
+vector<int> GameProps::GetAllPropType() {
+	return _AllPropType;
+}
 bool GameProps::GetIfTouched() {
 	return _IfTouched;
 }
 int GameProps::GetType() {
 	return _Type;
+}
+int GameProps::count(int Type) {
+	int sum = 0;
+	for (int i = 0; i < (int)_AllPropType.size(); i++) {
+		if (_AllPropType[i] == Type) {
+			sum += 1;
+		}
+	}
+	return sum;
+}
+int GameProps::find(int Type) {
+	for (int i = 0; i < (int)_AllPropType.size(); i++) {
+		if (_AllPropType[i] == Type) {
+			return i;
+		}
+	}
+	return -1;
 }
 void GameProps::SetIfShow(bool Status) {
 	_IfShow = Status;
@@ -47,6 +78,10 @@ bool GameProps::GetIfShow() {
 
 void GameProps::SetIfExist(bool IfExist) {
 	_IfExist = IfExist;
+	if (_IfExist == false) {
+		_Type = -1;
+		_AllPropType[_NowIndex] = -1;
+	}
 }
 bool GameProps::GetIfExist() {
 	return _IfExist;
@@ -80,7 +115,9 @@ int GameProps::IfEffectExit() { // 1 is effect,-1 is no effect, 0 is 19second
 	if (clock() - _StartTime >= EffectTime) {
 		_IfCountDown = false;
 		_IfTouched = false;
+		_IfExist = false;
 		_Type = -1;
+		_AllPropType[_NowIndex] = -1;
 		return -1;
 	}
 	return 1;

@@ -170,10 +170,13 @@ void Map::SetGetShovel(int EffectTime) {
 	}
 	else if (EffectTime == 0 ) {
 		Type = 5;
+		/*
 		if (_IfShovelShine == false) {
 			_IfShovelShine = true;
 			IfShine = true;
 		}
+		*/
+		IfShine = true;
 	}
 	else if(EffectTime == -1){
 		Type = 4;

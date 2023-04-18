@@ -7,6 +7,7 @@
 #include "../Library/gamecore.h"
 #include "mygame.h"
 #include <string>
+#include <algorithm>
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
@@ -45,9 +46,17 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 		_PlayerTank.SetIfBattle(true);
 		return;
 	}
-	if ((CMovingBitmap::IsOverlap(_PlayerTank.GetTankBitmap(), Prop.GetPropBitmap()) || Prop.GetIfTouched())
-		&& Prop.GetIfExist()) {
-		event.TrigGetProps(Prop, Stage1, _PlayerTank,EnemyList);
+	for (int i = _NowProp - 1; i > -1; i--) {
+		if ((CMovingBitmap::IsOverlap(_PlayerTank.GetTankBitmap(), _Prop[i].GetPropBitmap())
+			|| _Prop[i].GetIfTouched()) && _Prop[i].GetIfExist()) {
+			if (i == _NowProp - 1 && _Prop[i].count(_Prop[i].GetType()) > 1
+				&& (_Prop[i].GetType() == 5 || _Prop[i].GetType() == 3)) {
+				_Prop[_Prop[i].find(_Prop[i].GetType())].SetIfCountDown(false);
+				_Prop[i].SetIfExist(false);
+				continue;
+			}
+			event.TrigGetProps(_Prop[i], Stage1, _PlayerTank, EnemyList);
+		}
 	}
 	if (_PlayerTank.GetTankState() == Live){
 		PlayerTankMove(&_PlayerTank);
@@ -110,8 +119,14 @@ void CGameStateRun::OnInit()                                  // 遊戲的初值
 	_PlayerTank.LoadBitmap();
 	_PlayerTankFrontX = 0;
 	_PlayerTankFrontY = 0;
+	
+	_NowProp = 0;
+	for (int i = 0; i < 5; i++) {
+		_Prop.push_back(GameProps());
+		_Prop[i].OnInit();
+	}
+
 	_TimerSpawn = clock();
-	Prop.OnInit();
 	//event.TrigSetProps(Prop);
 	EnemyList.push_back(_EnemyTank1);
 	EnemyList.push_back(_EnemyTank2);
@@ -202,7 +217,9 @@ void CGameStateRun::OnShow()
 	ChooseStageScreen.OnShow();
 	if (_IfBattling) {
 		Stage1.OnShow();
-		Prop.OnShow();
+		if (_NowProp != 0) {
+			_Prop[_NowProp-1].OnShow();
+		}
 		_PlayerTank.OnShow();
 		for (int i = 0; i < 4; i++) {
 			EnemyList[i].OnShow();
@@ -221,6 +238,11 @@ void CGameStateRun::OnShowText() {
 	_TimerFinish = clock();
 	CTextDraw::Print(pDC, 0, 0, (to_string(_TimerSpawn / CLOCKS_PER_SEC) + " " + to_string(_TimerFinish)));
 	CTextDraw::Print(pDC, 0, 25, (to_string(_EnemyQuantity)));
+	for (int i = 0; i < _NowProp; i++) {
+		CTextDraw::Print(pDC, 0, 50+i*25, to_string(_Prop[i].GetIfTouched())+" " + to_string(_Prop[i].GetIfExist()) 
+		+ " " + to_string(_Prop[i].GetType()) + " " + to_string(_Prop[i].count(_Prop[i].GetType())) );
+
+	}
 	/*CTextDraw::Print(pDC, 0, 50, (to_string(EnemyList[0].isEnemyHaveItem())));
 	CTextDraw::Print(pDC, 0, 75, (to_string(EnemyList[1].isEnemyHaveItem())));
 	CTextDraw::Print(pDC, 0, 100, (to_string(EnemyList[2].isEnemyHaveItem())));
@@ -270,8 +292,11 @@ void CGameStateRun::AllBulletCollision() {
 						&& enemy.GetTankState() == Live) {
 						enemy.SetLife(0);
 						if (enemy.isEnemyHaveItem()){
-							event.TrigSetProps(Prop);
-							enemy.SetEnemyHaveItem(false);
+							if (_NowProp < 5) {
+								event.TrigSetProps(_Prop, _NowProp);
+								enemy.SetEnemyHaveItem(false);
+							}
+							_NowProp += 1;
 						}
 						_PlayerTank.SetBulletStatus(1 + i, false);
 						_PlayerTank.SetIfFire(1 + i, false);

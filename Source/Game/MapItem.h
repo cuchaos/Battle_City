@@ -13,6 +13,7 @@ namespace game_framework {
 		bool GetIfShoot();
 		bool GetIfBreak();
 		bool GetIfWalk();
+		bool GetIfShine();
 		int GetType();
 		CMovingBitmap GetMapItmeBitmap();
 

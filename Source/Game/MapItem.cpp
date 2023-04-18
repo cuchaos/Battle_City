@@ -46,7 +46,7 @@ MapItem::MapItem(int ItemType) { //傳某一個格子 type 進去
 		_ShovelAnimaetion.LoadBitmapByString({ "resources/wall.bmp","resources/IronWall.bmp" }, RGB(0, 0, 0));
 		// I add the Iron wall because the Item Shovel must change the type ,but bitmap was load at the first
 		// so i add Iron wall bitmap in it. 
-		_ShovelAnimaetion.SetAnimation(500, false);
+		_ShovelAnimaetion.SetAnimation(500, true);
 	}
 	else if (_Type == 5) { //5是 鐵牆(無法行走(可破壞後走), 可射擊(無法穿過) ,不可破壞(拿道具後可破壞) )
 		_Health = 3;
@@ -112,6 +112,9 @@ bool MapItem::GetIfBreak() {
 bool MapItem::GetIfWalk() {
 	return _IfWalk;
 }
+bool MapItem::GetIfShine() {
+	return _IfShine;
+}
 void MapItem::SetTopLeft(int x, int y) {
 	_OneGrid.SetTopLeft(x, y);
 	if (_Type == 4) {
@@ -125,6 +128,9 @@ void MapItem::GrassOnsShow() {
 }
 void MapItem::OnShow() {
 	if (_IfGetShovel) {
+		if (_IfShine && _ShovelAnimaetion.IsAnimationDone()) {
+			_ShovelAnimaetion.ToggleAnimation();
+		}
 		_ShovelAnimaetion.ShowBitmap();
 		return;
 	}
@@ -133,6 +139,7 @@ void MapItem::OnShow() {
 	}
 	
 }
+
 CMovingBitmap MapItem::GetMapItmeBitmap() {
 	return _OneGrid;
 }
@@ -145,11 +152,8 @@ void MapItem::SetShovelChangeType(int Type,bool IfShine) {
 		_IfShoot = true;
 		_IfBreak = false;
 		_IfWalk = false;
-		if (IfShine && _IfShine == false) {
-			_ShovelAnimaetion.ToggleAnimation();
-			_IfShine = true;
-		}
-		else if( !IfShine && _IfShine == false){
+		_IfShine = IfShine;
+		if (!_IfShine) {
 			_ShovelAnimaetion.SetFrameIndexOfBitmap(1);
 		}
 	}
@@ -160,6 +164,7 @@ void MapItem::SetShovelChangeType(int Type,bool IfShine) {
 		_IfShoot = true;
 		_IfBreak = true;
 		_IfWalk = false;
+		_IfShine = false;
 		_OneGrid.SetFrameIndexOfBitmap(0);
 	}
 }

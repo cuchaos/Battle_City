@@ -7,24 +7,19 @@
 #include "../Library/gameutil.h"
 #include "../Library/gamecore.h"
 #include <random>
+#include <string>
 #include "Enemy.h"
 
 // Tank Child
 using namespace game_framework;
 
 Enemy::Enemy() : CTank() {
-	//_EnemyType = 0;
-	/*_X = Width * 14 + 100;
-	_Y = Height * 0;
-	_OriginAngle = Down;
-	_TurnAngle = Down;
-	_NowGrid = { (_X - 100) / Width, _Y / Height };*/
 	_IfGetTimeStop = false;
 	_TimeStart = clock();
 	_TimeFinish = clock();
+	_EnemyType = 0;
 	_Setinit = false;
 	_EnemyHaveItem = false;
-	//SetFaceDirection();
 }
 int Enemy::GetEnemyScore() {
 	return _EnemyScore;
@@ -150,7 +145,39 @@ void Enemy::SetFaceDirection() {
 		_Frameindex = 6 + _EnemyType * 8;
 	}
 }
-
+void Enemy::TankbeHit() {
+	if (_FrameTime == 26){
+		if (clock() - _SpawnClock >= 2500){
+			_TankState = Spawn;
+			_Setinit = false;
+		}
+	}
+	else {
+		if (_FrameTime > 26){
+			_FrameTime = 0;
+		}
+		else { 
+			if (_FrameTime % 26 == 5) {
+				_TankBrokenAnimation.SetFrameIndexOfBitmap(1);
+			}
+			else if (_FrameTime % 26 == 10) {
+				_TankBrokenAnimation.SetFrameIndexOfBitmap(2);
+			}
+			else if (_FrameTime % 26 == 15) {
+				_TankBrokenAnimation.SetFrameIndexOfBitmap(3);
+			}
+			else if (_FrameTime % 26 == 20) {
+				_TankBrokenAnimation.SetFrameIndexOfBitmap(4);
+			}
+			else if (_FrameTime % 26 == 25) {
+				_TankBrokenAnimation.SetFrameIndexOfBitmap(0);
+				_SpawnClock = clock();
+			}
+		}
+		_FrameTime += 1;
+		_TankBrokenAnimation.ShowBitmap();
+	}
+}
 void Enemy::FireBullet(int BulletOrder) {
 	if (_OriginAngle == Right || _OriginAngle == Left) {
 		_Bullet.SetBulletFire(_X, _Y + 25, _OriginAngle, _BulletFlySpeed);
@@ -175,11 +202,13 @@ bool Enemy::GetIfFire(int FireOrder) {
 int Enemy::GetEnemyType() {
 	return _EnemyType;
 }
+bool Enemy::GetIfBattle() {
+	return _IfBattle;
+}
 void Enemy::OnShow() {
 	if (_IfBattle) {
 		if (_TankState == Spawn) {
 			if (!_Setinit) {
-				//SetEnemyType();
 				SetEnemyInit();
 			}
 			CTank::LoadBitmap();
@@ -197,4 +226,12 @@ void Enemy::OnShow() {
 		}
 	}
 }
-	
+
+void Enemy::OnShowScore(CDC *pDC, CFont* &fp) {
+	pDC->SetBkMode(TRANSPARENT);
+	pDC->SetTextColor(RGB(255, 255, 255));
+	CTextDraw::ChangeFontLog(pDC, 48, "STZhongsong", RGB(255,255,255));
+	if (clock() - _SpawnClock <= 500) {
+		CTextDraw::Print(pDC, _X, _Y, to_string(_EnemyScore));
+	}
+}

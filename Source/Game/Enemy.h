@@ -18,6 +18,7 @@ namespace game_framework {
 		void LoadBitmap();						
 		void SetOriginAngle(int _direction);	// 設定轉向方向 
 		void EnemyRandomDirection();			// 隨機設定前進方向
+		bool GetIfBattle();
 		// bullet
 
 		void FireBullet(int BulletOrder) override;
@@ -30,11 +31,13 @@ namespace game_framework {
 		CMovingBitmap GetEnemyBitmap();
 		void SetFaceDirection() override;
 		void OnShow() override;
+		void TankbeHit() override;
+		void OnShowScore(CDC *pDC, CFont* &fp);
 	private:
 		int _EnemyType;
 		int _EnemyScore;
 		int _RandomDirection,_RandomMoveTime;	// 隨機轉向方向,隨機移動時間
-		clock_t _TimeFinish, _TimeStart;		// 計時器 (結束-開始 = 經過時間)
+		clock_t _TimeFinish, _TimeStart,_SpawnClock;		// 計時器 (結束-開始 = 經過時間)
 		bool _EnemyHaveItem;					// 道具
 		
 		bool _IfGetTimeStop;

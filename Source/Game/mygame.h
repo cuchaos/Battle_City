@@ -121,7 +121,7 @@ namespace game_framework {
 		void PlayerTankMove(CPlayer *tank);
 		void EnemyTankMove(Enemy *tank);
 		void TankCollisionMap(CTank *tank);
-		
+		void RandomSpawnTank(int num);
 		bool ShootCollision(CBullet Bullet,int TankLevel); 
 		//bool PlayerBulletCollision();
 		//bool EnemyBulletCollision();
@@ -140,7 +140,7 @@ namespace game_framework {
 		vector<GameProps> _Prop;
 		
 		Menu ChooseStageScreen;
-		clock_t _TimerStart,_TimerFinish;
+		clock_t _TimerSpawn,_TimerFinish;
 		int _EnemyQuantity;
 		CPlayer _PlayerTank;
 		bool _isHoldUpKey, _isHoldDownKey, _isHoldRightKey, _isHoldLeftKey;
@@ -148,6 +148,7 @@ namespace game_framework {
 		
 		int _OnIceCountDown; // If we on ice,we should go without any keydown,this is 
 							// the go on counter 2 Grid,so is 64 pixel
+		int tempIndex;
 		int _HoldKey;
 		int _PlayerTankFrontX ;
 		int _PlayerTankFrontY ;
@@ -156,7 +157,7 @@ namespace game_framework {
 		Enemy _EnemyTank1, _EnemyTank4, _EnemyTank3, _EnemyTank2;
 		vector<Enemy> EnemyList = {};
 		vector<clock_t> EnemyFireLastTime = {};
-		//vector<int> EnemyTypeList = { 0,1,2,3 };
+		vector<int> EnemyTypeList = {0,0,0,0};
 	};
 
 	/////////////////////////////////////////////////////////////////////////////

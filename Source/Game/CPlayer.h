@@ -25,6 +25,7 @@ namespace game_framework {
 		CBullet _SecondBullet;
 		void SetFaceDirection() override;
 		void OnShow() override;
+		void TankbeHit() override;
 	private:
 		bool _IfSecondFire;
 

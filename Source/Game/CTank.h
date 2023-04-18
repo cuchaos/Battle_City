@@ -22,12 +22,13 @@ namespace game_framework {
 		void Move();						//移動
 		void SetXY(int x, int y);			//座標設定
 		void TurnFace(UINT nChar);			//調整圖片方向
-		void TankbeHit();
+		
 		void Animation();
 		vector<vector<int>> GetTankFront();
 
 		// virtual Direction (LoadBitmapIndex)
 		virtual void SetFaceDirection() = 0;
+		virtual void TankbeHit() = 0;
 
 		// bullet
 		virtual void FireBullet(int BulletOrder) = 0;

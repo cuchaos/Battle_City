@@ -129,9 +129,4 @@ int GameProps::GetX() {
 int GameProps::GetY() {
 	return _Y;
 }
-//void GameProps::OnShowScore(CDC *pDC, CFont* &fp) {
-//	pDC->SetBkMode(TRANSPARENT);
-//	pDC->SetTextColor(RGB(255, 255, 255));
-//	CTextDraw::ChangeFontLog(pDC, 48, "STZhongsong", RGB(255, 255, 255));
-//	CTextDraw::Print(pDC, _X, _Y, to_string(500));
-//}
+

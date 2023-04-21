@@ -121,3 +121,17 @@ int GameProps::IfEffectExit() { // 1 is effect,-1 is no effect, 0 is 19second
 	}
 	return 1;
 }
+
+int GameProps::GetX() {
+	return _X;
+}
+
+int GameProps::GetY() {
+	return _Y;
+}
+//void GameProps::OnShowScore(CDC *pDC, CFont* &fp) {
+//	pDC->SetBkMode(TRANSPARENT);
+//	pDC->SetTextColor(RGB(255, 255, 255));
+//	CTextDraw::ChangeFontLog(pDC, 48, "STZhongsong", RGB(255, 255, 255));
+//	CTextDraw::Print(pDC, _X, _Y, to_string(500));
+//}

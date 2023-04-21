@@ -130,6 +130,7 @@ int CTank::GetBulletOwner() {
 vector<vector<int>> CTank::GetTankFront() {
 	return _FrontXY;
 }
+
 void CTank::LocationPoint() {
 	SetXY(_NowGrid[0] * Width + 100, _NowGrid[1] * Height);
 	for (int i = 0; i < 2; i++) _OffsetXY[i] = 0;			//轉向後坦克的定位回正 偏移數值歸零

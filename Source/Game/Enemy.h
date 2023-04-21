@@ -37,7 +37,6 @@ namespace game_framework {
 		void OnShowScore(CDC *pDC, CFont* &fp);
 	private:
 		clock_t _TimeFinish, _TimeStart, _SpawnClock;		// 計時器 (結束-開始 = 經過時間)
-
 		int _EnemyType;
 		int _EnemyScore;
 		bool _EnemyHaveItem;					// 道具

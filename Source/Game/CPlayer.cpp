@@ -15,10 +15,6 @@ CPlayer::CPlayer() : CTank(){
 	_PlayerScore = 0;
 	_KillEnemyList = {0,0,0,0};
 	_Level = 1;
-	_AttackSpeedUP = false;
-	_CanBreakIron = false;
-	_DoubleAttack = false; 
-	_IfGetShip = false; 
 	_TankState = Spawn;
 	PlayerInit();
 }
@@ -32,12 +28,16 @@ void CPlayer::PlayerInit() {
 	_TurnAngle = Up;
 	_NowGrid = { (_X - 100) / Width, _Y / Height };
 	_OffsetXY = { 0,0 };
+	_AttackSpeedUP = false;
+	_CanBreakIron = false;
+	_DoubleAttack = false;
+	_IfGetShip = false;
 	_IfSecondFire = false;
 	SetFaceDirection();
 }
-int CPlayer::GetPlayerScore() {
-	return _PlayerScore;
-}
+//int CPlayer::GetPlayerScore() {
+//	return _PlayerScore;
+//}
 
 void CPlayer::SetIfInvicible(bool Status) {
 	_IfInvicible = Status;
@@ -105,25 +105,25 @@ void CPlayer::TankbeHit() {
 		_TankBrokenAnimation.ShowBitmap();
 	}
 }
-void CPlayer::KillEnemy(int type) {
-	_KillEnemyList.push_back(type);
-	if (type == LightTank) {
-		PlusPlayerScore(100);						
-	}
-	else if (type == QuickTank) {
-		PlusPlayerScore(300);						
-	}
-	else if (type == ArmorTank) {					
-		PlusPlayerScore(200);						
-	}
-	else if (type == HeavyTank) {					
-		PlusPlayerScore(400);						
-	}
-}
+//void CPlayer::KillEnemy(int type) {
+//	_KillEnemyList.push_back(type);
+//	if (type == LightTank) {
+//		PlusPlayerScore(100);						
+//	}
+//	else if (type == QuickTank) {
+//		PlusPlayerScore(300);						
+//	}
+//	else if (type == ArmorTank) {					
+//		PlusPlayerScore(200);						
+//	}
+//	else if (type == HeavyTank) {					
+//		PlusPlayerScore(400);						
+//	}
+//}
 
-void CPlayer::PlusPlayerScore(int score) {
-	_PlayerScore += score;
-}
+//void CPlayer::PlusPlayerScore(int score) {
+//	_PlayerScore += score;
+//}
 
 void CPlayer::SetBulletStatus(int BulletOrder, bool Status) { // 1 is first bullet , 2 is second bullet 
 	if (BulletOrder == 1) {
@@ -200,8 +200,10 @@ void CPlayer::OnShow() {
 				//SetEnemyInit();
 				PlayerInit();
 			}
-			CTank::LoadBitmap();
-			ShowSpawnAnimation();
+			else if(_Setinit){
+				CTank::LoadBitmap();
+				ShowSpawnAnimation();
+			}
 		}
 		else if (_TankState == Live) {
 			_Tank.SetFrameIndexOfBitmap(_Frameindex);

@@ -13,7 +13,7 @@ namespace game_framework {
 		void PlusPlayerScore(int score);
 		void LevelUP();
 		void PlayerInit();
-		int GetPlayerScore();
+		//int GetPlayerScore();
 
 		bool GetIfInvicible();
 
@@ -30,7 +30,6 @@ namespace game_framework {
 		void TankbeHit() override;
 	private:
 		bool _IfSecondFire;
-
 		int _IfInvicible;
 		int _PlayerScore;
 		vector<int> _KillEnemyList;

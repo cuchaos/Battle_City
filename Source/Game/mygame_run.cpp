@@ -105,7 +105,7 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 	if (EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0 &&
 		EnemyList[0].GetTankState() == Spawn && EnemyList[1].GetTankState() == Spawn && EnemyList[2].GetTankState() == Spawn && EnemyList[3].GetTankState() == Spawn &&
 		!(EnemyList[0].GetIfBattle()  && EnemyList[1].GetIfBattle() && EnemyList[2].GetIfBattle() && EnemyList[3].GetIfBattle())) {
-		GotoGameState(GAME_STATE_OVER);
+		GotoGameState(GAME_STATE_RUN);
 	}
 }
 void CGameStateRun::OnInit()                                  // 遊戲的初值及圖形設定
@@ -253,6 +253,12 @@ void CGameStateRun::OnShowText() {
 		CTextDraw::Print(pDC, 0, 50+i*25, to_string(_Prop[i].GetIfTouched())+" " + to_string(_Prop[i].GetIfExist()) 
 		+ " " + to_string(_Prop[i].GetType()) + " " + to_string(_Prop[i].count(_Prop[i].GetType())) );
 	}
+	if ((_NowStage - 1)>=0){
+		CTextDraw::Print(pDC, 0, 50, (to_string(EnemyTypeList[0]) + " " + to_string(_AllStageEnemy[_NowStage - 1][0])));
+		CTextDraw::Print(pDC, 0, 75, (to_string(EnemyTypeList[1]) + " " + to_string(_AllStageEnemy[_NowStage - 1][1])));
+		CTextDraw::Print(pDC, 0, 100, (to_string(EnemyTypeList[2]) + " " + to_string(_AllStageEnemy[_NowStage - 1][2])));
+		CTextDraw::Print(pDC, 0, 125, (to_string(EnemyTypeList[3]) + " " + to_string(_AllStageEnemy[_NowStage - 1][3])));
+	}
 	*/
 	CTextDraw::Print(pDC, 0, 150, (to_string(_NowStage - 1)));
 
@@ -261,6 +267,9 @@ void CGameStateRun::OnShowText() {
 		if (EnemyList[i].GetTankState() == Death) {
 			EnemyList[i].OnShowScore(pDC, fp);
 		}
+	}
+	if (_PlayerTank.GetEatItem()){
+		_PlayerTank.OnShowScore(pDC, fp);
 	}
 	CDDraw::ReleaseBackCDC();
 }

@@ -12,80 +12,96 @@
 using namespace game_framework;
 
 Menu::Menu() {
-	_TotalScore = 0;
-	_TheHightestScore = 0;
 	tempselect = 0;
 	finalselect = 0;
-	_MenuType = 0;
-
+	_MenuType = LobbyMenu;
 	_RaiseDelay = 10;
 	_RaiseSpeed = 10;
-	_Menuing = false;
-	_Selecting = false;
-	_ChoosingStage = false;
-	_Animationing = false;
-	_Battleing = false;
+	_IfLobbyMenuing = false;
+	_IfSelecting = false;
+	_IfChoosingStage = false;
+	_IfAnimation = false;
+	_IfSettlement = false;
+	_Dialog = { {},{},{0},{0} };
 }
-
-void Menu::SetSelecting(bool select) {
-	_Selecting = select;
+void Menu::SetMenuType(MenuType Type) {
+	switch (Type)
+	{
+	case LobbyMenu:
+		_MenuType = LobbyMenu;
+		return;
+	case ChooseStageMenu:
+		_MenuType = ChooseStageMenu;
+		return;
+	case BattleMenu:
+		_MenuType = BattleMenu;
+		return;
+	case SettleMenu:
+		_MenuType = SettleMenu;
+		return;
+	}
 }
-bool Menu::GetSelecting() {
-	return _Selecting;
+void Menu::SetSelecting(bool Status) {
+	_IfSelecting = Status;
 }
-
-void Menu::SetMenuing(bool menu) {
-	_Menuing = menu;
+void Menu::SetIfLobbyMenuing(bool Status) {
+	_IfLobbyMenuing = Status;
 }
-bool Menu::GetMenuing() {
-	return _Menuing;
+void Menu::SetIfChoosingStage(bool Status) {
+	_IfChoosingStage = Status;
 }
-int Menu::GetMenuY(int type) {
-	if (type == Lobby) {
+void Menu::SetIfAnimation(bool Status) {
+	_IfAnimation = Status;
+}
+void Menu::SetSettlement(vector<int>& EnemyNum, vector<int>& EnemyScore, int& NowScore, int& THeHighestScore) {
+	_IfSettlement = true;
+	_CountNumber = {0,0,0,0};
+	_NowCountTank = 0;
+	_Dialog[0] = EnemyNum;
+	_Dialog[1] = EnemyScore;
+	_Dialog[2] = { NowScore };
+	_Dialog[3] = { THeHighestScore };
+}
+bool Menu::GetIfSelecting() {
+	return _IfSelecting;
+}
+bool Menu::GetIfLobbyMenuing() {
+	return _IfLobbyMenuing;
+}
+bool Menu::GetChoosingStage() {
+	return _IfChoosingStage;
+}
+bool Menu::GetIfAnimation() {
+	return _IfAnimation;
+}
+int Menu::GetMenuY(MenuType Type) {
+	if (Type == LobbyMenu) {
 		return _Menu.GetTop();
 	}
-	else if (type == ChooseStage) {
+	else if (Type == ChooseStageMenu) {
 		return _ChooseStageMenuTop.GetTop();
 	}
 	return 0;
 }
-void Menu::SetLobbyRaise() {
-	_MenuType = Lobby;
-	_Menuing = true;
-	_Animationing = true;
-	if (clock() - _Last_time >= _RaiseDelay && _Animationing) {
-		_Menu.SetTopLeft(100, _Menu.GetTop() - _RaiseSpeed);
-		_Last_time = clock();
-	}
-}
-
-void Menu::SetChoosingStageanimation() {
-	_MenuType = ChooseStage;
-	_ChoosingStage = true;
-	_Animationing = true;
+void Menu::SetMenuRaise(MenuType Type) {
+	_MenuType = Type;
 	if (clock() - _Last_time >= _RaiseDelay) {
-		_ChooseStageMenuTop.SetTopLeft(0,_ChooseStageMenuTop.GetTop() + _RaiseSpeed + 15);
-		_ChooseStageMenuDown.SetTopLeft(0,_ChooseStageMenuDown.GetTop() - _RaiseSpeed - 15);
-		_Last_time = clock();
+		if (_MenuType == LobbyMenu && _IfAnimation) {
+			_IfLobbyMenuing = true;
+			_Menu.SetTopLeft(100, _Menu.GetTop() - _RaiseSpeed);
+			_Last_time = clock();
+		}
+		else if (_MenuType == ChooseStageMenu) {
+			_IfChoosingStage = true;
+			_ChooseStageMenuTop.SetTopLeft(0, _ChooseStageMenuTop.GetTop() + _RaiseSpeed + 15);
+			_ChooseStageMenuDown.SetTopLeft(0, _ChooseStageMenuDown.GetTop() - _RaiseSpeed - 15);
+			_Last_time = clock();
+		}
 	}
 }
-bool Menu::GetChoosingStage() {
-	return _ChoosingStage;
-}
-void Menu::SetChoosingStage(bool choosingstage) {
-	_ChoosingStage = choosingstage;
-}
 
-bool Menu::GetAnimationing() {
-	return _Animationing;
-}
-void Menu::SetAnimationing(bool Status) {
-	_Animationing = Status;
-}
 
-void Menu::SetBattleing(bool Status) {
-	_Battleing = Status;
-}
+
 int Menu::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
 	const char KEY_UP = 0x26;
 	const char KEY_DOWN = 0x28;
@@ -93,12 +109,12 @@ int Menu::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
 	const char Key_Z = 0x5A;
 	const char Key_X = 0x58;
 
-	if (_Animationing == true && _MenuType == Lobby) {
+	if (_IfAnimation && _MenuType == LobbyMenu) { // return -1 is still same,not change.
 		_Menu.SetTopLeft(100, 0);
-		_Animationing = false;
+		_IfAnimation = false;
 		return -1;
 	}
-	if (_Selecting && _MenuType == Lobby) {
+	if (_IfSelecting && _MenuType == LobbyMenu) { // we select the stage in there.
 		if (nChar == KEY_DOWN) {
 			tempselect += 1;
 			tempselect %= 2;
@@ -111,17 +127,18 @@ int Menu::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
 		else if (nChar == KEY_ENTER) {
 			_ChooseStageMenuTop.SetTopLeft(0, -450);
 			_ChooseStageMenuDown.SetTopLeft(0, 900);
-			_Selecting = false;
-			_Menuing = false;
+			_IfSelecting = false;
+			_IfLobbyMenuing = false;
+			_IfAnimation = false;
 			_Menu.SetTopLeft(100, 900);
 			finalselect = tempselect;
 			tempselect = 0;
 			return finalselect;
 		}
 		_Arrow.SetTopLeft(380, 500 + 70 * tempselect);
-		return -1;
+		return -1; // return -1 is still same.
 	}
-	else if (_Selecting && _MenuType == ChooseStage) {
+	else if (_IfSelecting && _MenuType == ChooseStageMenu) { // IfSelecting is after in graymenu animation.
 		if (nChar == Key_Z) {
 			tempselect -= 1;
 			if (tempselect < 0) {
@@ -135,10 +152,13 @@ int Menu::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
 			}
 		}
 		else if (nChar == KEY_ENTER) {
-			_ChoosingStage = false;
+			_IfChoosingStage = false;
+			_IfAnimation = false;
+			_IfSelecting = false;
 			finalselect = tempselect + 1;
 			return finalselect;
 		}
+		return -1; // return -1 is still same.
 	}
 	return -1;
 }
@@ -154,23 +174,38 @@ void Menu::LoadBitMap() {
 	_ChooseStageMenuTop.SetTopLeft(0, -450);
 	_ChooseStageMenuDown.LoadBitmapByString({ "resources/GrayScreen.bmp" });
 	_ChooseStageMenuDown.SetTopLeft(0, 900);
+	
+	for (int i = 0; i < 4; i++) {
+		CMovingBitmap temp;
+		temp.LoadBitmapByString({ "resources/SettleArrow.bmp" }, RGB(0, 0, 0));
+		_SettleArrow.push_back(temp);
+		_SettleArrow[i].SetTopLeft(330, 370 + i * 100);
+	}
+	
 }
 void Menu::OnShow() {
 
-	if (_MenuType == Lobby) {
-		if (_Menuing) {
+	if (_MenuType == LobbyMenu) {
+		if (_IfLobbyMenuing) {
 			_Menu.ShowBitmap();
 		}
-		if (_Selecting) {
+		if (_IfSelecting) {
 			_Arrow.ShowBitmap();
 		}
 	}
-	if (_ChoosingStage && _MenuType == ChooseStage) {
-		_ChooseStageMenuTop.ShowBitmap();
-		_ChooseStageMenuDown.ShowBitmap();
+	if (_MenuType == ChooseStageMenu) {
+		if (_IfChoosingStage) {
+			_ChooseStageMenuTop.ShowBitmap();
+			_ChooseStageMenuDown.ShowBitmap();
+		}
 	}
-	if (_Battleing) {
+	if (_MenuType == BattleMenu) {
 		_BattleMenuGray.ShowBitmap();
+	}
+	if (_MenuType == SettleMenu) {
+		for (int i = 0; i < 4; i++) {
+			_SettleArrow[i].ShowBitmap();
+		}
 	}
 }
 void Menu::OnShowText(CDC *pDC, CFont* &fp) {
@@ -178,10 +213,33 @@ void Menu::OnShowText(CDC *pDC, CFont* &fp) {
 	pDC->SetBkMode(TRANSPARENT);
 	pDC->SetTextColor(RGB(180, 180, 180));
 	CTextDraw::ChangeFontLog(pDC, 40, "STZhongsong", RGB(180, 180, 180));
-	if (_Menuing && _Selecting) {
-		CTextDraw::Print(pDC, 200, 60, to_string(_TotalScore).c_str());
+	if (_IfLobbyMenuing && _IfSelecting) {
+		CTextDraw::Print(pDC, 200, 60, to_string(_Dialog[2][0]).c_str());
 	}
-	if (_ChoosingStage && _Selecting) {
+	if (_IfChoosingStage && _IfSelecting) {
 		CTextDraw::Print(pDC, 600, 400, string("Stage") + to_string(tempselect+1).c_str());
+	}
+	
+	if (_IfSettlement) {
+		if (_NowCountTank <= 3) {
+			if (_CountNumber[_NowCountTank] < _Dialog[0][_NowCountTank]) {
+				if (clock() - _Last_time >= 250) {
+					_CountNumber[_NowCountTank]++;
+					_Last_time = clock();
+				}
+			}
+			else {
+				if (clock() - _Last_time >= 250 && _NowCountTank != 3) {
+					_NowCountTank++;
+					_Last_time = clock();
+				}
+			}
+		}
+		for (int i = 0; i <= _NowCountTank; i++) {
+			CTextDraw::Print(pDC, 400, 60, string("TheHighestScore") + to_string(_Dialog[3][0]));
+			CTextDraw::Print(pDC, 400, 100, string("NowScore") + to_string(_Dialog[2][0]));
+			CTextDraw::Print(pDC, 470, 400 + i * 100, to_string(_CountNumber[i]));
+			CTextDraw::Print(pDC, 200, 400 + i * 100, to_string(_Dialog[1][i] * _CountNumber[i]));
+		}
 	}
 }

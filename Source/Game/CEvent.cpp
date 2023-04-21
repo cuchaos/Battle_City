@@ -15,32 +15,40 @@ using namespace game_framework;
 Event::Event() {
 	_IfStart = false;
 }
+
 void Event::TrigLobbyMenu(Menu& LobbyMenu) {
-	if (LobbyMenu.GetMenuY(0) > 0) {
-		LobbyMenu.SetLobbyRaise();
+	if (LobbyMenu.GetMenuY(LobbyMenu.LobbyMenu) > 0) {
+		LobbyMenu.SetIfAnimation(true);
+		LobbyMenu.SetMenuRaise(LobbyMenu.LobbyMenu);
 	}
 	else {
 		LobbyMenu.SetSelecting(true);
+		LobbyMenu.SetIfAnimation(false);
 	}
 }
 void Event::TrigSelectingStage(Menu& GrayScreen) {
-	if (GrayScreen.GetMenuY(1) < 0) {
-		GrayScreen.SetChoosingStageanimation();
+	if (GrayScreen.GetMenuY(GrayScreen.ChooseStageMenu) < 0) {
+		GrayScreen.SetMenuRaise(GrayScreen.ChooseStageMenu);
 	}
 	else {
 		GrayScreen.SetSelecting(true);
+		GrayScreen.SetIfAnimation(false);
 	}
 }
-
 void Event::TrigSetBattleMap(vector<vector<int>>& Stage,Map& StageMap,int& EnemyNum, Menu& BattleMenu) {
 	StageMap.OnInit(Stage);
 	StageMap.SetIfShowMap(true);
-	BattleMenu.SetBattleing(true);
+	BattleMenu.SetMenuType(BattleMenu.BattleMenu);
 	EnemyNum = 20;
 }
-void Event::TrigReSetProps(vector<GameProps>& Props,int NowPropIndex) {
-	if (NowPropIndex >= 1) {
-		int _LastProps = Props[0].GetAllPropType().size() - 1;
+void Event::TrigSettlement(Menu& SettlementMenu, vector<int>& StageEnemy, int& NowScore,int& TheHighestScore) {
+	vector<int> EnemyScore = { 100,200,300,400 };
+	SettlementMenu.SetMenuType(SettlementMenu.SettleMenu);
+	SettlementMenu.SetSettlement(StageEnemy, EnemyScore, NowScore, TheHighestScore);
+}
+void Event::TrigReSetProps(vector<GameProps>& Props) {
+	int _LastProps = Props[0].GetAllPropType().size() - 1;
+	if (_LastProps+1 >= 1) {
 		if (!Props[_LastProps].GetIfTouched() && Props[_LastProps].GetIfExist()) {
 			Props[_LastProps].SetIfExist(false);
 		}
@@ -70,6 +78,14 @@ void Event::TrigGetProps(GameProps& Props,Map& StageMap,CPlayer& Player,vector<E
 		for (int i = 0; i < 4; i++) {
 			AllEnemy[i].SetIfGetTimeStop(true);
 			AllEnemy[i].SetGetTimeStop(Props.IfEffectExit());
+		}
+	}
+	else if (type == 4) {
+		if (Props.IfEffectExit() == 1) {
+			Player.SetIfInvicible(true);
+		}
+		else {
+			Player.SetIfInvicible(false);
 		}
 	}
 	else if (type == 5) {

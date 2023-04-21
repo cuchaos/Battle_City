@@ -16,12 +16,14 @@ namespace game_framework {
 		bool GetIfShow();
 		bool GetIfTouched();
 		bool GetIfExist();
-		
+		int GetX();
+		int GetY();
 		vector<int> GetAllPropType();
 
 		CMovingBitmap GetPropBitmap();
 		int IfEffectExit();
 		void OnShow();
+		//void OnShowScore(CDC *pDC, CFont* &fp);
 	private:
 		CMovingBitmap _Props;
 

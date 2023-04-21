@@ -34,6 +34,12 @@ namespace game_framework {
 		void TankbeHit() override;
 		void OnShowScore(CDC *pDC, CFont* &fp);
 	private:
+		enum EnemyType {
+			LightTank,
+			QuickTank,
+			ArmorTank,
+			HeavyTank,
+		};
 		int _EnemyType;
 		int _EnemyScore;
 		int _RandomDirection,_RandomMoveTime;	// 隨機轉向方向,隨機移動時間

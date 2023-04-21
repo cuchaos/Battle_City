@@ -55,12 +55,6 @@ namespace game_framework {
 			Left,
 			Up,
 		};
-		enum EnemyType {
-			LightTank,
-			QuickTank,
-			ArmorTank,
-			HeavyTank,
-		};
 		enum TankState{
 			Spawn,
 			Live,

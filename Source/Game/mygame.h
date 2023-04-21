@@ -144,7 +144,7 @@ namespace game_framework {
 		bool _IfBattling; //the var that depend on Map and Gray Menu and tank and props show 
 		bool _IfSettling;
 		bool _IfSelecting;
-
+		vector<int> _IfEatItem;
 		int _OnIceCountDown; // If we on ice,we should go without any keydown,this is 
 							// the go on counter 2 Grid,so is 64 pixel
 		int tempIndex;

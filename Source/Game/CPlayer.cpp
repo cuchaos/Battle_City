@@ -35,24 +35,58 @@ void CPlayer::PlayerInit() {
 	_IfSecondFire = false;
 	SetFaceDirection();
 }
-//int CPlayer::GetPlayerScore() {
-//	return _PlayerScore;
-//}
+void CPlayer::LoadBitmap() {
+	_Tank.LoadBitmapByString({ "resources/Tank_Right_1.bmp" ,"resources/Tank_Right_2.bmp",
+								"resources/Tank_Left_1.bmp"  ,"resources/Tank_Left_2.bmp",
+								"resources/Tank_Top_1.bmp"   ,"resources/Tank_Top_2.bmp",
+								"resources/Tank_Bottom_1.bmp","resources/Tank_Bottom_2.bmp" }, RGB(0, 0, 0));
+	_Bullet.LoadBitmap();
+	_SecondBullet.LoadBitmap();
+}
 
 void CPlayer::SetIfInvicible(bool Status) {
 	_IfInvicible = Status;
 }
-bool CPlayer::GetIfInvicible() {
-	return _IfInvicible;
+void CPlayer::SetFaceDirection() {
+	if (_OriginAngle == Right) {
+		_Frameindex = 0;
+	}
+	else if (_OriginAngle == Left) {
+		_Frameindex = 2;
+	}
+	else if (_OriginAngle == Up) {
+		_Frameindex = 4;
+	}
+	else if (_OriginAngle == Down) {
+		_Frameindex = 6;
+	}
 }
-void CPlayer::LoadBitmap() {
-	_Tank.LoadBitmapByString({  "resources/Tank_Right_1.bmp" ,"resources/Tank_Right_2.bmp",
-							    "resources/Tank_Left_1.bmp"  ,"resources/Tank_Left_2.bmp", 
-								"resources/Tank_Top_1.bmp"   ,"resources/Tank_Top_2.bmp", 
-								"resources/Tank_Bottom_1.bmp","resources/Tank_Bottom_2.bmp"},RGB(0,0,0));
-	_Bullet.LoadBitmap();
-	_SecondBullet.LoadBitmap();
+void CPlayer::SetBulletStatus(int BulletOrder, bool Status) { // 1 is first bullet , 2 is second bullet 
+	if (BulletOrder == 1) {
+		if (_Bullet.GetAlreadyFire() == true && Status == false) {
+			_Bullet.SetIfBoom(true);
+		}
+		_Bullet.SetBulletAlreadyFire(Status);
+	}
+	else if (BulletOrder == 2) {
+		if (_SecondBullet.GetAlreadyFire() == true && Status == false) {
+			_SecondBullet.SetIfBoom(true);
+		}
+		_SecondBullet.SetBulletAlreadyFire(Status);
+	}
 }
+void CPlayer::SetIfFire(int FireOrder, bool Status) {
+	if (FireOrder == 1) {
+		_IfFire = Status;
+	}
+	else if (FireOrder == 2) {
+		_IfSecondFire = Status;
+	}
+}
+void CPlayer::SetIfGetShip(bool Status) {
+	_IfGetShip = Status;
+}
+
 void CPlayer::FireBullet(int BulletOrder) {
 	if (BulletOrder == 1 && _Bullet.GetIfBoom() == false) {
 		if (_OriginAngle == Right || _OriginAngle == Left) {
@@ -71,6 +105,21 @@ void CPlayer::FireBullet(int BulletOrder) {
 			_SecondBullet.SetBulletFire(_X + 25, _Y, _OriginAngle, _BulletFlySpeed);
 		}
 		_IfSecondFire = true;
+	}
+}
+void CPlayer::LevelUP() {
+	if (_Level < 4) {
+		_Level += 1;
+		if (_Level == 2) {
+			_AttackSpeedUP = true;
+			_BulletFlySpeed = 20;
+		}
+		else if (_Level == 3) {
+			_DoubleAttack = true;
+		}
+		else if (_Level == 4) {
+			_CanBreakIron = true;
+		}
 	}
 }
 void CPlayer::TankbeHit() {
@@ -105,51 +154,7 @@ void CPlayer::TankbeHit() {
 		_TankBrokenAnimation.ShowBitmap();
 	}
 }
-//void CPlayer::KillEnemy(int type) {
-//	_KillEnemyList.push_back(type);
-//	if (type == LightTank) {
-//		PlusPlayerScore(100);						
-//	}
-//	else if (type == QuickTank) {
-//		PlusPlayerScore(300);						
-//	}
-//	else if (type == ArmorTank) {					
-//		PlusPlayerScore(200);						
-//	}
-//	else if (type == HeavyTank) {					
-//		PlusPlayerScore(400);						
-//	}
-//}
 
-//void CPlayer::PlusPlayerScore(int score) {
-//	_PlayerScore += score;
-//}
-
-void CPlayer::SetBulletStatus(int BulletOrder, bool Status) { // 1 is first bullet , 2 is second bullet 
-	if (BulletOrder == 1) {
-		if (_Bullet.GetAlreadyFire() == true && Status == false) {
-			_Bullet.SetIfBoom(true);
-		}
-		_Bullet.SetBulletAlreadyFire(Status);
-	}
-	else if (BulletOrder == 2) {
-		if (_SecondBullet.GetAlreadyFire() == true && Status == false) {
-			_SecondBullet.SetIfBoom(true);
-		}
-		_SecondBullet.SetBulletAlreadyFire(Status);
-	}
-}
-void CPlayer::SetIfFire(int FireOrder, bool Status) {
-	if (FireOrder == 1) {
-		_IfFire = Status;
-	}
-	else if(FireOrder == 2){
-		_IfSecondFire = Status;
-	}
-}
-void CPlayer::SetIfGetShip(bool Status) {
-	_IfGetShip = Status;
-}
 bool CPlayer::GetIfFire(int FireOrder) {
 	if (FireOrder == 1) {
 		return _IfFire;
@@ -159,38 +164,10 @@ bool CPlayer::GetIfFire(int FireOrder) {
 	}
 	return false;
 }
-void CPlayer::SetFaceDirection() {
-	if (_OriginAngle == Right) {
-		_Frameindex = 0 ;
-	}
-	else if (_OriginAngle == Left) {
-		_Frameindex = 2 ;
-	}
-	else if (_OriginAngle == Up) {
-		_Frameindex = 4 ;
-	}
-	else if (_OriginAngle == Down) {
-		_Frameindex = 6 ;
-	}
+bool CPlayer::GetIfInvicible() {
+	return _IfInvicible;
 }
-void CPlayer::SetMoveOnIce(bool IfOnIce) {
-	
-}
-void CPlayer::LevelUP() {
-	if (_Level < 4) {
-		_Level += 1;
-		if (_Level == 2) {
-			_AttackSpeedUP = true;
-			_BulletFlySpeed = 20;
-		}
-		else if (_Level == 3) {
-			_DoubleAttack = true;
-		}
-		else if (_Level == 4) {
-			_CanBreakIron = true;
-		}
-	}
-}
+
 
 void CPlayer::OnShow() {
 	if (_IfBattle) {
@@ -200,10 +177,10 @@ void CPlayer::OnShow() {
 				//SetEnemyInit();
 				PlayerInit();
 			}
-			else if(_Setinit){
+			//else if(_Setinit){
 				CTank::LoadBitmap();
 				ShowSpawnAnimation();
-			}
+			//}
 		}
 		else if (_TankState == Live) {
 			_Tank.SetFrameIndexOfBitmap(_Frameindex);

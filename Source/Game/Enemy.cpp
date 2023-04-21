@@ -21,18 +21,56 @@ Enemy::Enemy() : CTank() {
 	_Setinit = false;
 	_EnemyHaveItem = false;
 }
+void Enemy::LoadBitmap() {
+	_Tank.LoadBitmapByString({ //LightTank
+								"resources/Enemy_LightTank_Right1.bmp" ,"resources/Enemy_LightTank_Right2.bmp",
+									"resources/Enemy_LightTank_Left1.bmp"  ,"resources/Enemy_LightTank_Left2.bmp",
+									"resources/Enemy_LightTank_Top1.bmp"   ,"resources/Enemy_LightTank_Top2.bmp",
+									"resources/Enemy_LightTank_Bottom1.bmp","resources/Enemy_LightTank_Bottom2.bmp",
+									//QuickTank
+									"resources/Enemy_QuickTank_Right1.bmp" ,"resources/Enemy_QuickTank_Right2.bmp",
+										"resources/Enemy_QuickTank_Left1.bmp"  ,"resources/Enemy_QuickTank_Left2.bmp",
+										"resources/Enemy_QuickTank_Top1.bmp"   ,"resources/Enemy_QuickTank_Top2.bmp",
+										"resources/Enemy_QuickTank_Bottom1.bmp","resources/Enemy_QuickTank_Bottom2.bmp" ,
+										//ArmorTank
+										"resources/Enemy_ArmorTank_Right1.bmp" ,"resources/Enemy_ArmorTank_Right2.bmp",
+											"resources/Enemy_ArmorTank_Left1.bmp"  ,"resources/Enemy_ArmorTank_Left2.bmp",
+											"resources/Enemy_ArmorTank_Top1.bmp"   ,"resources/Enemy_ArmorTank_Top2.bmp",
+											"resources/Enemy_ArmorTank_Bottom1.bmp","resources/Enemy_ArmorTank_Bottom2.bmp",
+											//HeavyTank
+											"resources/Enemy_HeavyTank_Right1.bmp" ,"resources/Enemy_HeavyTank_Right2.bmp",
+												"resources/Enemy_HeavyTank_Left1.bmp"  ,"resources/Enemy_HeavyTank_Left2.bmp",
+												"resources/Enemy_HeavyTank_Top1.bmp"   ,"resources/Enemy_HeavyTank_Top2.bmp",
+												"resources/Enemy_HeavyTank_Bottom1.bmp","resources/Enemy_HeavyTank_Bottom2.bmp" }, RGB(0, 0, 0));
+	_Bullet.LoadBitmap();
+}
 int Enemy::GetEnemyScore() {
 	return _EnemyScore;
 }
-
 bool Enemy::isEnemyHaveItem() {
 	return _EnemyHaveItem;
 }
-
+bool Enemy::GetIfGetTimeStop() {
+	return _IfGetTimeStop;
+}
+CMovingBitmap Enemy::GetEnemyBitmap() {
+	return _Tank;
+}
+bool Enemy::GetEnemySetInit() {
+	return _Setinit;
+}
+bool Enemy::GetIfFire(int FireOrder) {
+	return _IfFire;
+}
+int Enemy::GetEnemyType() {
+	return _EnemyType;
+}
+bool Enemy::GetIfBattle() {
+	return _IfBattle;
+}
 void Enemy::SetEnemyHaveItem(bool has) {
 	_EnemyHaveItem = has;
 }
-
 void Enemy::SetEnemyInit() {
 	_X = Width * (rand()%4*8) + 100;
 	_Y = Height * 0;
@@ -69,20 +107,33 @@ void Enemy::SetOriginAngle(int direction) {
 void Enemy::SetIfGetTimeStop(bool IfGetTimeStop) {
 	_IfGetTimeStop = IfGetTimeStop;
 }
-
 void Enemy::SetGetTimeStop(int Status) {
 	if (Status == -1) {
 		_IfGetTimeStop = false;
 	}
 }
-bool Enemy::GetIfGetTimeStop() {
-	return _IfGetTimeStop;
+void Enemy::SetFaceDirection() {
+	if (_OriginAngle == Right) {
+		_Frameindex = 0 + _EnemyType * 8;
+	}
+	else if (_OriginAngle == Left) {
+		_Frameindex = 2 + _EnemyType * 8;
+	}
+	else if (_OriginAngle == Up) {
+		_Frameindex = 4 + _EnemyType * 8;
+	}
+	else if (_OriginAngle == Down) {
+		_Frameindex = 6 + _EnemyType * 8;
+	}
 }
-CMovingBitmap Enemy::GetEnemyBitmap() {
-	return _Tank;
+void Enemy::SetBulletStatus(int BulletOrder, bool Status) {
+	if (_Bullet.GetAlreadyFire() == true && Status == false) {
+		_Bullet.SetIfBoom(true);
+	}
+	_Bullet.SetBulletAlreadyFire(Status);
 }
-bool Enemy::GetEnemySetInit() {
-	return _Setinit;
+void Enemy::SetIfFire(int FireOrder, bool Status) {
+	_IfFire = Status;
 }
 void Enemy::EnemyRandomDirection(){
 	_RandomDirection = rand() % 4;		// 隨機移動四個方向
@@ -105,44 +156,6 @@ void Enemy::EnemyRandomDirection(){
 			break;
 		}
 		_TimeStart = clock();			// 重新開始計時
-	}
-}
-void Enemy::LoadBitmap() {
-	_Tank.LoadBitmapByString({ //LightTank
-								"resources/Enemy_LightTank_Right1.bmp" ,"resources/Enemy_LightTank_Right2.bmp",
-									"resources/Enemy_LightTank_Left1.bmp"  ,"resources/Enemy_LightTank_Left2.bmp",
-									"resources/Enemy_LightTank_Top1.bmp"   ,"resources/Enemy_LightTank_Top2.bmp",
-									"resources/Enemy_LightTank_Bottom1.bmp","resources/Enemy_LightTank_Bottom2.bmp",
-								//QuickTank
-								"resources/Enemy_QuickTank_Right1.bmp" ,"resources/Enemy_QuickTank_Right2.bmp",
-									"resources/Enemy_QuickTank_Left1.bmp"  ,"resources/Enemy_QuickTank_Left2.bmp",
-									"resources/Enemy_QuickTank_Top1.bmp"   ,"resources/Enemy_QuickTank_Top2.bmp",
-									"resources/Enemy_QuickTank_Bottom1.bmp","resources/Enemy_QuickTank_Bottom2.bmp" ,
-								//ArmorTank
-								"resources/Enemy_ArmorTank_Right1.bmp" ,"resources/Enemy_ArmorTank_Right2.bmp",
-									"resources/Enemy_ArmorTank_Left1.bmp"  ,"resources/Enemy_ArmorTank_Left2.bmp",
-									"resources/Enemy_ArmorTank_Top1.bmp"   ,"resources/Enemy_ArmorTank_Top2.bmp",
-									"resources/Enemy_ArmorTank_Bottom1.bmp","resources/Enemy_ArmorTank_Bottom2.bmp",
-								//HeavyTank
-								"resources/Enemy_HeavyTank_Right1.bmp" ,"resources/Enemy_HeavyTank_Right2.bmp",
-									"resources/Enemy_HeavyTank_Left1.bmp"  ,"resources/Enemy_HeavyTank_Left2.bmp",
-									"resources/Enemy_HeavyTank_Top1.bmp"   ,"resources/Enemy_HeavyTank_Top2.bmp",
-									"resources/Enemy_HeavyTank_Bottom1.bmp","resources/Enemy_HeavyTank_Bottom2.bmp" }, RGB(0, 0, 0));
-	_Bullet.LoadBitmap();
-}
-
-void Enemy::SetFaceDirection() {
-	if (_OriginAngle == Right) {
-		_Frameindex = 0 +_EnemyType * 8;
-	}
-	else if (_OriginAngle == Left) {
-		_Frameindex = 2 + _EnemyType * 8;
-	}
-	else if (_OriginAngle == Up) {
-		_Frameindex = 4 + _EnemyType * 8;
-	}
-	else if (_OriginAngle == Down) {
-		_Frameindex = 6 + _EnemyType * 8;
 	}
 }
 void Enemy::TankbeHit() {
@@ -187,24 +200,6 @@ void Enemy::FireBullet(int BulletOrder) {
 	}
 	_IfFire = _Bullet.GetAlreadyFire();
 }
-void Enemy::SetBulletStatus(int BulletOrder, bool Status) {
-	if (_Bullet.GetAlreadyFire() == true && Status == false) {
-		_Bullet.SetIfBoom(true);
-	}
-	_Bullet.SetBulletAlreadyFire(Status);
-}
-void Enemy::SetIfFire(int FireOrder, bool Status) {
-	_IfFire = Status;
-}
-bool Enemy::GetIfFire(int FireOrder) {
-	return _IfFire;
-}
-int Enemy::GetEnemyType() {
-	return _EnemyType;
-}
-bool Enemy::GetIfBattle() {
-	return _IfBattle;
-}
 void Enemy::OnShow() {
 	if (_IfBattle) {
 		if (_TankState == Spawn) {
@@ -228,7 +223,6 @@ void Enemy::OnShow() {
 		}
 	}
 }
-
 void Enemy::OnShowScore(CDC *pDC, CFont* &fp) {
 	pDC->SetBkMode(TRANSPARENT);
 	pDC->SetTextColor(RGB(255, 255, 255));

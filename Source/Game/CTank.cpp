@@ -23,47 +23,17 @@ CTank::CTank() :Width(32), Height(32) {
 	_BulletFlySpeed = 15;
 	_TankState = Spawn;
 }
-CTank::~CTank() {
-
+void CTank::LoadBitmap() {
+	_SpawnAnimation.LoadBitmapByString({ "resources/Spawn_1.bmp",
+										"resources/Spawn_2.bmp",
+										"resources/Spawn_3.bmp",
+										"resources/Spawn_4.bmp" }, RGB(0, 0, 0));
+	_TankBrokenAnimation.LoadBitmapByString({ "resources/Boom0.bmp",
+											 "resources/Boom1.bmp",
+											 "resources/Boom2.bmp",
+											 "resources/Boom3.bmp",
+											 "resources/Boom4.bmp" }, RGB(0, 0, 0));
 }
-int CTank::GetX1(){
-	return _X;
-}
-int CTank::GetY1() {
-	return _Y;
-}
-int CTank::GetOriginAngle() {
-	return _OriginAngle;
-}
-int CTank::GetLife() {
-	return _Life;
-}
-bool CTank::GetIfGetShip() {
-	return _IfGetShip;
-}
-void CTank::SetLife(int num) {
-	if (_Life > 0){
-		_Life = num;
-	}
-	if (_Life == 0){
-		_TankState = Death;
-	}
-}
-int CTank::GetLevel() {
-	return _Level;
-}
-int CTank::GetTankState() {
-	return _TankState;
-}
-void CTank::SetXY(int _x, int _y) {
-	_X = _x;
-	_Y = _y;
-}
-
-void CTank::SetIfBattle(bool Status) {
-	_IfBattle = Status;
-}
-
 void CTank::Move() {
 	if (_OriginAngle == Right) {
 		_X += _MovementSpeed;
@@ -95,59 +65,75 @@ void CTank::Move() {
 		}
 	}
 }
+CTank::~CTank() {
 
-//void CTank::TankbeHit() {
-//	if (_FrameTime == 26){
-//		if (true){
-//			_TankState = Spawn;
-//			_Setinit = false;
-//		}
-//	}
-//	else {
-//		if (_FrameTime > 26){
-//			_FrameTime = 0;
-//		}
-//		else { 
-//			if (_FrameTime % 26 == 5) {
-//				_TankBrokenAnimation.SetFrameIndexOfBitmap(1);
-//			}
-//			else if (_FrameTime % 26 == 10) {
-//				_TankBrokenAnimation.SetFrameIndexOfBitmap(2);
-//			}
-//			else if (_FrameTime % 26 == 15) {
-//				_TankBrokenAnimation.SetFrameIndexOfBitmap(3);
-//			}
-//			else if (_FrameTime % 26 == 20) {
-//				_TankBrokenAnimation.SetFrameIndexOfBitmap(4);
-//			}
-//			else if (_FrameTime % 26 == 25) {
-//				_TankBrokenAnimation.SetFrameIndexOfBitmap(0);
-//			}
-//		}
-//		_FrameTime += 1;
-//		_TankBrokenAnimation.ShowBitmap();
-//	}
-//}
+}
+int CTank::GetX1(){
+	return _X;
+}
+int CTank::GetY1() {
+	return _Y;
+}
+int CTank::GetHeight() {
+	return _Tank.GetHeight();
+}
+int CTank::GetWidth() {
+	return _Tank.GetWidth();
+}
+int CTank::GetOriginAngle() {
+	return _OriginAngle;
+}
+int CTank::GetLife() {
+	return _Life;
+}
+int CTank::GetLevel() {
+	return _Level;
+}
+bool CTank::GetIfGetShip() {
+	return _IfGetShip;
+}
+int CTank::GetTankState() {
+	return _TankState;
+}
+CMovingBitmap CTank::GetTankBitmap() {
+	return _Tank;
+}
+CMovingBitmap CTank::GetBulletBitmap() {
+	return _Bullet.GetBitmap();
+}
 
-void CTank::Animation() {
-	if (_FrameTime%_FrameSecond==0){
-		if (_Frameindex%2==0){
-			_Tank.SetFrameIndexOfBitmap(_Frameindex + 1);
-			_Frameindex += 1;
-		}
-		else {
-			_Tank.SetFrameIndexOfBitmap(_Frameindex - 1);
-			_Frameindex -= 1;
-		}
+void CTank::SetXY(int _x, int _y) {
+	_X = _x;
+	_Y = _y;
+}
+void CTank::SetLife(int num) {
+	if (_Life > 0) {
+		_Life = num;
 	}
-	_FrameTime += 1;
+	if (_Life == 0) {
+		_TankState = Death;
+	}
+}
+void CTank::SetIfBattle(bool Status) {
+	_IfBattle = Status;
+}
+
+//Bullet
+void CTank::SetBulletOwner(int who) {
+	_Bullet.SetOwner(who);
+}
+int CTank::GetBulletOwner() {
+	return _Bullet.GetOwner();
+}
+
+//Location and Direction
+vector<vector<int>> CTank::GetTankFront() {
+	return _FrontXY;
 }
 void CTank::LocationPoint() {
-	SetXY( _NowGrid[0]*Width+100 , _NowGrid[1]*Height );
+	SetXY(_NowGrid[0] * Width + 100, _NowGrid[1] * Height);
 	for (int i = 0; i < 2; i++) _OffsetXY[i] = 0;			//轉向後坦克的定位回正 偏移數值歸零
-} 
-
-/*Tank Front */
+}
 void CTank::TurnFace(UINT nChar) {
 	if (nChar == VK_RIGHT) {
 		_TurnAngle = Right;
@@ -194,20 +180,20 @@ void CTank::TankFront() {		// 對坦克前方的兩格格子做XY定位
 		_FrontXY[1][1] = _Y + Height * 2;
 	}
 }
-vector<vector<int>> CTank::GetTankFront(){
-	return _FrontXY;
-}
-/*Tank Spawn*/
-void CTank::LoadBitmap() {
-	_SpawnAnimation.LoadBitmapByString({"resources/Spawn_1.bmp",
-										"resources/Spawn_2.bmp",
-										"resources/Spawn_3.bmp", 
-										"resources/Spawn_4.bmp"}, RGB(0, 0, 0));
-	_TankBrokenAnimation.LoadBitmapByString({"resources/Boom0.bmp",
-											 "resources/Boom1.bmp",
-											 "resources/Boom2.bmp",
-											 "resources/Boom3.bmp",
-											 "resources/Boom4.bmp" },RGB(0 ,0 ,0));
+
+//show
+void CTank::Animation() {
+	if (_FrameTime%_FrameSecond == 0) {
+		if (_Frameindex % 2 == 0) {
+			_Tank.SetFrameIndexOfBitmap(_Frameindex + 1);
+			_Frameindex += 1;
+		}
+		else {
+			_Tank.SetFrameIndexOfBitmap(_Frameindex - 1);
+			_Frameindex -= 1;
+		}
+	}
+	_FrameTime += 1;
 }
 void CTank::ShowSpawnAnimation() {
 	if (_FrameTime % 12 == 0) {
@@ -228,27 +214,4 @@ void CTank::ShowSpawnAnimation() {
 	}
 	_SpawnAnimation.SetTopLeft(_X, _Y);
 	_SpawnAnimation.ShowBitmap();
-}
-
-/*Bullet*/
-void CTank::SetBulletOwner(int who) {
-	_Bullet.SetOwner(who);
-}
-int CTank::GetBulletOwner() {
-	return _Bullet.GetOwner();
-}
-//Tank
-
-int CTank::GetHeight() {
-	return _Tank.GetHeight();
-}
-int CTank::GetWidth() {
-	return _Tank.GetWidth();
-}
-
-CMovingBitmap CTank::GetTankBitmap() {
-	return _Tank;
-}
-CMovingBitmap CTank::GetBulletBitmap() {
-	return _Bullet.GetBitmap();
 }

@@ -8,15 +8,18 @@ namespace game_framework {
 		void SetGameProps();
 		void SetIfShow(bool IfShow);
 		void SetIfExist(bool IfExist);
+		void SetIfCountDown(bool IfCountDown);
 
+		int count(int Type);
+		int find(int Type);
 		int GetType();
 		bool GetIfShow();
 		bool GetIfTouched();
 		bool GetIfExist();
-
+		
+		vector<int> GetAllPropType();
 
 		CMovingBitmap GetPropBitmap();
-
 		int IfEffectExit();
 		void OnShow();
 	private:
@@ -26,10 +29,10 @@ namespace game_framework {
 		bool _IfCountDown;
 		bool _IfTouched;
 		bool _IfExist;
-
+		static vector<int> _AllPropType;
 		int _X, _Y; //top left x,top y
 		bool _IfShow; // 甚麼時候要出現
 		int _Type; // 0 is chariot,1 is Star, 2 is handgrenade, 3 is clock,4 is steel helmet, 5 is shovel, 6 is pistol
-		
+		int _NowIndex;
 	};
 }

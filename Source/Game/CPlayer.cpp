@@ -13,12 +13,8 @@ using namespace game_framework;
 
 CPlayer::CPlayer() : CTank(){
 	_PlayerScore = 0;
-	_KillEnemyList = {};
+	_KillEnemyList = {0,0,0,0};
 	_Level = 1;
-	_AttackSpeedUP = false;
-	_CanBreakIron = false;
-	_DoubleAttack = false; 
-	_IfGetShip = false; 
 	_TankState = Spawn;
 	PlayerInit();
 }
@@ -31,12 +27,16 @@ void CPlayer::PlayerInit() {
 	_TurnAngle = Up;
 	_NowGrid = { (_X - 100) / Width, _Y / Height };
 	_OffsetXY = { 0,0 };
+	_AttackSpeedUP = false;
+	_CanBreakIron = false;
+	_DoubleAttack = false;
+	_IfGetShip = false;
 	_IfSecondFire = false;
 	SetFaceDirection();
 }
-int CPlayer::GetPlayerScore() {
-	return _PlayerScore;
-}
+//int CPlayer::GetPlayerScore() {
+//	return _PlayerScore;
+//}
 
 void CPlayer::SpawnAfter5Second() {
 	_Invicible = true;
@@ -70,26 +70,57 @@ void CPlayer::FireBullet(int BulletOrder) {
 		_IfSecondFire = true;
 	}
 }
-
-void CPlayer::KillEnemy(int type) {
-	_KillEnemyList.push_back(type);
-	if (type == LightTank) {
-		PlusPlayerScore(100);						
+void CPlayer::TankbeHit() {
+	if (_FrameTime == 26){
+		if (true){
+			_TankState = Spawn;
+			_Setinit = false;
+		}
 	}
-	else if (type == QuickTank) {
-		PlusPlayerScore(300);						
-	}
-	else if (type == ArmorTank) {					
-		PlusPlayerScore(200);						
-	}
-	else if (type == HeavyTank) {					
-		PlusPlayerScore(400);						
+	else {
+		if (_FrameTime > 26){
+			_FrameTime = 0;
+		}
+		else { 
+			if (_FrameTime % 26 == 5) {
+				_TankBrokenAnimation.SetFrameIndexOfBitmap(1);
+			}
+			else if (_FrameTime % 26 == 10) {
+				_TankBrokenAnimation.SetFrameIndexOfBitmap(2);
+			}
+			else if (_FrameTime % 26 == 15) {
+				_TankBrokenAnimation.SetFrameIndexOfBitmap(3);
+			}
+			else if (_FrameTime % 26 == 20) {
+				_TankBrokenAnimation.SetFrameIndexOfBitmap(4);
+			}
+			else if (_FrameTime % 26 == 25) {
+				_TankBrokenAnimation.SetFrameIndexOfBitmap(0);
+			}
+		}
+		_FrameTime += 1;
+		_TankBrokenAnimation.ShowBitmap();
 	}
 }
+//void CPlayer::KillEnemy(int type) {
+//	_KillEnemyList.push_back(type);
+//	if (type == LightTank) {
+//		PlusPlayerScore(100);						
+//	}
+//	else if (type == QuickTank) {
+//		PlusPlayerScore(300);						
+//	}
+//	else if (type == ArmorTank) {					
+//		PlusPlayerScore(200);						
+//	}
+//	else if (type == HeavyTank) {					
+//		PlusPlayerScore(400);						
+//	}
+//}
 
-void CPlayer::PlusPlayerScore(int score) {
-	_PlayerScore += score;
-}
+//void CPlayer::PlusPlayerScore(int score) {
+//	_PlayerScore += score;
+//}
 
 void CPlayer::SetBulletStatus(int BulletOrder, bool Status) { // 1 is first bullet , 2 is second bullet 
 	if (BulletOrder == 1) {
@@ -166,8 +197,10 @@ void CPlayer::OnShow() {
 				//SetEnemyInit();
 				PlayerInit();
 			}
-			CTank::LoadBitmap();
-			ShowSpawnAnimation();
+			else if(_Setinit){
+				CTank::LoadBitmap();
+				ShowSpawnAnimation();
+			}
 		}
 		else if (_TankState == Live) {
 			_Tank.SetFrameIndexOfBitmap(_Frameindex);

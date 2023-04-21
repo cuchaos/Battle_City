@@ -10,10 +10,10 @@ namespace game_framework {
 		void KillEnemy(int type);
 		void LoadBitmap();
 		void SpawnAfter5Second();
-		void PlusPlayerScore(int score);
+		//void PlusPlayerScore(int score);
 		void LevelUP();
 		void PlayerInit();
-		int GetPlayerScore();
+		//int GetPlayerScore();
 
 		void SetIfGetShip(bool Status);
 		void SetMoveOnIce(bool IfOnIce);
@@ -25,9 +25,9 @@ namespace game_framework {
 		CBullet _SecondBullet;
 		void SetFaceDirection() override;
 		void OnShow() override;
+		void TankbeHit() override;
 	private:
 		bool _IfSecondFire;
-
 		int _Invicible;
 		int _PlayerScore;
 		vector<int> _KillEnemyList;

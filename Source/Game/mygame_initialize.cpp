@@ -71,9 +71,9 @@ void CGameStateInit::OnInit()
 		vector<int> temp = { 0,0,0,0 };
 		_AllStageEnemy.push_back(temp);
 		getline(myfile, content);
-		int lastindex = content.size() - 2;
+		int lastindex = content.size() - 1;
 		int vectorindex = 3;
-		for (int j = content.size() - 2; j > -1; j--) {
+		for (int j = content.size() - 1; j > -1; j--) {
 			if (content[j] == ' ' || j == 0) {
 				int temp_count = 0;
 				int temp_first = 0;
@@ -132,6 +132,10 @@ void CGameStateInit::OnShowText() {
 	pDC->SetBkMode(TRANSPARENT);
 	pDC->SetTextColor(RGB(0, 180, 0));
 	CTextDraw::Print(pDC, 0, 0, (to_string(_MouseX) + " " + to_string(_MouseY).c_str()));
+	/*CTextDraw::Print(pDC, 0, 50, (to_string(_AllStageEnemy[9][0])));
+	CTextDraw::Print(pDC, 0, 75, (to_string(_AllStageEnemy[9][1])));
+	CTextDraw::Print(pDC, 0, 100, (to_string(_AllStageEnemy[9][2])));
+	CTextDraw::Print(pDC, 0, 125, (to_string(_AllStageEnemy[9][3])));*/
 	//_Lobby.OnShowText(pDC, fp);
 	CDDraw::ReleaseBackCDC();
 }

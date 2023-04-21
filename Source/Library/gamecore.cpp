@@ -27,8 +27,11 @@ namespace game_framework {
 	// 遊戲狀態的話，可以不用管這個class的介面與實作。
 	/////////////////////////////////////////////////////////////////////////////
 	int CGameState::_1POr2P = -1;
+	int CGameState::_TheHighestScore = 0;
+	int CGameState::_NowTotalScore = 0;
 	vector<vector<vector<int>>> CGameState::_AllStage = {};
 	vector<vector<int>> CGameState::_AllStageEnemy = {};
+
 	CGame CGame::instance;
 
 	CGame::CGame()

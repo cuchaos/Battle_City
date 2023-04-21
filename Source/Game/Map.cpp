@@ -1,4 +1,4 @@
-#include <vector>
+﻿#include <vector>
 #include "stdafx.h"
 #include "../Core/Resource.h"
 #include <mmsystem.h>
@@ -12,8 +12,6 @@
 using namespace game_framework;
 
 Map::Map() {
-	_BoardX = 0;
-	_BoardY = 0;
 }
 void Map::OnInit(vector<vector<int>> stage) {
 	_IfShowMap = false;
@@ -96,15 +94,15 @@ void Map::OnShow() {
 }
 
 
-bool Map::GetMapItemInfo(int x, int y, int gettype) { 
-	if (gettype == 0){
-		return _Stage[x][y].GetIfWalk();
-	}
-	else if (gettype == 1){
-		return _Stage[x][y].GetIfShoot();
-	}
-	else if (gettype == 2)
+bool Map::GetMapItemInfo(int x, int y,InfoType GridAttribute) 
+{
+	switch (GridAttribute)
 	{
+	case CanWalk:
+		return _Stage[x][y].GetIfWalk();
+	case CanShoot:
+		return _Stage[x][y].GetIfShoot();
+	case CanBreak:
 		return _Stage[x][y].GetIfBreak();
 	}
 	return true;
@@ -135,22 +133,22 @@ vector<vector<int>> Map::GetFrontGridsIndex(vector<vector<int>> GridXY) { // u s
 	return FrontIndex;
 }
 bool Map::GetIfBoardEdge(int Nowx, int Nowy,int NowHeight,int NowWidth,int NowDirection) {
-	if (NowDirection == 0) {
+	if (NowDirection == Right) {
 		if (Nowx + NowWidth >= 932) {
 			return false;
 		}
 	}
-	else if (NowDirection == 1) {
+	else if (NowDirection == Down) {
 		if (Nowy + NowHeight>= 832) {
 			return false;
 		}
 	}
-	else if (NowDirection == 2) {
+	else if (NowDirection == Left) {
 		if (Nowx <= 100) {
 			return false;
 		}
 	}
-	else if (NowDirection == 3) {
+	else if (NowDirection == Up) {
 		if (Nowy <= 0) {
 			return false;
 		}
@@ -170,12 +168,6 @@ void Map::SetGetShovel(int EffectTime) {
 	}
 	else if (EffectTime == 0 ) {
 		Type = 5;
-		/*
-		if (_IfShovelShine == false) {
-			_IfShovelShine = true;
-			IfShine = true;
-		}
-		*/
 		IfShine = true;
 	}
 	else if(EffectTime == -1){

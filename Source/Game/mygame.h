@@ -123,12 +123,8 @@ namespace game_framework {
 		void TankCollisionMap(CTank *tank);
 		void RandomSpawnTank(int num);
 		bool ShootCollision(CBullet Bullet,int TankLevel); 
-		//bool PlayerBulletCollision();
-		//bool EnemyBulletCollision();
-		//bool BulletBulletCollision();
-		//void PlayerShoot(CPlayer *tank);
-		//void EnemyShoot(Enemy *tank);
 		Event event;
+
 
 		void AllBulletFly();
 		void AllBulletCollision();
@@ -139,13 +135,16 @@ namespace game_framework {
 		int _NowProp;  // the var that record Prop number
 		vector<GameProps> _Prop;
 		
-		Menu ChooseStageScreen;
+		Menu _Menu;
+
 		clock_t _TimerSpawn,_TimerFinish;
 		int _EnemyQuantity;
 		CPlayer _PlayerTank;
 		bool _isHoldUpKey, _isHoldDownKey, _isHoldRightKey, _isHoldLeftKey;
 		bool _IfBattling; //the var that depend on Map and Gray Menu and tank and props show 
-		
+		bool _IfSettling;
+		bool _IfSelecting;
+
 		int _OnIceCountDown; // If we on ice,we should go without any keydown,this is 
 							// the go on counter 2 Grid,so is 64 pixel
 		int tempIndex;

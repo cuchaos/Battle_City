@@ -35,7 +35,6 @@ void CGameStateInit::OnInit()
 	_Lobby.LoadBitMap();
 	_MouseX = 0;
 	_MouseY = 0;
-
 	ifstream myfile;
 	myfile.open("MapRawData.txt");
 	string content;

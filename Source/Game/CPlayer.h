@@ -9,11 +9,13 @@ namespace game_framework {
 		CPlayer();
 		void KillEnemy(int type);
 		void LoadBitmap();
-		void SpawnAfter5Second();
+		void SetIfInvicible(bool Status);
 		void PlusPlayerScore(int score);
 		void LevelUP();
 		void PlayerInit();
 		int GetPlayerScore();
+
+		bool GetIfInvicible();
 
 		void SetIfGetShip(bool Status);
 		void SetMoveOnIce(bool IfOnIce);
@@ -29,7 +31,7 @@ namespace game_framework {
 	private:
 		bool _IfSecondFire;
 
-		int _Invicible;
+		int _IfInvicible;
 		int _PlayerScore;
 		vector<int> _KillEnemyList;
 

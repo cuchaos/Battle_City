@@ -4,47 +4,45 @@ namespace game_framework {
 	class Menu {
 	public:
 		Menu();
-		void SetLobbyRaise();
+		enum MenuType {
+			LobbyMenu, ChooseStageMenu,BattleMenu,SettleMenu //ChoosingStage's work include the onshow gray in battleing
+		};
 		int OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 		void OnShow();
 		void OnShowText(CDC *pDC, CFont* &fp);
 
+		void SetMenuType(MenuType Type);
+		void SetMenuRaise(MenuType Type);
 		void SetSelecting(bool select);
-		bool GetSelecting();
-		void SetMenuing(bool menu);
-		bool GetMenuing();
-		int GetMenuY(int type); // type = 0 Lobby Menu,type = 1 GrayScreen(Top) 
+		void SetIfLobbyMenuing(bool menu);
+		void SetIfAnimation(bool Status);
+		void SetIfChoosingStage(bool Status);
+		void SetSettlement(vector<int>& EnemyNum, vector<int>& EnemyScore, int& NowScore, int& THeHighestScore);
 
-		void SetChoosingStageanimation();
+		bool GetIfSelecting();
+		bool GetIfLobbyMenuing();
 		bool GetChoosingStage();
-		void SetChoosingStage(bool choosingstage);
-
-		bool GetAnimationing();
-		void SetAnimationing(bool Status);
-
-		void SetBattleing(bool Status);
-
+		bool GetIfAnimation();
+		int GetMenuY(MenuType Type); // type = 0 Lobby Menu,type = 1 GrayScreen(Top) 
+		
 		void LoadBitMap();
 	private:
-		enum MenuType{
-			Lobby,ChooseStage
-		};
-
 		int tempselect; //option arrow locate (temp,not the final location)
 		int finalselect;
-		int _TotalScore;
-		int _TheHightestScore;
+		vector<int> _CountNumber;
+		int _NowCountTank;
+		vector<vector<int>> _Dialog;
 		int _MenuType;
 
-		bool _Battleing;
+		bool _IfAnimation;
+		bool _IfSelecting; // If Selecting (in Main Menu)
+		bool _IfLobbyMenuing; // If Menuing (in Main Menu)
+		bool _IfSettlement;
+		bool _IfChoosingStage; // Choosing Stage will appear gray Menu and let player choose stage 
 		CMovingBitmap _BattleMenuGray; //GrayMenu(background)
-
-		bool _Animationing;
-		bool _Selecting; // If Selecting (in Main Menu)
-		bool _Menuing; // If Menuing (in Main Menu)
-		bool _ChoosingStage; // Choosing Stage will appear gray Menu and let player choose stage 
 		CMovingBitmap _ChooseStageMenuTop; //GrayMenu from Top
 		CMovingBitmap _ChooseStageMenuDown; //GrayMenu from Down
+		vector<CMovingBitmap> _SettleArrow;
 
 		int _RaiseSpeed; // Lobby raise speed (animation)
 		int _RaiseDelay; // Lobby raise animation delay

@@ -35,15 +35,18 @@ void CGameStateRun::OnBeginState()
 void CGameStateRun::OnMove()                            // 移動遊戲元素
 {
 	if (_NowStage == -1 && !_IfBattling) { // NowStage == -1  代表正在選, == 1 ~ 35代表已經選完了
-		event.TrigSelectingStage(ChooseStageScreen);
+		event.TrigSelectingStage(_Menu);
 		return;
 	}
 	
-	if (_NowStage >= 1 && !_IfBattling) {
-		event.TrigSetBattleMap(_AllStage[_NowStage-1],Stage1, _EnemyNum,ChooseStageScreen);
+	if (_NowStage >= 1 && !_IfBattling && !_IfSettling) {
+		event.TrigSetBattleMap(_AllStage[_NowStage-1],Stage1, _EnemyNum,_Menu);
 		EnemyTypeList.assign(_AllStageEnemy[_NowStage - 1].begin(), _AllStageEnemy[_NowStage - 1].end());
 		_IfBattling = true;
 		_PlayerTank.SetIfBattle(true);
+		return;
+	}
+	if (!_IfBattling) {
 		return;
 	}
 	for (int i = _NowProp - 1; i > -1; i--) {
@@ -90,7 +93,7 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 				RandomSpawnTank(i);
 				_EnemyQuantity += 1;
 				if (_EnemyQuantity % 4 == 1){
-					event.TrigUnshowProps(Prop);
+					event.TrigReSetProps(_Prop);
 					EnemyList[i].SetEnemyHaveItem(true);
 				}
 			}
@@ -110,7 +113,8 @@ void CGameStateRun::OnInit()                                  // 遊戲的初值
 	srand((unsigned)time(NULL));
 	_NowStage = -1;
 	_IfBattling = false;
-	ChooseStageScreen.LoadBitMap();
+	_IfSettling = false;
+	_Menu.LoadBitMap();
 	_isHoldDownKey = _isHoldUpKey = _isHoldLeftKey = _isHoldRightKey = false;
 	
 	_MouseX = 0;
@@ -127,7 +131,6 @@ void CGameStateRun::OnInit()                                  // 遊戲的初值
 	}
 
 	_TimerSpawn = clock();
-	//event.TrigSetProps(Prop);
 	EnemyList.push_back(_EnemyTank1);
 	EnemyList.push_back(_EnemyTank2);
 	EnemyList.push_back(_EnemyTank3);
@@ -159,15 +162,20 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			}
 			_PlayerTank.FireBullet(1);
 		}
-
 		if (nChar == VK_DOWN)	_isHoldDownKey = true;
 		if (nChar == VK_UP)		_isHoldUpKey = true;
 		if (nChar == VK_LEFT)	_isHoldLeftKey = true;
 		if (nChar == VK_RIGHT)	_isHoldRightKey = true;
 		if (nChar == VK_DOWN || nChar == VK_RIGHT || nChar == VK_LEFT || nChar == VK_UP) _HoldKey = nChar;
+		if (nChar == 0x41) {
+			_IfBattling = false;
+			_IfSettling = true;
+			Stage1.SetIfShowMap(false);
+			event.TrigSettlement(_Menu, _AllStageEnemy[_NowStage - 1], _NowTotalScore, _TheHighestScore);
+		}
 	}	
 	else {
-		_NowStage = ChooseStageScreen.OnKeyDown(nChar, nRepCnt, nFlags);
+		_NowStage = _Menu.OnKeyDown(nChar, nRepCnt, nFlags);
 	}
 }
 
@@ -214,7 +222,8 @@ void CGameStateRun::OnRButtonUp(UINT nFlags, CPoint point)    // 處理滑鼠的
 
 void CGameStateRun::OnShow()
 {
-	ChooseStageScreen.OnShow();
+	
+	_Menu.OnShow();
 	if (_IfBattling) {
 		Stage1.OnShow();
 		if (_NowProp != 0) {
@@ -238,23 +247,16 @@ void CGameStateRun::OnShowText() {
 	_TimerFinish = clock();
 	CTextDraw::Print(pDC, 0, 0, (to_string(_TimerSpawn / CLOCKS_PER_SEC) + " " + to_string(_TimerFinish)));
 	CTextDraw::Print(pDC, 0, 25, (to_string(_EnemyQuantity)));
+	CTextDraw::Print(pDC, 0, 50, (to_string(_MouseX) + " " + to_string(_MouseY)));
+	/*
 	for (int i = 0; i < _NowProp; i++) {
 		CTextDraw::Print(pDC, 0, 50+i*25, to_string(_Prop[i].GetIfTouched())+" " + to_string(_Prop[i].GetIfExist()) 
 		+ " " + to_string(_Prop[i].GetType()) + " " + to_string(_Prop[i].count(_Prop[i].GetType())) );
-
 	}
-	/*CTextDraw::Print(pDC, 0, 50, (to_string(EnemyList[0].isEnemyHaveItem())));
-	CTextDraw::Print(pDC, 0, 75, (to_string(EnemyList[1].isEnemyHaveItem())));
-	CTextDraw::Print(pDC, 0, 100, (to_string(EnemyList[2].isEnemyHaveItem())));
-	CTextDraw::Print(pDC, 0, 125, (to_string(EnemyList[3].isEnemyHaveItem())));*/
-	if ((_NowStage - 1)>=0){
-		CTextDraw::Print(pDC, 0, 50, (to_string(EnemyTypeList[0]) + " " + to_string(_AllStageEnemy[_NowStage - 1][0])));
-		CTextDraw::Print(pDC, 0, 75, (to_string(EnemyTypeList[1]) + " " + to_string(_AllStageEnemy[_NowStage - 1][1])));
-		CTextDraw::Print(pDC, 0, 100, (to_string(EnemyTypeList[2]) + " " + to_string(_AllStageEnemy[_NowStage - 1][2])));
-		CTextDraw::Print(pDC, 0, 125, (to_string(EnemyTypeList[3]) + " " + to_string(_AllStageEnemy[_NowStage - 1][3])));
-	}
+	*/
 	CTextDraw::Print(pDC, 0, 150, (to_string(_NowStage - 1)));
-	ChooseStageScreen.OnShowText(pDC, fp);
+
+	_Menu.OnShowText(pDC, fp);
 	for (int i = 0; i < 4; i++){
 		if (EnemyList[i].GetTankState() == Death) {
 			EnemyList[i].OnShowScore(pDC, fp);
@@ -308,6 +310,7 @@ void CGameStateRun::AllBulletCollision() {
 						_PlayerTank.SetIfFire(1 + i, false);
 						enemy.SetBulletStatus(1, false);
 						enemy.SetIfFire(1, false);
+						_NowTotalScore += enemy.GetEnemyScore();
 						break;
 					}
 				}
@@ -318,11 +321,13 @@ void CGameStateRun::AllBulletCollision() {
 			}
 			else {
 				if (CMovingBitmap::IsOverlap(_AllBullet[i]->GetBitmap(), _PlayerTank.GetTankBitmap())
-						&& _PlayerTank.GetTankState() == Live) {
+						&& _PlayerTank.GetTankState() == Live ) {
+					if (!_PlayerTank.GetIfInvicible()) {
 						_PlayerTank.SetLife(0);
-						EnemyList[i - 2].SetBulletStatus(1, false);
-						EnemyList[i - 2].SetIfFire(1,false);
-						continue;
+					}
+					EnemyList[i - 2].SetBulletStatus(1, false);
+					EnemyList[i - 2].SetIfFire(1,false);
+					continue;
 				}
 				if (ShootCollision(*_AllBullet[i], EnemyList[i-2].GetLevel())) {
 					EnemyList[i - 2].SetBulletStatus(1, false);
@@ -343,8 +348,8 @@ bool CGameStateRun::ShootCollision(CBullet Bullet, int TankLevel) {
 	if (Stage1.GetIfBoardEdge(Bullet.GetNowBackPlace()[0][0], Bullet.GetNowBackPlace()[0][1]
 		, Bullet.GetHeight(), Bullet.GetWidth(), Bullet.GetDirection()) == true) {
 		_tempcollision = Stage1.GetFrontGridsIndex(Bullet.GetNowFrontPlace());
-		if (Stage1.GetMapItemInfo(_tempcollision[0][1], _tempcollision[0][0], 1) == true
-			|| Stage1.GetMapItemInfo(_tempcollision[1][1], _tempcollision[1][0], 1) == true) {
+		if (Stage1.GetMapItemInfo(_tempcollision[0][1], _tempcollision[0][0],Stage1.CanShoot) == true
+			|| Stage1.GetMapItemInfo(_tempcollision[1][1], _tempcollision[1][0], Stage1.CanShoot) == true) {
 			if (Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 4 || Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 5) {
 				Stage1.ShootWall(Bullet.GetDirection(), TankLevel, _tempcollision[0][1], _tempcollision[0][0]);
 			}
@@ -363,15 +368,15 @@ void CGameStateRun::TankCollisionMap(CTank *tank) {
 	tank->TankFront();
 	_tempcollision = Stage1.GetFrontGridsIndex(tank->GetTankFront());
 	if (Stage1.GetIfBoardEdge(tank->GetX1(), tank->GetY1(), tank->GetHeight(), tank->GetWidth(), tank->GetOriginAngle())) {
-		if ((Stage1.GetMapItemInfo(_tempcollision[0][1], _tempcollision[0][0], 0) &&
-			Stage1.GetMapItemInfo(_tempcollision[1][1], _tempcollision[1][0], 0))) {
+		if ((Stage1.GetMapItemInfo(_tempcollision[0][1], _tempcollision[0][0],Stage1.CanWalk) &&
+			Stage1.GetMapItemInfo(_tempcollision[1][1], _tempcollision[1][0], Stage1.CanWalk))) {
 			tank->Move();
 		}
 		if (tank->GetIfGetShip()) {
 			if (((Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 2 ||
 				Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 2))) {
-				if ((Stage1.GetMapItemInfo(_tempcollision[0][1], _tempcollision[0][0], 0) ||
-					Stage1.GetMapItemInfo(_tempcollision[1][1], _tempcollision[1][0], 0))) {
+				if ((Stage1.GetMapItemInfo(_tempcollision[0][1], _tempcollision[0][0], Stage1.CanWalk) ||
+					Stage1.GetMapItemInfo(_tempcollision[1][1], _tempcollision[1][0], Stage1.CanWalk))) {
 					tank->Move();
 				}
 				else if (Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 2 &&

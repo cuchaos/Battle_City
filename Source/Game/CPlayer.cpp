@@ -28,6 +28,7 @@ void CPlayer::PlayerInit() {
 	_Y = Height * 24;
 	_Life = 1;
 	_OriginAngle = Up;
+	_IfInvicible = false;
 	_TurnAngle = Up;
 	_NowGrid = { (_X - 100) / Width, _Y / Height };
 	_OffsetXY = { 0,0 };
@@ -38,10 +39,12 @@ int CPlayer::GetPlayerScore() {
 	return _PlayerScore;
 }
 
-void CPlayer::SpawnAfter5Second() {
-	_Invicible = true;
+void CPlayer::SetIfInvicible(bool Status) {
+	_IfInvicible = Status;
 }
-
+bool CPlayer::GetIfInvicible() {
+	return _IfInvicible;
+}
 void CPlayer::LoadBitmap() {
 	_Tank.LoadBitmapByString({  "resources/Tank_Right_1.bmp" ,"resources/Tank_Right_2.bmp",
 							    "resources/Tank_Left_1.bmp"  ,"resources/Tank_Left_2.bmp", 

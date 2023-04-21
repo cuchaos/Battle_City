@@ -211,8 +211,10 @@ void Enemy::OnShow() {
 			if (!_Setinit) {
 				SetEnemyInit();
 			}
-			CTank::LoadBitmap();
-			ShowSpawnAnimation();
+			else if (_Setinit) {
+				CTank::LoadBitmap();
+				ShowSpawnAnimation();
+			}
 		}
 		else if(_TankState == Live) {
 			_Tank.SetFrameIndexOfBitmap(_Frameindex);

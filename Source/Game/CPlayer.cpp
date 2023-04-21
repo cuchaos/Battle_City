@@ -16,6 +16,7 @@ CPlayer::CPlayer() : CTank(){
 	_KillEnemyList = {0,0,0,0};
 	_Level = 1;
 	_TankState = Spawn;
+	_Setinit = false;
 	PlayerInit();
 }
 void CPlayer::PlayerInit() {
@@ -34,6 +35,7 @@ void CPlayer::PlayerInit() {
 	_IfGetShip = false;
 	_IfSecondFire = false;
 	SetFaceDirection();
+	_Setinit = true;
 }
 //int CPlayer::GetPlayerScore() {
 //	return _PlayerScore;

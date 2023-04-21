@@ -96,38 +96,6 @@ void CTank::Move() {
 	}
 }
 
-//void CTank::TankbeHit() {
-//	if (_FrameTime == 26){
-//		if (true){
-//			_TankState = Spawn;
-//			_Setinit = false;
-//		}
-//	}
-//	else {
-//		if (_FrameTime > 26){
-//			_FrameTime = 0;
-//		}
-//		else { 
-//			if (_FrameTime % 26 == 5) {
-//				_TankBrokenAnimation.SetFrameIndexOfBitmap(1);
-//			}
-//			else if (_FrameTime % 26 == 10) {
-//				_TankBrokenAnimation.SetFrameIndexOfBitmap(2);
-//			}
-//			else if (_FrameTime % 26 == 15) {
-//				_TankBrokenAnimation.SetFrameIndexOfBitmap(3);
-//			}
-//			else if (_FrameTime % 26 == 20) {
-//				_TankBrokenAnimation.SetFrameIndexOfBitmap(4);
-//			}
-//			else if (_FrameTime % 26 == 25) {
-//				_TankBrokenAnimation.SetFrameIndexOfBitmap(0);
-//			}
-//		}
-//		_FrameTime += 1;
-//		_TankBrokenAnimation.ShowBitmap();
-//	}
-//}
 
 void CTank::Animation() {
 	if (_FrameTime%_FrameSecond==0){
@@ -142,6 +110,7 @@ void CTank::Animation() {
 	}
 	_FrameTime += 1;
 }
+
 void CTank::LocationPoint() {
 	SetXY( _NowGrid[0]*Width+100 , _NowGrid[1]*Height );
 	for (int i = 0; i < 2; i++) _OffsetXY[i] = 0;			//轉向後坦克的定位回正 偏移數值歸零

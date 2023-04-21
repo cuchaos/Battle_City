@@ -50,14 +50,18 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 		return;
 	}
 	for (int i = _NowProp - 1; i > -1; i--) {
-		if ((CMovingBitmap::IsOverlap(_PlayerTank.GetTankBitmap(), _Prop[i].GetPropBitmap())
-			|| _Prop[i].GetIfTouched()) && _Prop[i].GetIfExist()) {
+		if ((CMovingBitmap::IsOverlap(_PlayerTank.GetTankBitmap(), _Prop[i].GetPropBitmap()) || _Prop[i].GetIfTouched()) 
+			&& _Prop[i].GetIfExist()) {
 			if (i == _NowProp - 1 && _Prop[i].count(_Prop[i].GetType()) > 1
 				&& (_Prop[i].GetType() == 5 || _Prop[i].GetType() == 3)) {
 				_Prop[_Prop[i].find(_Prop[i].GetType())].SetIfCountDown(false);
 				_Prop[i].SetIfExist(false);
 				continue;
 			}
+			_IfEatItem[0] = 1;
+			_IfEatItem[1] = _Prop[i].GetX();
+			_IfEatItem[2] = _Prop[i].GetY();
+			_IfEatItem[3] = clock();
 			event.TrigGetProps(_Prop[i], Stage1, _PlayerTank, EnemyList);
 		}
 	}
@@ -116,7 +120,8 @@ void CGameStateRun::OnInit()                                  // 遊戲的初值
 	_IfSettling = false;
 	_Menu.LoadBitMap();
 	_isHoldDownKey = _isHoldUpKey = _isHoldLeftKey = _isHoldRightKey = false;
-	
+	_IfEatItem = {0,0,0,0};
+
 	_MouseX = 0;
 	_MouseY = 0;
 	_OnIceCountDown = 0;
@@ -268,9 +273,11 @@ void CGameStateRun::OnShowText() {
 			EnemyList[i].OnShowScore(pDC, fp);
 		}
 	}
-	if (_PlayerTank.GetEatItem()){
-		_PlayerTank.OnShowScore(pDC, fp);
+	if (_IfEatItem[0] && clock() - _IfEatItem[3] <= 300) {
+		CTextDraw::ChangeFontLog(pDC, 48, "STZhongsong", RGB(255, 255, 255));
+		CTextDraw::Print(pDC, _IfEatItem[1], _IfEatItem[2], to_string(500));
 	}
+	
 	CDDraw::ReleaseBackCDC();
 }
 void CGameStateRun::PlayerTankMove(CPlayer *tank) {

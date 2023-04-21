@@ -5,7 +5,10 @@ namespace game_framework {
 	public:
 		Menu();
 		enum MenuType {
-			LobbyMenu, ChooseStageMenu,BattleMenu,SettleMenu //ChoosingStage's work include the onshow gray in battleing
+			LobbyMenu, 
+			ChooseStageMenu,
+			BattleMenu,
+			SettleMenu //ChoosingStage's work include the onshow gray in battleing
 		};
 		int OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 		void OnShow();

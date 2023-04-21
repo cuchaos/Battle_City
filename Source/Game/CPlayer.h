@@ -7,27 +7,23 @@ namespace game_framework {
 	{
 	public:
 		CPlayer();
-		void KillEnemy(int type);
-		void LoadBitmap();
-		void SetIfInvicible(bool Status);
-		void PlusPlayerScore(int score);
-		void LevelUP();
+		CBullet _SecondBullet;
 		void PlayerInit();
-		//int GetPlayerScore();
+		void LoadBitmap();
+		void OnShow() override;
+		void FireBullet(int BulletOrder) override;
+		void TankbeHit() override;
+		void LevelUP();
 
 		bool GetIfInvicible();
-
-		void SetIfGetShip(bool Status);
-		void SetMoveOnIce(bool IfOnIce);
-
-		void SetBulletStatus(int BulletOrder, bool Status) override;
-		void SetIfFire(int FireOrder, bool Status) override;
 		bool GetIfFire(int FireOrder) override;
-		void FireBullet(int BulletOrder) override;
-		CBullet _SecondBullet;
+
 		void SetFaceDirection() override;
-		void OnShow() override;
-		void TankbeHit() override;
+		void SetIfInvicible(bool Status);
+		void SetIfGetShip(bool Status);
+		void SetIfFire(int FireOrder, bool Status) override;
+		void SetBulletStatus(int BulletOrder, bool Status) override;
+
 	private:
 		bool _IfSecondFire;
 		int _IfInvicible;

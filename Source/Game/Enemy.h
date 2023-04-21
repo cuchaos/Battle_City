@@ -7,18 +7,20 @@ namespace game_framework {
 	{
 	public:
 		Enemy();
+		void LoadBitmap();
 		int GetEnemyScore();
-		bool isEnemyHaveItem();					// 是否有道具
-		
-		void SetEnemyHaveItem(bool has);				// 設定有道具
+		bool GetIfBattle();
+
+		void SetEnemyHaveItem(bool has);		// 設定有道具
 		void SetEnemyType(int _num);			// 設定敵人類型
 		void SetEnemyInit();					// 設定初始化
-		void SetGetTimeStop(int Status);
-		void SetIfGetTimeStop(bool IfGetTimeStop);
-		void LoadBitmap();						
 		void SetOriginAngle(int _direction);	// 設定轉向方向 
 		void EnemyRandomDirection();			// 隨機設定前進方向
-		bool GetIfBattle();
+		
+		// Prop
+		void SetGetTimeStop(int Status);
+		void SetIfGetTimeStop(bool IfGetTimeStop);
+		bool isEnemyHaveItem();					// 是否有道具
 		// bullet
 
 		void FireBullet(int BulletOrder) override;
@@ -34,18 +36,12 @@ namespace game_framework {
 		void TankbeHit() override;
 		void OnShowScore(CDC *pDC, CFont* &fp);
 	private:
-		enum EnemyType {
-			LightTank,
-			QuickTank,
-			ArmorTank,
-			HeavyTank,
-		};
+		clock_t _TimeFinish, _TimeStart, _SpawnClock;		// 計時器 (結束-開始 = 經過時間)
 		int _EnemyType;
 		int _EnemyScore;
-		int _RandomDirection,_RandomMoveTime;	// 隨機轉向方向,隨機移動時間
-		clock_t _TimeFinish, _TimeStart,_SpawnClock;		// 計時器 (結束-開始 = 經過時間)
 		bool _EnemyHaveItem;					// 道具
-		
+
+		int _RandomDirection,_RandomMoveTime;	// 隨機轉向方向,隨機移動時間
 		bool _IfGetTimeStop;
 	};
 

@@ -8,29 +8,28 @@ namespace game_framework {
 			CanShoot,
 			CanBreak,
 		};
+		enum ObjectDirection {
+			Right, Down, Left, Up
+		};
 		Map();
 		vector<vector<MapItem>> _Stage; //每一個stage
 		void OnInit(vector<vector<int>> Stage); //要傳某一個stage的每個格子 type
+		void OnShow();
+		void OnShowGrass();
+		void ShootWall(int Direction, int Attack, int x, int y); //Iron wall or wall was shot
+
+		void SetGetShovel(int Type);
+		void SetIfShowMap(bool Status);
+
 		bool GetMapItemInfo(int _x, int _y, InfoType GridAttribute); // 獲取地圖某一格格子的資訊 0:walk ,1:shoot ,2:break
 		int GetType(int _x, int _y);
 		bool GetIfShowMap();
 		bool GetIfGrassInMap();
-		void OnShow();
-		void OnShowGrass();
-		vector<vector<int>> GetFrontGridsIndex(vector<vector<int>> Grid1XY); // you should put the two of pixel xy here
-		bool GetIfBoardEdge(int Nowx, int Nowy, int NowHeight, int NowWidth,int NowDirection); // wil return a bool that If u touch the edge
+		bool GetIfBoardEdge(int Nowx, int Nowy, int NowHeight, int NowWidth, int NowDirection); // wil return a bool that If u touch the edge
 		//CMovingBitmap GetMapBitmap(int _x,int _y);
-
-		void SetIfShowMap(bool Status);
-
-		void ShootWall(int Direction, int Attack, int x, int y); //Iron wall or wall was shot
-
-		void SetGetShovel(int Type);
-	private:
-		enum ObjectDirection {
-			Right, Down, Left, Up
-		};
+		vector<vector<int>> GetFrontGridsIndex(vector<vector<int>> Grid1XY); // you should put the two of pixel xy here
 		
+	private:
 		clock_t _StartTime; // last time to get that we have get item shovel
 		bool _IfGetShovel; 
 		bool _IfShovelShine; // last 3 sec will shine

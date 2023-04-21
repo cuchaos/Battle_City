@@ -21,17 +21,45 @@ CBullet::CBullet() {
 	_IfBoom = false;
 	_NowBackPlace = { {0,0},{0,0} };
 	_NowFrontPlace = { {0,0},{0,0} };
-	_BulletBroken = false;
 	_Owner = 0;
 }
-
 void CBullet::LoadBitmap() {
 	_Bulletimage.LoadBitmapByString({ "resources/Bullet0.bmp","resources/Bullet1.bmp","resources/Bullet2.bmp","resources/Bullet3.bmp" }, RGB(0,0,0));
 	_Boom.LoadBitmapByString({ "resources/Boom0.bmp","resources/Boom1.bmp","resources/Boom2.bmp" }, RGB(0,0,0));
 	_Boom.SetAnimation(50, true);
 }
-bool CBullet::GetAlreadyFire() {
-	return _AlreadyFire;
+void CBullet::BulletFly() {
+	_NowBackPlace[0][0] += _Move[_Direction][0] * _BulletSpeed;
+	_NowBackPlace[0][1] += _Move[_Direction][1] * _BulletSpeed;
+	_NowBackPlace[1][0] += _Move[_Direction][0] * _BulletSpeed;
+	_NowBackPlace[1][1] += _Move[_Direction][1] * _BulletSpeed;
+
+	_NowFrontPlace[0][0] += _Move[_Direction][0] * _BulletSpeed;
+	_NowFrontPlace[0][1] += _Move[_Direction][1] * _BulletSpeed;
+	_NowFrontPlace[1][0] += _Move[_Direction][0] * _BulletSpeed;
+	_NowFrontPlace[1][1] += _Move[_Direction][1] * _BulletSpeed;
+
+	_Bulletimage.SetTopLeft(_NowBackPlace[0][0], _NowBackPlace[0][1]);
+
+	if (_IfBoom == false) {
+		if (_Direction == Right || _Direction == Left) {
+			_Boom.SetTopLeft(_NowBackPlace[0][0], _NowBackPlace[0][1] - 18);
+		}
+		else {
+			_Boom.SetTopLeft(_NowBackPlace[0][0] - 18, _NowBackPlace[0][1]);
+		}
+	}
+}
+
+void CBullet::SetOwner(int who) {
+	_Owner = who;
+}
+void CBullet::SetIfBoom(bool Status) {
+	_Boom.ToggleAnimation();
+	_IfBoom = Status;
+}
+void CBullet::SetBulletAlreadyFire(bool BulletAlreadyFire) {
+	_AlreadyFire = BulletAlreadyFire;
 }
 void CBullet::SetBulletFire(int TankX,int TankY,int TankDirect,int BulletSpeed) {
 	if (_AlreadyFire == false) {
@@ -68,28 +96,35 @@ void CBullet::SetBulletFire(int TankX,int TankY,int TankDirect,int BulletSpeed) 
 		_Bulletimage.SetTopLeft(_NowBackPlace[0][0], _NowBackPlace[0][1]);
 	}
 }
-void CBullet::BulletFly() {
-	_NowBackPlace[0][0] += _Move[_Direction][0] * _BulletSpeed;
-	_NowBackPlace[0][1] += _Move[_Direction][1] * _BulletSpeed;
-	_NowBackPlace[1][0] += _Move[_Direction][0] * _BulletSpeed;
-	_NowBackPlace[1][1] += _Move[_Direction][1] * _BulletSpeed;
 
-	_NowFrontPlace[0][0] += _Move[_Direction][0] * _BulletSpeed;
-	_NowFrontPlace[0][1] += _Move[_Direction][1] * _BulletSpeed;
-	_NowFrontPlace[1][0] += _Move[_Direction][0] * _BulletSpeed;
-	_NowFrontPlace[1][1] += _Move[_Direction][1] * _BulletSpeed;
-
-	_Bulletimage.SetTopLeft(_NowBackPlace[0][0], _NowBackPlace[0][1]);
-
-	if (_IfBoom == false) {
-		if (_Direction == Right || _Direction == Left) {
-			_Boom.SetTopLeft(_NowBackPlace[0][0], _NowBackPlace[0][1] - 18);
-		}
-		else {
-			_Boom.SetTopLeft(_NowBackPlace[0][0] - 18, _NowBackPlace[0][1]);
-		}
-	}
+int CBullet::GetHeight() {
+	return _Bulletimage.GetHeight();
 }
+int CBullet::GetWidth() {
+	return _Bulletimage.GetWidth();
+}
+bool CBullet::GetAlreadyFire() {
+	return _AlreadyFire;
+}
+vector<vector<int>> CBullet::GetNowBackPlace() {
+	return _NowBackPlace;
+}
+vector<vector<int>> CBullet::GetNowFrontPlace() {
+	return _NowFrontPlace;
+}
+int CBullet::GetDirection() {
+	return _Direction;
+}
+bool CBullet::GetIfBoom() {
+	return _IfBoom;
+}
+int CBullet::GetOwner() {
+	return _Owner;
+}
+CMovingBitmap CBullet::GetBitmap() {
+	return _Bulletimage;
+}
+
 void CBullet::OnShow() {
 	if (_AlreadyFire == true) {
 		_Bulletimage.ShowBitmap();
@@ -103,47 +138,3 @@ void CBullet::OnShow() {
 		}
 	}
 }
-void CBullet::SetBulletAlreadyFire(bool BulletAlreadyFire) {
-	_AlreadyFire = BulletAlreadyFire;
-}
-vector<vector<int>> CBullet::GetNowBackPlace() {
-	return _NowBackPlace;
-}
-vector<vector<int>> CBullet::GetNowFrontPlace() {
-	return _NowFrontPlace;
-}
-int CBullet::GetDirection() {
-	return _Direction;
-}
-int CBullet::GetHeight() {
-	return _Bulletimage.GetHeight();
-}
-int CBullet::GetWidth() {
-	return _Bulletimage.GetWidth();
-}
-bool CBullet::GetIfBoom() {
-	return _IfBoom;
-}
-void CBullet::SetIfBoom(bool Status) {
-	_Boom.ToggleAnimation();
-	_IfBoom = Status;
-}
-
-void CBullet::SetOwner(int who) {
-	_Owner = who;
-}
-int CBullet::GetOwner() {
-	return _Owner;
-}
-
-CMovingBitmap CBullet::GetBitmap() {
-	return _Bulletimage;
-}
-
-//
-//bool CBullet::GetBulletBroken() {
-//	return _BulletBroken;
-//}
-//void CBullet::SetBulletBroken(bool broken) {
-//	_BulletBroken = broken;
-//}

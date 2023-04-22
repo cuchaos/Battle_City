@@ -22,7 +22,7 @@ Menu::Menu() {
 	_IfChoosingStage = false;
 	_IfAnimation = false;
 	_IfSettlement = false;
-	_Dialog = { {},{},{0},{0} };
+	_Dialog = { {},{},{0},{0},{0} };
 }
 void Menu::SetMenuType(MenuType Type) {
 	switch (Type)
@@ -53,14 +53,15 @@ void Menu::SetIfChoosingStage(bool Status) {
 void Menu::SetIfAnimation(bool Status) {
 	_IfAnimation = Status;
 }
-void Menu::SetSettlement(vector<int>& EnemyNum, vector<int>& EnemyScore, int& NowScore, int& THeHighestScore) {
+void Menu::SetSettlement(vector<int>& EnemyNum, vector<int>& EnemyScore, int& NowScore, int& THeHighestScore,int& NowStage) {
 	_IfSettlement = true;
 	_CountNumber = {0,0,0,0};
 	_NowCountTank = 0;
 	_Dialog[0] = EnemyNum;
 	_Dialog[1] = EnemyScore;
-	_Dialog[2] = { NowScore };
-	_Dialog[3] = { THeHighestScore };
+	_Dialog[2] = { NowStage };
+	_Dialog[3] = { NowScore };
+	_Dialog[4] = { THeHighestScore };
 }
 bool Menu::GetIfSelecting() {
 	return _IfSelecting;
@@ -174,12 +175,30 @@ void Menu::LoadBitMap() {
 	_ChooseStageMenuTop.SetTopLeft(0, -450);
 	_ChooseStageMenuDown.LoadBitmapByString({ "resources/GrayScreen.bmp" });
 	_ChooseStageMenuDown.SetTopLeft(0, 900);
-	
+	_Settlementdivided.LoadBitmapByString({ "resources/Settlementdivided.bmp" }, RGB(0, 0, 0));
+	_Settlementdivided.SetTopLeft(440, 680);
+
 	for (int i = 0; i < 4; i++) {
-		CMovingBitmap temp;
-		temp.LoadBitmapByString({ "resources/SettleArrow.bmp" }, RGB(0, 0, 0));
-		_SettleArrow.push_back(temp);
-		_SettleArrow[i].SetTopLeft(330, 370 + i * 100);
+		CMovingBitmap temp1,temp2;
+		string path;
+		temp1.LoadBitmapByString({ "resources/SettleArrow.bmp" }, RGB(0, 0, 0));
+		_SettleArrow.push_back(temp1);
+		_SettleArrow[i].SetTopLeft(520, 275 + i * 100);
+		if (i == 0) {
+			path = "resources/Enemy_LightTank_Top2.bmp";
+		}
+		else if (i == 1) {
+			path = "resources/Enemy_ArmorTank_Top2.bmp";
+		}
+		else if (i == 2) {
+			path = "resources/Enemy_QuickTank_Top2.bmp";
+		}
+		else {
+			path = "resources/Enemy_HeavyTank_Top2.bmp";
+		}
+		temp2.LoadBitmapByString({ path }, RGB(0, 0, 0));
+		_SettlementMenuEnemy.push_back(temp2);
+		_SettlementMenuEnemy[i].SetTopLeft(640, 300 + i * 100);
 	}
 	
 }
@@ -205,6 +224,8 @@ void Menu::OnShow() {
 	if (_MenuType == SettleMenu) {
 		for (int i = 0; i < 4; i++) {
 			_SettleArrow[i].ShowBitmap();
+			_SettlementMenuEnemy[i].ShowBitmap();
+			_Settlementdivided.ShowBitmap();
 		}
 	}
 }
@@ -236,10 +257,21 @@ void Menu::OnShowText(CDC *pDC, CFont* &fp) {
 			}
 		}
 		for (int i = 0; i <= _NowCountTank; i++) {
-			CTextDraw::Print(pDC, 400, 60, string("TheHighestScore") + to_string(_Dialog[3][0]));
-			CTextDraw::Print(pDC, 400, 100, string("NowScore") + to_string(_Dialog[2][0]));
-			CTextDraw::Print(pDC, 470, 400 + i * 100, to_string(_CountNumber[i]));
-			CTextDraw::Print(pDC, 200, 400 + i * 100, to_string(_Dialog[1][i] * _CountNumber[i]));
+			pDC->SetTextColor(RGB(161, 59, 6));
+			CTextDraw::Print(pDC, 400, 60, string("HI-Score    ")); // turn to color red
+			CTextDraw::Print(pDC, 180, 160, string("I-Player"));
+
+			pDC->SetTextColor(RGB(184, 120, 5));
+			CTextDraw::Print(pDC, 655, 60, to_string(_Dialog[4][0])); // turn to color orange
+			CTextDraw::Print(pDC, 180, 210, to_string(_Dialog[3][0]));
+
+			pDC->SetTextColor(RGB(180, 180, 180));
+			CTextDraw::Print(pDC, 500, 110, string("Stage")); //turn to color white
+			CTextDraw::Print(pDC, 655, 110, to_string(_Dialog[2][0])); 
+			CTextDraw::Print(pDC, 440, 300 + i * 100, to_string(_CountNumber[i]));
+			CTextDraw::Print(pDC, 180, 300 + i * 100, to_string(_Dialog[1][i] * _CountNumber[i]));
+			CTextDraw::Print(pDC, 310, 300 + i * 100, string("PTS"));
+			CTextDraw::Print(pDC, 320, 720, string("TOTAL"));
 		}
 	}
 }

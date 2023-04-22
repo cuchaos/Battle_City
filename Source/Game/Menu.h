@@ -20,7 +20,7 @@ namespace game_framework {
 		void SetIfLobbyMenuing(bool menu);
 		void SetIfAnimation(bool Status);
 		void SetIfChoosingStage(bool Status);
-		void SetSettlement(vector<int>& EnemyNum, vector<int>& EnemyScore, int& NowScore, int& THeHighestScore);
+		void SetSettlement(vector<int>& EnemyNum, vector<int>& EnemyScore, int& NowScore, int& TheHighestScore,int& NowStage);
 
 		bool GetIfSelecting();
 		bool GetIfLobbyMenuing();
@@ -45,6 +45,8 @@ namespace game_framework {
 		CMovingBitmap _BattleMenuGray; //GrayMenu(background)
 		CMovingBitmap _ChooseStageMenuTop; //GrayMenu from Top
 		CMovingBitmap _ChooseStageMenuDown; //GrayMenu from Down
+		CMovingBitmap _Settlementdivided;
+		vector<CMovingBitmap> _SettlementMenuEnemy;
 		vector<CMovingBitmap> _SettleArrow;
 
 		int _RaiseSpeed; // Lobby raise speed (animation)

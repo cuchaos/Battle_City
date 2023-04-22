@@ -22,7 +22,6 @@ namespace game_framework {
 		void SetIfGetTimeStop(bool IfGetTimeStop);
 		bool isEnemyHaveItem();					// 是否有道具
 		// bullet
-
 		void FireBullet(int BulletOrder) override;
 		void SetBulletStatus(int BulletOrder,bool Status) override;
 		void SetIfFire(int FireOrder, bool Status) override;
@@ -34,6 +33,7 @@ namespace game_framework {
 		void SetFaceDirection() override;
 		void OnShow() override;
 		void TankbeHit() override;
+		void Animation() override;
 		void OnShowScore(CDC *pDC, CFont* &fp);
 	private:
 		clock_t _TimeFinish, _TimeStart, _SpawnClock;		// 計時器 (結束-開始 = 經過時間)

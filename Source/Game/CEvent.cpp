@@ -35,16 +35,21 @@ void Event::TrigSelectingStage(Menu& GrayScreen) {
 		GrayScreen.SetIfAnimation(false);
 	}
 }
+void Event::TrigUpDateMap(Map& StageMap, int& EnemyNum) {
+	if (StageMap.GetEnemySignNum() > EnemyNum) {
+		StageMap.SetEnemySignPop();
+	}
+}
 void Event::TrigSetBattleMap(vector<vector<int>>& Stage,Map& StageMap,int& EnemyNum, Menu& BattleMenu) {
 	StageMap.OnInit(Stage);
 	StageMap.SetIfShowMap(true);
 	BattleMenu.SetMenuType(BattleMenu.BattleMenu);
 	EnemyNum = 20;
 }
-void Event::TrigSettlement(Menu& SettlementMenu, vector<int>& StageEnemy, int& NowScore,int& TheHighestScore) {
+void Event::TrigSettlement(Menu& SettlementMenu, vector<int>& StageEnemy, int& NowScore,int& TheHighestScore,int& NowStage) {
 	vector<int> EnemyScore = { 100,200,300,400 };
 	SettlementMenu.SetMenuType(SettlementMenu.SettleMenu);
-	SettlementMenu.SetSettlement(StageEnemy, EnemyScore, NowScore, TheHighestScore);
+	SettlementMenu.SetSettlement(StageEnemy, EnemyScore, NowScore, TheHighestScore,NowStage);
 }
 void Event::TrigReSetProps(vector<GameProps>& Props) {
 	int _LastProps = Props[0].GetAllPropType().size() - 1;

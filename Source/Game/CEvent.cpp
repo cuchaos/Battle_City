@@ -59,6 +59,9 @@ void Event::TrigReSetProps(vector<GameProps>& Props) {
 		}
 	}
 }
+void Event::TrigNextStage(Map& StageMap, Menu& BattleMenu, int& EnemyNum, int& NowStage) {
+
+}
 void Event::TrigSetProps(vector<GameProps>& Props,int NowPropIndex) {
 	Props[NowPropIndex].SetGameProps();
 }

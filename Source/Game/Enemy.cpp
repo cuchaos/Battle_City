@@ -15,6 +15,7 @@ using namespace game_framework;
 
 Enemy::Enemy() : CTank() {
 	_IfGetTimeStop = false;
+	_IfGetShip = false;
 	_TimeStart = clock();
 	_TimeFinish = clock();
 	_EnemyType = 0;

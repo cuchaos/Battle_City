@@ -14,6 +14,8 @@ using namespace game_framework;
 Map::Map() {
 }
 void Map::OnInit(vector<vector<int>> stage) {
+	_Stage.clear();
+	_EnemySign.clear();
 	_IfShowMap = false;
 	_IfGetShovel = false;
 	_IfShovelShine = false;

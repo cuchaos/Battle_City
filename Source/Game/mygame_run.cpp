@@ -45,7 +45,7 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 		_IfBattling = true;
 		_PlayerTank.SetIfBattle(true);
 		return;
-	}
+	}	
 	if (!_IfBattling) {
 		return;
 	}
@@ -184,7 +184,15 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		}
 	}	
 	else {
-		_NowStage = _Menu.OnKeyDown(nChar, nRepCnt, nFlags);
+		if (!_IfSettling) {
+			_NowStage = _Menu.OnKeyDown(nChar, nRepCnt, nFlags);
+		}
+		else {
+			if (_Menu.OnKeyDown(nChar, nRepCnt, nFlags) == 1) {
+				_NowStage += 1;
+				_IfSettling = false;
+			}
+		}
 	}
 }
 

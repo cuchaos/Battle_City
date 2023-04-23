@@ -14,6 +14,7 @@ namespace game_framework {
 		static void TrigSetBattleMap(vector<vector<int>>& Stage,Map& StageMap,int& EnemyNum, Menu& BattleMenu);
 		static void TrigUpDateMap(Map& StageMap, int& EnemyNum);
 		static void TrigSettlement(Menu& SettlementMenu, vector<int>& StageEnemy, int& NowScore, int& TheHighestScore,int& NowStage);
+		static void TrigNextStage(Map& StageMap, Menu& BattleMenu, int& EnemyNum, int& NowStage);
 		static void TrigSetProps(vector<GameProps>& Props,int NowPropndex);
 		static void TrigReSetProps(vector<GameProps>& Props);
 		static void TrigGetProps(GameProps& Props, Map& StageMap, CPlayer& Player,vector<Enemy>& AllEnemy); // lost a enemy class

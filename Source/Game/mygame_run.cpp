@@ -375,7 +375,7 @@ void CGameStateRun::TankCollisionMap(CTank *tank) {
 	if (Stage1.GetIfBoardEdge(tank->GetX1(), tank->GetY1(), tank->GetHeight(), tank->GetWidth(), tank->GetOriginAngle())) {
 		if ((Stage1.GetMapItemInfo(_tempcollision[0][1], _tempcollision[0][0],Stage1.CanWalk) &&
 			Stage1.GetMapItemInfo(_tempcollision[1][1], _tempcollision[1][0], Stage1.CanWalk))) {
-			tank->Move();
+			//tank->Move();
 		}
 		if (tank->GetIfGetShip()) {
 			if (((Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 2 ||
@@ -391,6 +391,7 @@ void CGameStateRun::TankCollisionMap(CTank *tank) {
 			}
 		}
 	}
+
 	tank->Animation();
 }
 

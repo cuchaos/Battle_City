@@ -109,7 +109,11 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 	if (EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0 &&
 		EnemyList[0].GetTankState() == Spawn && EnemyList[1].GetTankState() == Spawn && EnemyList[2].GetTankState() == Spawn && EnemyList[3].GetTankState() == Spawn &&
 		!(EnemyList[0].GetIfBattle()  && EnemyList[1].GetIfBattle() && EnemyList[2].GetIfBattle() && EnemyList[3].GetIfBattle())) {
-		GotoGameState(GAME_STATE_RUN);
+		_IfBattling = false;
+		_IfSettling = true;
+		Stage1.SetIfShowMap(false);
+		event.TrigSettlement(_Menu, _AllStageEnemy[_NowStage - 1], _NowTotalScore, _TheHighestScore,_NowStage);
+		//GotoGameState(GAME_STATE_RUN);
 	}
 }
 void CGameStateRun::OnInit()                                  // 遊戲的初值及圖形設定
@@ -176,7 +180,7 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			_IfBattling = false;
 			_IfSettling = true;
 			Stage1.SetIfShowMap(false);
-			event.TrigSettlement(_Menu, _AllStageEnemy[_NowStage - 1], _NowTotalScore, _TheHighestScore);
+			event.TrigSettlement(_Menu, _AllStageEnemy[_NowStage - 1], _NowTotalScore, _TheHighestScore,_NowStage);
 		}
 	}	
 	else {
@@ -253,7 +257,8 @@ void CGameStateRun::OnShowText() {
 	CTextDraw::Print(pDC, 0, 0, (to_string(_TimerSpawn / CLOCKS_PER_SEC) + " " + to_string(_TimerFinish)));
 	CTextDraw::Print(pDC, 0, 25, (to_string(_EnemyQuantity)));
 	CTextDraw::Print(pDC, 0, 50, (to_string(_MouseX) + " " + to_string(_MouseY)));
-	CTextDraw::Print(pDC, 0, 150, (to_string(_NowStage - 1)));
+	
+	CTextDraw::Print(pDC, 0, 150, (to_string(Stage1.GetEnemySignNum())));
 
 	_Menu.OnShowText(pDC, fp);
 	for (int i = 0; i < 4; i++){
@@ -265,7 +270,6 @@ void CGameStateRun::OnShowText() {
 		CTextDraw::ChangeFontLog(pDC, 48, "STZhongsong", RGB(255, 255, 255));
 		CTextDraw::Print(pDC, _IfEatItem[1], _IfEatItem[2], to_string(500));
 	}
-	
 	CDDraw::ReleaseBackCDC();
 }
 void CGameStateRun::PlayerTankMove(CPlayer *tank) {
@@ -296,6 +300,7 @@ void CGameStateRun::AllBulletCollision() {
 					if (CMovingBitmap::IsOverlap(_AllBullet[i]->GetBitmap(), enemy.GetTankBitmap())
 						//&& _PlayerTank.GetBulletOwner() == 1
 						&& enemy.GetTankState() == Live) {
+						event.TrigUpDateMap(Stage1, _EnemyNum);
 						enemy.SetLife(0);
 						_EnemyNum -= 1;
 						if (enemy.isEnemyHaveItem()){

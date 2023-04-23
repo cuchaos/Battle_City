@@ -60,40 +60,13 @@ void Map::OnInit(vector<vector<int>> stage) {
 	_PlayerSign[0].SetTopLeft(1010, 520);
 	_PlayerSign[1].SetTopLeft(1010, 620);
 }
-
-void Map::SetIfShowMap(bool Status) {
-	_IfShowMap = Status;
-}
-void Map::OnShowGrass() {
-	if (_IfShowMap) {
-		for (int i = 0; i < 26; i++) {
-			for (int j = 0; j < 26; j++) {
-				_Stage[i][j].GrassOnsShow();
-			}
-		}
-	}
-}
-void Map::OnShow() {
-	if (_IfShowMap) {
-		_BlackGrid.ShowBitmap();
-		for (int i = 0; i < 26; i++) {
-			for (int j = 0; j < 26; j++) {
-				_Stage[i][j].OnShow();
-			}
-		}
-		for (int i = 0; i < (int)_EnemySign.size(); i++) {
-			_EnemySign[i].ShowBitmap();
-		}
-		_OnePlayerHealth.ShowBitmap();
-		_SecondPlayerHealth.ShowBitmap();
-		for (int i = 0; i < 2; i++) {
-			_PlayerSign[i].ShowBitmap();
-		}
-		_BattleMenuFlag.ShowBitmap();
-	}
+void Map::ShootWall(int Direction, int TankLevel, int x, int y) {
+	_Stage[x][y].ChangeGridState(Direction, TankLevel);
 }
 
-
+int Map::GetEnemySignNum() {
+	return _EnemySign.size();
+}
 bool Map::GetMapItemInfo(int x, int y,InfoType GridAttribute) 
 {
 	switch (GridAttribute)
@@ -107,7 +80,6 @@ bool Map::GetMapItemInfo(int x, int y,InfoType GridAttribute)
 	}
 	return true;
 }
-
 int Map::GetType(int x, int y) {
 	return _Stage[x][y].GetType();
 }
@@ -156,10 +128,12 @@ bool Map::GetIfBoardEdge(int Nowx, int Nowy,int NowHeight,int NowWidth,int NowDi
 	return true;
 }
 
-void Map::ShootWall(int Direction, int TankLevel,int x,int y) { 
-	_Stage[x][y].ChangeGridState(Direction, TankLevel);
+void Map::SetEnemySignPop() {
+	_EnemySign.pop_back();
 }
-
+void Map::SetIfShowMap(bool Status) {
+	_IfShowMap = Status;
+}
 void Map::SetGetShovel(int EffectTime) {
 	int Type = 0;
 	bool IfShine = false;
@@ -181,4 +155,33 @@ void Map::SetGetShovel(int EffectTime) {
 	_Stage[23][14].SetShovelChangeType(Type, IfShine);
 	_Stage[24][14].SetShovelChangeType(Type, IfShine);
 	_Stage[25][14].SetShovelChangeType(Type, IfShine);
+}
+
+void Map::OnShowGrass() {
+	if (_IfShowMap) {
+		for (int i = 0; i < 26; i++) {
+			for (int j = 0; j < 26; j++) {
+				_Stage[i][j].GrassOnsShow();
+			}
+		}
+	}
+}
+void Map::OnShow() {
+	if (_IfShowMap) {
+		_BlackGrid.ShowBitmap();
+		for (int i = 0; i < 26; i++) {
+			for (int j = 0; j < 26; j++) {
+				_Stage[i][j].OnShow();
+			}
+		}
+		for (int i = 0; i < (int)_EnemySign.size(); i++) {
+			_EnemySign[i].ShowBitmap();
+		}
+		_OnePlayerHealth.ShowBitmap();
+		_SecondPlayerHealth.ShowBitmap();
+		for (int i = 0; i < 2; i++) {
+			_PlayerSign[i].ShowBitmap();
+		}
+		_BattleMenuFlag.ShowBitmap();
+	}
 }

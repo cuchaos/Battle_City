@@ -24,24 +24,44 @@ Enemy::Enemy() : CTank() {
 void Enemy::LoadBitmap() {
 	_Tank.LoadBitmapByString({ //LightTank
 								"resources/Enemy_LightTank_Right1.bmp" ,"resources/Enemy_LightTank_Right2.bmp",
-									"resources/Enemy_LightTank_Left1.bmp"  ,"resources/Enemy_LightTank_Left2.bmp",
-									"resources/Enemy_LightTank_Top1.bmp"   ,"resources/Enemy_LightTank_Top2.bmp",
-									"resources/Enemy_LightTank_Bottom1.bmp","resources/Enemy_LightTank_Bottom2.bmp",
-									//QuickTank
-									"resources/Enemy_QuickTank_Right1.bmp" ,"resources/Enemy_QuickTank_Right2.bmp",
-										"resources/Enemy_QuickTank_Left1.bmp"  ,"resources/Enemy_QuickTank_Left2.bmp",
-										"resources/Enemy_QuickTank_Top1.bmp"   ,"resources/Enemy_QuickTank_Top2.bmp",
-										"resources/Enemy_QuickTank_Bottom1.bmp","resources/Enemy_QuickTank_Bottom2.bmp" ,
-										//ArmorTank
-										"resources/Enemy_ArmorTank_Right1.bmp" ,"resources/Enemy_ArmorTank_Right2.bmp",
-											"resources/Enemy_ArmorTank_Left1.bmp"  ,"resources/Enemy_ArmorTank_Left2.bmp",
-											"resources/Enemy_ArmorTank_Top1.bmp"   ,"resources/Enemy_ArmorTank_Top2.bmp",
-											"resources/Enemy_ArmorTank_Bottom1.bmp","resources/Enemy_ArmorTank_Bottom2.bmp",
-											//HeavyTank
-											"resources/Enemy_HeavyTank_Right1.bmp" ,"resources/Enemy_HeavyTank_Right2.bmp",
-												"resources/Enemy_HeavyTank_Left1.bmp"  ,"resources/Enemy_HeavyTank_Left2.bmp",
-												"resources/Enemy_HeavyTank_Top1.bmp"   ,"resources/Enemy_HeavyTank_Top2.bmp",
-												"resources/Enemy_HeavyTank_Bottom1.bmp","resources/Enemy_HeavyTank_Bottom2.bmp" }, RGB(0, 0, 0));
+								"resources/Enemy_LightTank_Left1.bmp"  ,"resources/Enemy_LightTank_Left2.bmp",
+								"resources/Enemy_LightTank_Top1.bmp"   ,"resources/Enemy_LightTank_Top2.bmp",
+								"resources/Enemy_LightTank_Bottom1.bmp","resources/Enemy_LightTank_Bottom2.bmp",
+								//QuickTank
+								"resources/Enemy_QuickTank_Right1.bmp" ,"resources/Enemy_QuickTank_Right2.bmp",
+								"resources/Enemy_QuickTank_Left1.bmp"  ,"resources/Enemy_QuickTank_Left2.bmp",
+								"resources/Enemy_QuickTank_Top1.bmp"   ,"resources/Enemy_QuickTank_Top2.bmp",
+								"resources/Enemy_QuickTank_Bottom1.bmp","resources/Enemy_QuickTank_Bottom2.bmp" ,
+								//ArmorTank
+								"resources/Enemy_ArmorTank_Right1.bmp" ,"resources/Enemy_ArmorTank_Right2.bmp",
+								"resources/Enemy_ArmorTank_Left1.bmp"  ,"resources/Enemy_ArmorTank_Left2.bmp",
+								"resources/Enemy_ArmorTank_Top1.bmp"   ,"resources/Enemy_ArmorTank_Top2.bmp",
+								"resources/Enemy_ArmorTank_Bottom1.bmp","resources/Enemy_ArmorTank_Bottom2.bmp",
+								//HeavyTank
+								"resources/Enemy_HeavyTank_Right1.bmp" ,"resources/Enemy_HeavyTank_Right2.bmp",
+								"resources/Enemy_HeavyTank_Left1.bmp"  ,"resources/Enemy_HeavyTank_Left2.bmp",
+								"resources/Enemy_HeavyTank_Top1.bmp"   ,"resources/Enemy_HeavyTank_Top2.bmp",
+								"resources/Enemy_HeavyTank_Bottom1.bmp","resources/Enemy_HeavyTank_Bottom2.bmp",
+								//ItemTank LightTank
+								"resources/Enemy_LightTank_Red_Right1.bmp","resources/Enemy_LightTank_Red_Right2.bmp",
+								"resources/Enemy_LightTank_Red_Left1.bmp","resources/Enemy_LightTank_Red_Left2.bmp",
+								"resources/Enemy_LightTank_Red_Top1.bmp","resources/Enemy_LightTank_Red_Top2.bmp",
+								"resources/Enemy_LightTank_Red_Bottom1.bmp","resources/Enemy_LightTank_Red_Bottom2.bmp",
+								//ItemTank QuickTank
+								"resources/Enemy_QuickTank_Red_Right1.bmp","resources/Enemy_QuickTank_Red_Right2.bmp",
+								"resources/Enemy_QuickTank_Red_Left1.bmp","resources/Enemy_QuickTank_Red_Left2.bmp",
+								"resources/Enemy_QuickTank_Red_Top1.bmp","resources/Enemy_QuickTank_Red_Top2.bmp",
+								"resources/Enemy_QuickTank_Red_Bottom1.bmp","resources/Enemy_QuickTank_Red_Bottom2.bmp",
+								//ItemTank ArmorTank
+								"resources/Enemy_ArmorTank_Red_Right1.bmp","resources/Enemy_ArmorTank_Red_Right2.bmp",
+								"resources/Enemy_ArmorTank_Red_Left1.bmp","resources/Enemy_ArmorTank_Red_Left2.bmp",
+								"resources/Enemy_ArmorTank_Red_Top1.bmp","resources/Enemy_ArmorTank_Red_Top2.bmp",
+								"resources/Enemy_ArmorTank_Red_Bottom1.bmp","resources/Enemy_ArmorTank_Red_Bottom2.bmp",
+								//ItemTank HeavyTank
+								"resources/Enemy_HeavyTank_Red_Right1.bmp","resources/Enemy_HeavyTank_Red_Right2.bmp",
+								"resources/Enemy_HeavyTank_Red_Left1.bmp","resources/Enemy_HeavyTank_Red_Left2.bmp",
+								"resources/Enemy_HeavyTank_Red_Top1.bmp","resources/Enemy_HeavyTank_Red_Top2.bmp",
+								"resources/Enemy_HeavyTank_Red_Bottom1.bmp","resources/Enemy_HeavyTank_Red_Bottom2.bmp" }, RGB(0, 0, 0));
 	_Bullet.LoadBitmap();
 }
 int Enemy::GetEnemyScore() {
@@ -126,6 +146,44 @@ void Enemy::SetFaceDirection() {
 		_Frameindex = 6 + _EnemyType * 8;
 	}
 }
+void Enemy::Animation() {
+	if (_EnemyHaveItem){
+		if (_FrameTime%15 < 7) {
+			if (_Frameindex % 2 == 0) {
+				_Tank.SetFrameIndexOfBitmap(_Frameindex + 1);
+				_Frameindex += 1;
+			}
+			else {
+				_Tank.SetFrameIndexOfBitmap(_Frameindex - 1);
+				_Frameindex -= 1;
+			}
+		}
+		else if (_FrameTime%15 > 7) {
+			if (_Frameindex % 2 == 0) {
+				_Tank.SetFrameIndexOfBitmap(_Frameindex + 1 + 32);
+				_Frameindex += 1;
+			}
+			else {
+				_Tank.SetFrameIndexOfBitmap(_Frameindex - 1 + 32);
+				_Frameindex -= 1;
+			}
+		}
+	}
+	else if (!_EnemyHaveItem) {
+		if (_FrameTime%_FrameSecond == 0) {
+			if (_Frameindex % 2 == 0) {
+				_Tank.SetFrameIndexOfBitmap(_Frameindex + 1);
+				_Frameindex += 1;
+			}
+			else {
+				_Tank.SetFrameIndexOfBitmap(_Frameindex - 1);
+				_Frameindex -= 1;
+			}
+		}
+	}
+	_FrameTime += 1;
+}
+
 void Enemy::SetBulletStatus(int BulletOrder, bool Status) {
 	if (_Bullet.GetAlreadyFire() == true && Status == false) {
 		_Bullet.SetIfBoom(true);
@@ -212,14 +270,14 @@ void Enemy::OnShow() {
 			}
 		}
 		else if(_TankState == Live) {
-			_Tank.SetFrameIndexOfBitmap(_Frameindex);
+			//_Tank.SetFrameIndexOfBitmap(_Frameindex);
 			_Tank.SetTopLeft(_X, _Y);
 			_Tank.ShowBitmap();
 			_Bullet.OnShow();
 		}
 		else if (_TankState == Death) {
 			_TankBrokenAnimation.SetTopLeft(_X, _Y);
-			TankbeHit();
+			Enemy::TankbeHit();
 		}
 	}
 }

@@ -39,18 +39,6 @@ void GameProps::SetGameProps() {
 	_AllPropType.push_back(_Type);
 	_NowIndex = _AllPropType.size() - 1;
 }
-void GameProps::SetIfCountDown(bool State) {
-	_IfCountDown = State;
-}
-vector<int> GameProps::GetAllPropType() {
-	return _AllPropType;
-}
-bool GameProps::GetIfTouched() {
-	return _IfTouched;
-}
-int GameProps::GetType() {
-	return _Type;
-}
 int GameProps::count(int Type) {
 	int sum = 0;
 	for (int i = 0; i < (int)_AllPropType.size(); i++) {
@@ -68,33 +56,6 @@ int GameProps::find(int Type) {
 	}
 	return -1;
 }
-void GameProps::SetIfShow(bool Status) {
-	_IfShow = Status;
-}
-bool GameProps::GetIfShow() {
-	return _IfShow;
-}
-
-void GameProps::SetIfExist(bool IfExist) {
-	_IfExist = IfExist;
-	if (_IfExist == false) {
-		_Type = -1;
-		_AllPropType[_NowIndex] = -1;
-	}
-}
-bool GameProps::GetIfExist() {
-	return _IfExist;
-}
-void GameProps::OnShow() {
-	if (_IfShow && _IfExist) {
-		_Props.ShowBitmap();
-	}
-}
-
-CMovingBitmap GameProps::GetPropBitmap() {
-	return _Props;
-}
-
 int GameProps::IfEffectExit() { // 1 is effect,-1 is no effect, 0 is 19second
 	int EffectTime = 0;
 	if (!_IfCountDown) {
@@ -108,7 +69,7 @@ int GameProps::IfEffectExit() { // 1 is effect,-1 is no effect, 0 is 19second
 	if (_Type == 3 || _Type == 4) {
 		EffectTime = 10000;
 	}
-	if (_Type == 5 && EffectTime > clock() - _StartTime && clock() - _StartTime  >= EffectTime - 3000) {
+	if (_Type == 5 && EffectTime > clock() - _StartTime && clock() - _StartTime >= EffectTime - 3000) {
 		return 0;
 	}
 	if (clock() - _StartTime >= EffectTime) {
@@ -122,16 +83,50 @@ int GameProps::IfEffectExit() { // 1 is effect,-1 is no effect, 0 is 19second
 	return 1;
 }
 
+void GameProps::SetIfExist(bool IfExist) {
+	_IfExist = IfExist;
+	if (_IfExist == false) {
+		_Type = -1;
+		_AllPropType[_NowIndex] = -1;
+	}
+}
+void GameProps::SetIfShow(bool Status) {
+	_IfShow = Status;
+}
+void GameProps::SetIfCountDown(bool State) {
+	_IfCountDown = State;
+}
+
+vector<int> GameProps::GetAllPropType() {
+	return _AllPropType;
+}
+bool GameProps::GetIfTouched() {
+	return _IfTouched;
+}
+int GameProps::GetType() {
+	return _Type;
+}
 int GameProps::GetX() {
 	return _X;
 }
-
 int GameProps::GetY() {
 	return _Y;
 }
-//void GameProps::OnShowScore(CDC *pDC, CFont* &fp) {
-//	pDC->SetBkMode(TRANSPARENT);
-//	pDC->SetTextColor(RGB(255, 255, 255));
-//	CTextDraw::ChangeFontLog(pDC, 48, "STZhongsong", RGB(255, 255, 255));
-//	CTextDraw::Print(pDC, _X, _Y, to_string(500));
-//}
+
+bool GameProps::GetIfShow() {
+	return _IfShow;
+}
+
+bool GameProps::GetIfExist() {
+	return _IfExist;
+}
+CMovingBitmap GameProps::GetPropBitmap() {
+	return _Props;
+}
+
+void GameProps::OnShow() {
+	if (_IfShow && _IfExist) {
+		_Props.ShowBitmap();
+	}
+}
+

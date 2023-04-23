@@ -20,13 +20,14 @@ namespace game_framework {
 
 		void SetGetShovel(int Type);
 		void SetIfShowMap(bool Status);
+		void SetEnemySignPop();
 
+		int GetEnemySignNum();
 		bool GetMapItemInfo(int _x, int _y, InfoType GridAttribute); // 獲取地圖某一格格子的資訊 0:walk ,1:shoot ,2:break
 		int GetType(int _x, int _y);
 		bool GetIfShowMap();
 		bool GetIfGrassInMap();
 		bool GetIfBoardEdge(int Nowx, int Nowy, int NowHeight, int NowWidth, int NowDirection); // wil return a bool that If u touch the edge
-		//CMovingBitmap GetMapBitmap(int _x,int _y);
 		vector<vector<int>> GetFrontGridsIndex(vector<vector<int>> Grid1XY); // you should put the two of pixel xy here
 		
 	private:

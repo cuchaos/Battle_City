@@ -169,7 +169,19 @@ bool CPlayer::GetIfFire(int FireOrder) {
 bool CPlayer::GetIfInvicible() {
 	return _IfInvicible;
 }
-
+void CPlayer::Animation() {
+	if (_FrameTime%_FrameSecond == 0) {
+		if (_Frameindex % 2 == 0) {
+			_Tank.SetFrameIndexOfBitmap(_Frameindex + 1);
+			_Frameindex += 1;
+		}
+		else {
+			_Tank.SetFrameIndexOfBitmap(_Frameindex - 1);
+			_Frameindex -= 1;
+		}
+	}
+	_FrameTime += 1;
+}
 
 void CPlayer::OnShow() {
 	if (_IfBattle) {
@@ -193,7 +205,7 @@ void CPlayer::OnShow() {
 		}
 		else if (_TankState == Death) {
 			_TankBrokenAnimation.SetTopLeft(_X, _Y);
-			TankbeHit();
+			CPlayer::TankbeHit();
 		}
 	}
 }

@@ -21,8 +21,6 @@ namespace game_framework {
 		bool GetIfShow();
 		bool GetIfTouched();
 		bool GetIfExist();
-		int GetX();
-		int GetY();
 		vector<int> GetAllPropType();
 		CMovingBitmap GetPropBitmap();
 	private:

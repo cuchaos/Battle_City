@@ -99,6 +99,10 @@ void Enemy::SetEnemyInit() {
 	_NowGrid = { (_X - 100) / Width, _Y / Height };
 	_OffsetXY = { 0,0 };
 	_Life = 1;
+	_AttackSpeedUP = false;
+	_CanBreakIron = false;
+	_DoubleAttack = false;
+	_IfGetShip = false;
 	SetFaceDirection();
 	if (_EnemyType == LightTank){
 		_EnemyScore = 100;						// 坦克分數
@@ -222,6 +226,7 @@ void Enemy::TankbeHit() {
 			_TankState = Spawn;
 			_Setinit = false;
 		}
+		_Tank.SetTopLeft(0, 0);
 	}
 	else {
 		if (_FrameTime > 26){

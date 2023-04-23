@@ -183,19 +183,6 @@ void CTank::TankFront() {		// 對坦克前方的兩格格子做XY定位
 }
 
 //show
-//void CTank::Animation() {
-//	if (_FrameTime%_FrameSecond == 0) {
-//		if (_Frameindex % 2 == 0) {
-//			_Tank.SetFrameIndexOfBitmap(_Frameindex + 1);
-//			_Frameindex += 1;
-//		}
-//		else {
-//			_Tank.SetFrameIndexOfBitmap(_Frameindex - 1);
-//			_Frameindex -= 1;
-//		}
-//	}
-//	_FrameTime += 1;
-//}
 
 void CTank::ShowSpawnAnimation() {
 	if (_FrameTime % 12 == 0) {

@@ -259,7 +259,9 @@ void CGameStateRun::OnShowText() {
 	CTextDraw::Print(pDC, 0, 50, (to_string(_MouseX) + " " + to_string(_MouseY)));
 	
 	CTextDraw::Print(pDC, 0, 150, (to_string(Stage1.GetEnemySignNum())));
-
+	_tempcollision = Stage1.GetFrontGridsIndex(_PlayerTank.GetTankFront());
+	CTextDraw::Print(pDC, 0, 75, (to_string(_tempcollision[0][0])+ "," + to_string(_tempcollision[0][1]) +" "+ to_string(NowXGrid(EnemyList[0].GetX1())) +"," +to_string(NowYGrid(EnemyList[0].GetY1()) + 1)));
+	CTextDraw::Print(pDC, 0, 100, (to_string(_tempcollision[1][0]) + "," + to_string(_tempcollision[1][1]) + " " + to_string(NowXGrid(EnemyList[0].GetX1()) + 1) + "," + to_string(NowYGrid(EnemyList[0].GetY1()) + 1)));
 	_Menu.OnShowText(pDC, fp);
 	for (int i = 0; i < 4; i++){
 		if (EnemyList[i].GetTankState() == Death) {
@@ -280,17 +282,17 @@ void CGameStateRun::PlayerTankMove(CPlayer *tank) {
 		tank->GetTankState() == Live)
 	{
 		tank->TurnFace(_HoldKey);
-		TankCollisionMap(tank);
+		PlayerTankCollisionMap(tank);
 	}
 	else if ( _OnIceCountDown > 0) {
 		tank->TurnFace(_HoldKey);
-		TankCollisionMap(tank);
+		PlayerTankCollisionMap(tank);
 		_OnIceCountDown -= 4;
 	}
 }
 void CGameStateRun::EnemyTankMove(Enemy *tank) {
 	tank->EnemyRandomDirection();
-	TankCollisionMap(tank);
+	//TankCollisionMap(tank);
 }
 void CGameStateRun::AllBulletCollision() {
 	for (int i = 0; i < 6; i++) {
@@ -333,7 +335,7 @@ void CGameStateRun::AllBulletCollision() {
 				if (CMovingBitmap::IsOverlap(_AllBullet[i]->GetBitmap(), _PlayerTank.GetTankBitmap())
 						&& _PlayerTank.GetTankState() == Live ) {
 					if (!_PlayerTank.GetIfInvicible()) {
-						_PlayerTank.SetLife(0);
+						//_PlayerTank.SetLife(0);
 					}
 					EnemyList[i - 2].SetBulletStatus(1, false);
 					EnemyList[i - 2].SetIfFire(1,false);
@@ -374,17 +376,19 @@ bool CGameStateRun::ShootCollision(CBullet Bullet, int TankLevel) {
 	}
 	return false;
 }
-void CGameStateRun::TankCollisionMap(CTank *tank) {
+void CGameStateRun::PlayerTankCollisionMap(CPlayer *tank) {
 	tank->TankFront();
 	_tempcollision = Stage1.GetFrontGridsIndex(tank->GetTankFront());
 	if (Stage1.GetIfBoardEdge(tank->GetX1(), tank->GetY1(), tank->GetHeight(), tank->GetWidth(), tank->GetOriginAngle())) {
 		if ((Stage1.GetMapItemInfo(_tempcollision[0][1], _tempcollision[0][0],Stage1.CanWalk) &&
 			Stage1.GetMapItemInfo(_tempcollision[1][1], _tempcollision[1][0], Stage1.CanWalk))) {
-			//tank->Move();
+			if (!TankCollision(tank)){
+				tank->Move();
+			}
 		}
 		if (tank->GetIfGetShip()) {
-			if (((Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 2 ||
-				Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 2))) {
+			if ((Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 2 ||
+				Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 2)) {
 				if ((Stage1.GetMapItemInfo(_tempcollision[0][1], _tempcollision[0][0], Stage1.CanWalk) ||
 					Stage1.GetMapItemInfo(_tempcollision[1][1], _tempcollision[1][0], Stage1.CanWalk))) {
 					tank->Move();
@@ -414,4 +418,54 @@ void CGameStateRun::RandomSpawnTank(int num) {
 	}
 	EnemyTypeList[tempIndex] -= 1;
 	EnemyList[num].SetEnemyType(tempIndex);
+}
+
+bool CGameStateRun::TankCollision(CTank *tank) {
+	for (int i = 0; i < 4; i++){
+		_tempcollision = Stage1.GetFrontGridsIndex(tank->GetTankFront());
+		//_Tanktempcollision = Stage1.GetFrontGridsIndex(EnemyList[i].GetTankFront());
+		if (tank->GetOriginAngle() == Right){
+			if ((_tempcollision[0][0] == NowXGrid(EnemyList[i].GetX1()) &&_tempcollision[1][1] == NowYGrid(EnemyList[i].GetY1()))||
+				(_tempcollision[1][0] == NowXGrid(EnemyList[i].GetX1()) &&_tempcollision[0][1] == NowYGrid(EnemyList[i].GetY1()) + 1 )){
+				return true;
+			}
+		}
+		else if (tank->GetOriginAngle() == Down) {
+			if ((_tempcollision[0][0] == NowXGrid(EnemyList[i].GetX1()) + 1 &&_tempcollision[0][1] == NowYGrid(EnemyList[i].GetY1()))||
+				(_tempcollision[1][0] == NowXGrid(EnemyList[i].GetX1()) + 1 &&_tempcollision[1][1] == NowYGrid(EnemyList[i].GetY1()))){
+				return true;
+			}
+		}
+		else if (tank->GetOriginAngle() == Left) {
+			if ((_tempcollision[0][0] == NowXGrid(EnemyList[i].GetX1()) + 1 &&_tempcollision[1][1] == NowYGrid(EnemyList[i].GetY1()) )||
+				(_tempcollision[1][0] == NowXGrid(EnemyList[i].GetX1()) + 1 &&_tempcollision[0][1] == NowYGrid(EnemyList[i].GetY1()) + 1 )){
+				return true;
+			}
+		}
+		else if (tank->GetOriginAngle() == Up) {
+			if ((_tempcollision[0][0] == NowXGrid(EnemyList[i].GetX1())	&& _tempcollision[0][1] == NowYGrid(EnemyList[i].GetY1()) + 1 )||
+				(_tempcollision[0][0] == NowXGrid(EnemyList[i].GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(EnemyList[i].GetY1()) + 1)||
+				(_tempcollision[1][0] == NowXGrid(EnemyList[i].GetX1()) && _tempcollision[1][1] == NowYGrid(EnemyList[i].GetY1()) + 1 )){
+				return true;
+			}
+		}
+		/*
+		00   00  00
+		11  11    11 ->三種可能 
+
+            0
+		01  01   1
+		01   1  01
+		        0    ->三種可能 
+		*/
+	}
+	return false;
+}
+
+int CGameStateRun::NowXGrid(int x) {
+	return (x - 100) / 32;
+}
+
+int CGameStateRun::NowYGrid(int y) {
+	return y / 32;
 }

@@ -29,7 +29,7 @@ namespace game_framework {
 		void LoadBitmap();					//Load重生動畫
 		virtual void OnShow() = 0;				//SHOW
 		void ShowSpawnAnimation();			//Show重生動畫
-		void Animation();
+		virtual void Animation() = 0;
 		
 		int GetX1(); //Get top left 
 		int GetY1(); //Get top left 
@@ -65,7 +65,6 @@ namespace game_framework {
 		virtual bool GetIfFire(int FireOrder) = 0;
 		int GetBulletOwner();
 		CMovingBitmap GetBulletBitmap();
-		
 		void SetBulletOwner(int who);
 	protected:
 		int _X, _Y;									//地圖座標

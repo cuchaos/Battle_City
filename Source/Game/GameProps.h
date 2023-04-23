@@ -15,6 +15,8 @@ namespace game_framework {
 		void SetIfExist(bool IfExist);
 		void SetIfCountDown(bool IfCountDown);
 
+		int GetX();
+		int GetY();
 		int GetType();
 		bool GetIfShow();
 		bool GetIfTouched();

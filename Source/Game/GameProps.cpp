@@ -112,6 +112,7 @@ int GameProps::GetX() {
 int GameProps::GetY() {
 	return _Y;
 }
+
 bool GameProps::GetIfShow() {
 	return _IfShow;
 }
@@ -128,3 +129,4 @@ void GameProps::OnShow() {
 		_Props.ShowBitmap();
 	}
 }
+

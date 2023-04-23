@@ -55,6 +55,7 @@ void Menu::SetIfAnimation(bool Status) {
 }
 void Menu::SetSettlement(vector<int>& EnemyNum, vector<int>& EnemyScore, int& NowScore, int& THeHighestScore,int& NowStage) {
 	_IfSettlement = true;
+	_IfAnimation = true;
 	_CountNumber = {0,0,0,0};
 	_NowCountTank = 0;
 	_Dialog[0] = EnemyNum;
@@ -63,6 +64,23 @@ void Menu::SetSettlement(vector<int>& EnemyNum, vector<int>& EnemyScore, int& No
 	_Dialog[3] = { NowScore };
 	_Dialog[4] = { THeHighestScore };
 }
+void Menu::SetMenuRaise(MenuType Type) {
+	_MenuType = Type;
+	if (clock() - _Last_time >= _RaiseDelay) {
+		if (_MenuType == LobbyMenu && _IfAnimation) {
+			_IfLobbyMenuing = true;
+			_Menu.SetTopLeft(100, _Menu.GetTop() - _RaiseSpeed);
+			_Last_time = clock();
+		}
+		else if (_MenuType == ChooseStageMenu) {
+			_IfChoosingStage = true;
+			_ChooseStageMenuTop.SetTopLeft(0, _ChooseStageMenuTop.GetTop() + _RaiseSpeed + 15);
+			_ChooseStageMenuDown.SetTopLeft(0, _ChooseStageMenuDown.GetTop() - _RaiseSpeed - 15);
+			_Last_time = clock();
+		}
+	}
+}
+
 bool Menu::GetIfSelecting() {
 	return _IfSelecting;
 }
@@ -83,22 +101,6 @@ int Menu::GetMenuY(MenuType Type) {
 		return _ChooseStageMenuTop.GetTop();
 	}
 	return 0;
-}
-void Menu::SetMenuRaise(MenuType Type) {
-	_MenuType = Type;
-	if (clock() - _Last_time >= _RaiseDelay) {
-		if (_MenuType == LobbyMenu && _IfAnimation) {
-			_IfLobbyMenuing = true;
-			_Menu.SetTopLeft(100, _Menu.GetTop() - _RaiseSpeed);
-			_Last_time = clock();
-		}
-		else if (_MenuType == ChooseStageMenu) {
-			_IfChoosingStage = true;
-			_ChooseStageMenuTop.SetTopLeft(0, _ChooseStageMenuTop.GetTop() + _RaiseSpeed + 15);
-			_ChooseStageMenuDown.SetTopLeft(0, _ChooseStageMenuDown.GetTop() - _RaiseSpeed - 15);
-			_Last_time = clock();
-		}
-	}
 }
 
 
@@ -160,6 +162,13 @@ int Menu::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
 			return finalselect;
 		}
 		return -1; // return -1 is still same.
+	}
+	else if (_IfSettlement && _MenuType == SettleMenu && !_IfAnimation) {
+		if (nChar == KEY_ENTER) {
+			_IfSettlement = false;
+			return 1;
+		}
+		return -1;
 	}
 	return -1;
 }
@@ -253,6 +262,9 @@ void Menu::OnShowText(CDC *pDC, CFont* &fp) {
 				if (clock() - _Last_time >= 250 && _NowCountTank != 3) {
 					_NowCountTank++;
 					_Last_time = clock();
+				}
+				if (_IfAnimation == true) {
+					_IfAnimation = false;
 				}
 			}
 		}

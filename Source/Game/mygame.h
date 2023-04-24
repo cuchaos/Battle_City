@@ -122,7 +122,9 @@ namespace game_framework {
 		void EnemyTankMove(Enemy *tank);
 		void PlayerTankCollisionMap(CPlayer *tank);
 		void EnemyTankCollisionMap(Enemy *tank);
-		bool TankCollision(CTank *tank);
+		//bool PlayerTankCollision();
+		bool EnemyTankCollision(CTank *tank);
+		bool TankCollision(CTank *tank ,CTank *who);
 		void RandomSpawnTank(int num);
 		bool ShootCollision(CBullet Bullet,int TankLevel); 
 		int NowXGrid(int x);

@@ -262,6 +262,7 @@ void CGameStateRun::OnShowText() {
 	_tempcollision = Stage1.GetFrontGridsIndex(_PlayerTank.GetTankFront());
 	CTextDraw::Print(pDC, 0, 75, (to_string(_tempcollision[0][0])+ "," + to_string(_tempcollision[0][1]) +" "+ to_string(NowXGrid(EnemyList[0].GetX1())) +"," +to_string(NowYGrid(EnemyList[0].GetY1()) + 1)));
 	CTextDraw::Print(pDC, 0, 100, (to_string(_tempcollision[1][0]) + "," + to_string(_tempcollision[1][1]) + " " + to_string(NowXGrid(EnemyList[0].GetX1()) + 1) + "," + to_string(NowYGrid(EnemyList[0].GetY1()) + 1)));
+	CTextDraw::Print(pDC, 0, 125, (to_string(EnemyTankCollision(&_PlayerTank))));
 	_Menu.OnShowText(pDC, fp);
 	for (int i = 0; i < 4; i++){
 		if (EnemyList[i].GetTankState() == Death) {
@@ -292,8 +293,9 @@ void CGameStateRun::PlayerTankMove(CPlayer *tank) {
 }
 void CGameStateRun::EnemyTankMove(Enemy *tank) {
 	tank->EnemyRandomDirection();
-	//TankCollisionMap(tank);
+	EnemyTankCollisionMap(tank);
 }
+
 void CGameStateRun::AllBulletCollision() {
 	for (int i = 0; i < 6; i++) {
 		if (_AllBullet[i]->GetAlreadyFire()) {
@@ -349,6 +351,7 @@ void CGameStateRun::AllBulletCollision() {
 		}
 	}
 }
+
 void CGameStateRun::AllBulletFly() {
 	for (int i = 0; i < 6; i++) {
 		if (_AllBullet[i]->GetAlreadyFire()) {
@@ -356,6 +359,7 @@ void CGameStateRun::AllBulletFly() {
 		}
 	}
 }
+
 bool CGameStateRun::ShootCollision(CBullet Bullet, int TankLevel) {
 	if (Stage1.GetIfBoardEdge(Bullet.GetNowBackPlace()[0][0], Bullet.GetNowBackPlace()[0][1]
 		, Bullet.GetHeight(), Bullet.GetWidth(), Bullet.GetDirection()) == true) {
@@ -376,13 +380,14 @@ bool CGameStateRun::ShootCollision(CBullet Bullet, int TankLevel) {
 	}
 	return false;
 }
+
 void CGameStateRun::PlayerTankCollisionMap(CPlayer *tank) {
 	tank->TankFront();
 	_tempcollision = Stage1.GetFrontGridsIndex(tank->GetTankFront());
 	if (Stage1.GetIfBoardEdge(tank->GetX1(), tank->GetY1(), tank->GetHeight(), tank->GetWidth(), tank->GetOriginAngle())) {
 		if ((Stage1.GetMapItemInfo(_tempcollision[0][1], _tempcollision[0][0],Stage1.CanWalk) &&
 			Stage1.GetMapItemInfo(_tempcollision[1][1], _tempcollision[1][0], Stage1.CanWalk))) {
-			if (!TankCollision(tank)){
+			if (!EnemyTankCollision(tank)){
 				tank->Move();
 			}
 		}
@@ -400,10 +405,90 @@ void CGameStateRun::PlayerTankCollisionMap(CPlayer *tank) {
 			}
 		}
 	}
-
+	tank->Animation();
+}
+void CGameStateRun::EnemyTankCollisionMap(Enemy *tank) {
+	tank->TankFront();
+	_tempcollision = Stage1.GetFrontGridsIndex(tank->GetTankFront());
+	if (Stage1.GetIfBoardEdge(tank->GetX1(), tank->GetY1(), tank->GetHeight(), tank->GetWidth(), tank->GetOriginAngle())) {
+		if ((Stage1.GetMapItemInfo(_tempcollision[0][1], _tempcollision[0][0], Stage1.CanWalk) &&
+			Stage1.GetMapItemInfo(_tempcollision[1][1], _tempcollision[1][0], Stage1.CanWalk))) {
+			if (!EnemyTankCollision(tank)) {
+				tank->Move();
+			}
+		}
+	}
 	tank->Animation();
 }
 
+//bool CGameStateRun::PlayerTankCollision() {
+//	for (int i = 0; i < 4; i++) {
+//		return TankCollision(&_PlayerTank, &EnemyList[i]);
+//	}
+//}
+
+bool CGameStateRun::EnemyTankCollision(CTank *tank) {
+	bool _collision = false;
+	for (int i = 0; i < 4; i++) {
+		_collision |= TankCollision(tank, &EnemyList[i]);
+	}
+	return _collision || TankCollision(tank, &_PlayerTank);
+}
+
+bool CGameStateRun::TankCollision(CTank *tank, CTank *who) {
+	_tempcollision = Stage1.GetFrontGridsIndex(tank->GetTankFront());
+	//_Tanktempcollision = Stage1.GetFrontGridsIndex(EnemyList[i].GetTankFront());
+	if (tank->GetOriginAngle() == Right) {
+		if ((_tempcollision[0][0] == NowXGrid(who->GetX1()) && _tempcollision[0][1] == NowYGrid(who->GetY1())) ||
+			(_tempcollision[1][0] == NowXGrid(who->GetX1()) && _tempcollision[1][1] == NowYGrid(who->GetY1())) ||
+			(_tempcollision[0][0] == NowXGrid(who->GetX1()) && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1)||
+			(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1())) ||
+			(_tempcollision[1][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[1][1] == NowYGrid(who->GetY1())) ||
+			(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1)) {
+			return true;
+		}
+	}
+	else if (tank->GetOriginAngle() == Down) {
+		if ((_tempcollision[0][0] == NowXGrid(who->GetX1()) && _tempcollision[0][1] == NowYGrid(who->GetY1())) ||
+			(_tempcollision[1][0] == NowXGrid(who->GetX1()) && _tempcollision[1][1] == NowYGrid(who->GetY1())) ||
+			(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1()))||
+			(_tempcollision[0][0] == NowXGrid(who->GetX1()) && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1 ) ||
+			(_tempcollision[1][0] == NowXGrid(who->GetX1()) && _tempcollision[1][1] == NowYGrid(who->GetY1()) + 1) ||
+			(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1)) {
+			return true;
+		}
+	}
+	else if (tank->GetOriginAngle() == Left) {
+		if ((_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1())) ||
+			(_tempcollision[1][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[1][1] == NowYGrid(who->GetY1())) ||
+			(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1)||
+			(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 2 && _tempcollision[0][1] == NowYGrid(who->GetY1())) ||
+			(_tempcollision[1][0] == NowXGrid(who->GetX1()) + 2 && _tempcollision[1][1] == NowYGrid(who->GetY1())) ||
+			(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 2 && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1)) {
+			return true;
+		}
+	}
+	else if (tank->GetOriginAngle() == Up) {
+		if ((_tempcollision[0][0] == NowXGrid(who->GetX1()) && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1) ||
+			(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1) ||
+			(_tempcollision[1][0] == NowXGrid(who->GetX1()) && _tempcollision[1][1] == NowYGrid(who->GetY1()) + 1)||
+			(_tempcollision[0][0] == NowXGrid(who->GetX1()) && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 2) ||
+			(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 2) ||
+			(_tempcollision[1][0] == NowXGrid(who->GetX1()) && _tempcollision[1][1] == NowYGrid(who->GetY1()) + 2)) {
+			return true;
+		}
+	}
+	/*
+	00   00  00
+	11  11    11 
+
+		0
+	01  01   1
+	01   1  01
+			0    ->三種可能(X)->六種可能 因為移動會讓坦克的定位往前一點點但圖片看不出來所以會變成穿模 所以避免穿模就必須判斷六次
+	*/
+	return false;
+}
 // tempIndex先亂數決定要生成的TankType 
 //如果TankType已生成完畢就繼續亂數生成直到尚未生成完畢的Tank
 //生成完畢就break跳出while
@@ -419,49 +504,6 @@ void CGameStateRun::RandomSpawnTank(int num) {
 	EnemyTypeList[tempIndex] -= 1;
 	EnemyList[num].SetEnemyType(tempIndex);
 }
-
-bool CGameStateRun::TankCollision(CTank *tank) {
-	for (int i = 0; i < 4; i++){
-		_tempcollision = Stage1.GetFrontGridsIndex(tank->GetTankFront());
-		//_Tanktempcollision = Stage1.GetFrontGridsIndex(EnemyList[i].GetTankFront());
-		if (tank->GetOriginAngle() == Right){
-			if ((_tempcollision[0][0] == NowXGrid(EnemyList[i].GetX1()) &&_tempcollision[1][1] == NowYGrid(EnemyList[i].GetY1()))||
-				(_tempcollision[1][0] == NowXGrid(EnemyList[i].GetX1()) &&_tempcollision[0][1] == NowYGrid(EnemyList[i].GetY1()) + 1 )){
-				return true;
-			}
-		}
-		else if (tank->GetOriginAngle() == Down) {
-			if ((_tempcollision[0][0] == NowXGrid(EnemyList[i].GetX1()) + 1 &&_tempcollision[0][1] == NowYGrid(EnemyList[i].GetY1()))||
-				(_tempcollision[1][0] == NowXGrid(EnemyList[i].GetX1()) + 1 &&_tempcollision[1][1] == NowYGrid(EnemyList[i].GetY1()))){
-				return true;
-			}
-		}
-		else if (tank->GetOriginAngle() == Left) {
-			if ((_tempcollision[0][0] == NowXGrid(EnemyList[i].GetX1()) + 1 &&_tempcollision[1][1] == NowYGrid(EnemyList[i].GetY1()) )||
-				(_tempcollision[1][0] == NowXGrid(EnemyList[i].GetX1()) + 1 &&_tempcollision[0][1] == NowYGrid(EnemyList[i].GetY1()) + 1 )){
-				return true;
-			}
-		}
-		else if (tank->GetOriginAngle() == Up) {
-			if ((_tempcollision[0][0] == NowXGrid(EnemyList[i].GetX1())	&& _tempcollision[0][1] == NowYGrid(EnemyList[i].GetY1()) + 1 )||
-				(_tempcollision[0][0] == NowXGrid(EnemyList[i].GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(EnemyList[i].GetY1()) + 1)||
-				(_tempcollision[1][0] == NowXGrid(EnemyList[i].GetX1()) && _tempcollision[1][1] == NowYGrid(EnemyList[i].GetY1()) + 1 )){
-				return true;
-			}
-		}
-		/*
-		00   00  00
-		11  11    11 ->三種可能 
-
-            0
-		01  01   1
-		01   1  01
-		        0    ->三種可能 
-		*/
-	}
-	return false;
-}
-
 int CGameStateRun::NowXGrid(int x) {
 	return (x - 100) / 32;
 }

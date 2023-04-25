@@ -43,6 +43,7 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 		event.TrigSetBattleMap(_AllStage[_NowStage-1],Stage1, _EnemyNum,_Menu,_PlayerTank,_Prop);
 		EnemyTypeList.assign(_AllStageEnemy[_NowStage - 1].begin(), _AllStageEnemy[_NowStage - 1].end());
 		_IfBattling = true;
+		_NowProp = 0;	
 		return;
 	}	
 	if (!_IfBattling) {

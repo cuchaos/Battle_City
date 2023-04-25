@@ -52,7 +52,7 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 		if ((CMovingBitmap::IsOverlap(_PlayerTank.GetTankBitmap(), _Prop[i].GetPropBitmap()) || _Prop[i].GetIfTouched()) 
 			&& _Prop[i].GetIfExist()) {
 			if (i == _NowProp - 1 && _Prop[i].count(_Prop[i].GetType()) > 1
-				&& (_Prop[i].GetType() == 5 || _Prop[i].GetType() == 3)) {
+				&& (_Prop[i].GetType() == GameProps::ItemType::Clock || _Prop[i].GetType() == GameProps::ItemType::Shovel)) {
 				_Prop[_Prop[i].find(_Prop[i].GetType())].SetIfCountDown(false);
 				_Prop[i].SetIfExist(false);
 				continue;

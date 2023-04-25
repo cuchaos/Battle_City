@@ -50,32 +50,31 @@ void CPlayer::SetIfInvicible(bool Status) {
 	_IfInvicible = Status;
 }
 void CPlayer::SetFaceDirection() {
-	if (_OriginAngle == Right) {
+	switch (_OriginAngle) {
+	case Right:
 		_Frameindex = 0;
-	}
-	else if (_OriginAngle == Left) {
+		break;
+	case Left:
 		_Frameindex = 2;
-	}
-	else if (_OriginAngle == Up) {
+		break;
+	case Up:
 		_Frameindex = 4;
-	}
-	else if (_OriginAngle == Down) {
+		break;
+	case Down:
 		_Frameindex = 6;
+		break;
+	default:
+		throw "unpog";
 	}
 }
 void CPlayer::SetBulletStatus(int BulletOrder, bool Status) { // 1 is first bullet , 2 is second bullet 
-	if (BulletOrder == 1) {
-		if (_Bullet.GetAlreadyFire() == true && Status == false) {
-			_Bullet.SetIfBoom(true);
-		}
-		_Bullet.SetBulletAlreadyFire(Status);
+	if (!(BulletOrder == 1 || BulletOrder == 2)) throw "wtf";
+	auto& currentBullet = BulletOrder == 1 ? _Bullet : _SecondBullet;
+	
+	if (currentBullet.GetAlreadyFire() == true && Status == false) {
+		currentBullet.SetIfBoom(true);
 	}
-	else if (BulletOrder == 2) {
-		if (_SecondBullet.GetAlreadyFire() == true && Status == false) {
-			_SecondBullet.SetIfBoom(true);
-		}
-		_SecondBullet.SetBulletAlreadyFire(Status);
-	}
+	currentBullet.SetBulletAlreadyFire(Status);
 }
 void CPlayer::SetIfFire(int FireOrder, bool Status) {
 	if (FireOrder == 1) {

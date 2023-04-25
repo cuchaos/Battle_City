@@ -153,9 +153,8 @@ namespace game_framework {
 		int _PlayerTankFrontY ;
 		vector<vector<int>> _tempcollision;
 		//vector<vector<int>> _tempcollision;
-		Enemy _EnemyTank1, _EnemyTank4, _EnemyTank3, _EnemyTank2;
-		vector<Enemy> EnemyList = {};
-		vector<clock_t> EnemyFireLastTime = {};
+		std::vector<Enemy> EnemyList = std::vector<Enemy>(4);
+		std::vector<clock_t> EnemyFireLastTime = std::vector<clock_t>(4);
 		vector<int> EnemyTypeList = {0,0,0,0};
 	};
 

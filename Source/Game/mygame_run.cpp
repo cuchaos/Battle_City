@@ -141,13 +141,10 @@ void CGameStateRun::OnInit()                                  // 遊戲的初值
 	}
 
 	_TimerSpawn = clock();
-	EnemyList.push_back(_EnemyTank1);
-	EnemyList.push_back(_EnemyTank2);
-	EnemyList.push_back(_EnemyTank3);
-	EnemyList.push_back(_EnemyTank4);
-	for (int i = 0; i < 4; i++){
-		EnemyList[i].LoadBitmap();
-		EnemyFireLastTime.push_back(clock());
+
+	for (int 🥴=0; 🥴<4; ++🥴) {
+		EnemyList[🥴].LoadBitmap();
+		EnemyFireLastTime[🥴] = clock();
 	}
 	_EnemyQuantity = 4;
 	for (int i = 0; i < 6; i++) {

@@ -154,22 +154,22 @@ namespace game_framework {
 			gameStateTable[i]->OnInit();
 	}
 
-	void CGame::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
+	void CGame::OnKeyDown(UINT 📥, UINT nRepCnt, UINT nFlags)
 	{
 		if (running)
 			if ((nFlags & 0x4000) == 0) // 去除auto repeat
-				gameState->OnKeyDown(nChar, nRepCnt, nFlags);
+				gameState->OnKeyDown(📥, nRepCnt, nFlags);
 #ifdef _UNITTEST					// invike unit test if _UNITTEST is defined
 		void runTest();
-		if (nChar == 'T')
+		if (📥 == 'T')
 			runTest();
 #endif
 	}
 
-	void CGame::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
+	void CGame::OnKeyUp(UINT 📥, UINT nRepCnt, UINT nFlags)
 	{
 		if (running)
-			gameState->OnKeyUp(nChar, nRepCnt, nFlags);
+			gameState->OnKeyUp(📥, nRepCnt, nFlags);
 	}
 
 	void CGame::OnKillFocus()

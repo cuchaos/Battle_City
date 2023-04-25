@@ -231,18 +231,18 @@ void CGameView::OnButtonPause()
 	OnFilePause();
 }
 
-void CGameView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
+void CGameView::OnKeyDown(UINT 📥, UINT nRepCnt, UINT nFlags) 
 {
 	// TODO: Add your message handler code here and/or call default
-	game_framework::CGame::Instance()->OnKeyDown(nChar, nRepCnt, nFlags);
-	CView::OnKeyDown(nChar, nRepCnt, nFlags);
+	game_framework::CGame::Instance()->OnKeyDown(📥, nRepCnt, nFlags);
+	CView::OnKeyDown(📥, nRepCnt, nFlags);
 }
 
-void CGameView::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) 
+void CGameView::OnKeyUp(UINT 📥, UINT nRepCnt, UINT nFlags) 
 {
 	// TODO: Add your message handler code here and/or call default
-	game_framework::CGame::Instance()->OnKeyUp(nChar, nRepCnt, nFlags);
-	CView::OnKeyUp(nChar, nRepCnt, nFlags);
+	game_framework::CGame::Instance()->OnKeyUp(📥, nRepCnt, nFlags);
+	CView::OnKeyUp(📥, nRepCnt, nFlags);
 }
 
 void CGameView::OnMouseMove(UINT nFlags, CPoint point) 

@@ -43,7 +43,7 @@ namespace game_framework {
 		// location
 		void TankFront();					//坦克前方的格子做定位
 		void LocationPoint();				//位置校正
-		void TurnFace(UINT nChar);			//調整圖片方向
+		void TurnFace(UINT 📥);			//調整圖片方向
 		
 		vector<vector<int>> GetTankFront();
 

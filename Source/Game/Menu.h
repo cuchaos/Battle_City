@@ -10,7 +10,7 @@ namespace game_framework {
 			BattleMenu,
 			SettleMenu //ChoosingStage's work include the onshow gray in battleing
 		};
-		int OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+		int OnKeyDown(UINT 📥, UINT nRepCnt, UINT nFlags);
 		void OnShow();
 		void OnShowText(CDC *pDC, CFont* &fp);
 

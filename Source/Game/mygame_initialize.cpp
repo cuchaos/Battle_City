@@ -105,9 +105,9 @@ void CGameStateInit::OnBeginState()
 void CGameStateInit::OnMove() {
 	event.TrigLobbyMenu(_Lobby);
 }
-void CGameStateInit::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
+void CGameStateInit::OnKeyUp(UINT 📥, UINT nRepCnt, UINT nFlags)
 {
-	_1POr2P = _Lobby.OnKeyDown(nChar, nRepCnt, nFlags);
+	_1POr2P = _Lobby.OnKeyDown(📥, nRepCnt, nFlags);
 	if ( _1POr2P != -1) {
 		GotoGameState(GAME_STATE_RUN);		// 切換至GAME_STATE_RUN
 	}

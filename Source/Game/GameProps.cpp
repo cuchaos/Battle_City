@@ -96,6 +96,9 @@ void GameProps::SetIfShow(bool Status) {
 void GameProps::SetIfCountDown(bool State) {
 	_IfCountDown = State;
 }
+void GameProps::ReStartAllProp() {
+	_AllPropType.clear();
+}
 
 vector<int> GameProps::GetAllPropType() {
 	return _AllPropType;

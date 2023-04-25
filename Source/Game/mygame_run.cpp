@@ -40,10 +40,9 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 	}
 	
 	if (_NowStage >= 1 && !_IfBattling && !_IfSettling) {
-		event.TrigSetBattleMap(_AllStage[_NowStage-1],Stage1, _EnemyNum,_Menu);
+		event.TrigSetBattleMap(_AllStage[_NowStage-1],Stage1, _EnemyNum,_Menu,_PlayerTank,_Prop);
 		EnemyTypeList.assign(_AllStageEnemy[_NowStage - 1].begin(), _AllStageEnemy[_NowStage - 1].end());
 		_IfBattling = true;
-		_PlayerTank.SetIfBattle(true);
 		return;
 	}	
 	if (!_IfBattling) {
@@ -68,25 +67,26 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 	if (_PlayerTank.GetTankState() == Live){
 		PlayerTankMove(&_PlayerTank);
 	}
+
 	for (int i = 0; i < 4; i++) {
 		// 當TankState == Spawn 時 檢查EnemyTypeList 是否都生成完畢
 		// 都生成完畢則將Enemy設定為 _IfBattle = false 避免重生
-		if (EnemyList[i].GetTankState() == Spawn){
+		if (EnemyList[i].GetTankState() == Spawn) {
 			if (EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0) {
 				EnemyList[i].SetIfBattle(false);
 			}
 		}
 		// 當Enemy 為 _IfBattle = false 而且 EnemyTypeList 都沒生成完畢
 		// 將Enemy 設定 _IfBattle = true 並重新計時
-		if (!EnemyList[i].GetIfBattle() && !(EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0)){
+		if (!EnemyList[i].GetIfBattle() && !(EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0)) {
 			if (!EnemyList[i].GetIfBattle() && clock() - _TimerSpawn >= 2000) {
 				RandomSpawnTank(i);
 				EnemyList[i].SetIfBattle(true);
 				_TimerSpawn = clock();
 			}
 		}
-		else if (EnemyList[i].GetIfBattle()){
-			if(EnemyList[i].GetTankState() == Live && !EnemyList[i].GetIfGetTimeStop()) {
+		else if (EnemyList[i].GetIfBattle()) { //Enemy On move 
+			if (EnemyList[i].GetTankState() == Live && !EnemyList[i].GetIfGetTimeStop()) {
 				EnemyTankMove(&EnemyList[i]);
 				if (EnemyList[i].GetIfFire(1) == false && clock() - EnemyFireLastTime[i] >= 1000) {
 					EnemyList[i].FireBullet(1);
@@ -96,7 +96,7 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 			else if (EnemyList[i].GetTankState() == Spawn && !EnemyList[i].GetEnemySetInit()) {
 				RandomSpawnTank(i);
 				_EnemyQuantity += 1;
-				if (_EnemyQuantity % 4 == 1){
+				if (_EnemyQuantity % 4 == 1) {
 					event.TrigReSetProps(_Prop);
 					EnemyList[i].SetEnemyHaveItem(true);
 				}
@@ -113,6 +113,7 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 		_IfSettling = true;
 		Stage1.SetIfShowMap(false);
 		event.TrigSettlement(_Menu, _AllStageEnemy[_NowStage - 1], _NowTotalScore, _TheHighestScore,_NowStage);
+		_NowProp = 0;
 		//GotoGameState(GAME_STATE_RUN);
 	}
 }

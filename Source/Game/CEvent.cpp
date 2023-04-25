@@ -40,11 +40,16 @@ void Event::TrigUpDateMap(Map& StageMap, int& EnemyNum) {
 		StageMap.SetEnemySignPop();
 	}
 }
-void Event::TrigSetBattleMap(vector<vector<int>>& Stage,Map& StageMap,int& EnemyNum, Menu& BattleMenu) {
+void Event::TrigSetBattleMap(vector<vector<int>>& Stage,Map& StageMap,int& EnemyNum, Menu& BattleMenu, CPlayer& Player, vector<GameProps>& Props) {
+	if (Props.size() != 0) {
+		Props[0].ReStartAllProp();
+	}
 	StageMap.OnInit(Stage);
 	StageMap.SetIfShowMap(true);
 	BattleMenu.SetMenuType(BattleMenu.BattleMenu);
 	EnemyNum = 20;
+	Player.PlayerInit();
+	Player.SetIfBattle(true);
 }
 void Event::TrigSettlement(Menu& SettlementMenu, vector<int>& StageEnemy, int& NowScore,int& TheHighestScore,int& NowStage) {
 	vector<int> EnemyScore = { 100,200,300,400 };

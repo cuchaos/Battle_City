@@ -13,12 +13,6 @@ namespace game_framework {
 			Left,
 			Up,
 		};
-		enum EnemyType {
-			LightTank,
-			QuickTank,
-			ArmorTank,
-			HeavyTank,
-		};
 		enum TankState {
 			Spawn,
 			Live,
@@ -65,7 +59,7 @@ namespace game_framework {
 		virtual bool GetIfFire(int FireOrder) = 0;
 		int GetBulletOwner();
 		CMovingBitmap GetBulletBitmap();
-		void SetBulletOwner(int who);
+		void SetBulletOwner(int Who);
 	protected:
 		int _X, _Y;									//地圖座標
 		int Width, Height;							//OneGrid寬,高

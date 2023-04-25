@@ -143,9 +143,9 @@ void CGameStateRun::OnInit()                                  // 遊戲的初值
 
 	_TimerSpawn = clock();
 
-	for (int 🥴=0; 🥴<4; ++🥴) {
-		EnemyList[🥴].LoadBitmap();
-		EnemyFireLastTime[🥴] = clock();
+	for (int i=0; i<4; ++i) {
+		EnemyList[i].LoadBitmap();
+		EnemyFireLastTime[i] = clock();
 	}
 	_EnemyQuantity = 4;
 	for (int i = 0; i < 6; i++) {
@@ -161,21 +161,21 @@ void CGameStateRun::OnInit()                                  // 遊戲的初值
 	}
 }
 
-void CGameStateRun::OnKeyDown(UINT 📥, UINT nRepCnt, UINT nFlags)
+void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	if (_IfBattling) {
-		if (📥 == 0x5A || 📥 == 0x58) {
+		if (nChar == 0x5A || nChar == 0x58) {
 			if (_PlayerTank.GetLevel() > 3 && _PlayerTank.GetIfFire(1) == true) {
 				_PlayerTank.FireBullet(2);
 			}
 			_PlayerTank.FireBullet(1);
 		}
-		if (📥 == VK_DOWN)	_isHoldDownKey = true;
-		if (📥 == VK_UP)		_isHoldUpKey = true;
-		if (📥 == VK_LEFT)	_isHoldLeftKey = true;
-		if (📥 == VK_RIGHT)	_isHoldRightKey = true;
-		if (📥 == VK_DOWN || 📥 == VK_RIGHT || 📥 == VK_LEFT || 📥 == VK_UP) _HoldKey = 📥;
-		if (📥 == 'A') {
+		if (nChar == VK_DOWN)	_isHoldDownKey = true;
+		if (nChar == VK_UP)		_isHoldUpKey = true;
+		if (nChar == VK_LEFT)	_isHoldLeftKey = true;
+		if (nChar == VK_RIGHT)	_isHoldRightKey = true;
+		if (nChar == VK_DOWN || nChar == VK_RIGHT || nChar == VK_LEFT || nChar == VK_UP) _HoldKey = nChar;
+		if (nChar == 'A') {
 			_IfBattling = false;
 			_IfSettling = true;
 			Stage1.SetIfShowMap(false);
@@ -184,10 +184,10 @@ void CGameStateRun::OnKeyDown(UINT 📥, UINT nRepCnt, UINT nFlags)
 	}	
 	else {
 		if (!_IfSettling) {
-			_NowStage = _Menu.OnKeyDown(📥, nRepCnt, nFlags);
+			_NowStage = _Menu.OnKeyDown(nChar, nRepCnt, nFlags);
 		}
 		else {
-			if (_Menu.OnKeyDown(📥, nRepCnt, nFlags) == 1) {
+			if (_Menu.OnKeyDown(nChar, nRepCnt, nFlags) == 1) {
 				_NowStage += 1;
 				_IfSettling = false;
 			}
@@ -195,13 +195,13 @@ void CGameStateRun::OnKeyDown(UINT 📥, UINT nRepCnt, UINT nFlags)
 	}
 }
 
-void CGameStateRun::OnKeyUp(UINT 📥, UINT nRepCnt, UINT nFlags)
+void CGameStateRun::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	if (_IfBattling) {
-		if (📥 == VK_DOWN)	_isHoldDownKey = false;
-		if (📥 == VK_UP)		_isHoldUpKey = false;
-		if (📥 == VK_LEFT)	_isHoldLeftKey = false;
-		if (📥 == VK_RIGHT)	_isHoldRightKey = false;
+		if (nChar == VK_DOWN)	_isHoldDownKey = false;
+		if (nChar == VK_UP)		_isHoldUpKey = false;
+		if (nChar == VK_LEFT)	_isHoldLeftKey = false;
+		if (nChar == VK_RIGHT)	_isHoldRightKey = false;
 
 		if (!_isHoldDownKey && !_isHoldUpKey && !_isHoldLeftKey && !_isHoldRightKey) {
 			_tempcollision = Stage1.GetFrontGridsIndex(_PlayerTank.GetTankFront());

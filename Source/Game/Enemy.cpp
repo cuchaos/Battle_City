@@ -138,17 +138,19 @@ void Enemy::SetGetTimeStop(int Status) {
 	}
 }
 void Enemy::SetFaceDirection() {
-	if (_OriginAngle == Right) {
+	switch (_OriginAngle){
+	case Right:
 		_Frameindex = 0 + _EnemyType * 8;
-	}
-	else if (_OriginAngle == Left) {
+		break;
+	case Left:
 		_Frameindex = 2 + _EnemyType * 8;
-	}
-	else if (_OriginAngle == Up) {
+		break;
+	case Up:
 		_Frameindex = 4 + _EnemyType * 8;
-	}
-	else if (_OriginAngle == Down) {
+		break;
+	case Down:
 		_Frameindex = 6 + _EnemyType * 8;
+		break;
 	}
 }
 void Enemy::Animation() {
@@ -203,8 +205,7 @@ void Enemy::EnemyRandomDirection(){
 	_RandomMoveTime = rand() % 5 + 1;	// 移動時間 1~6sec
 	_TimeFinish = clock();
 	if ((_TimeFinish - _TimeStart) / CLOCKS_PER_SEC > _RandomMoveTime) {	// > :因為要播放重生動畫
-		switch (_RandomDirection)
-		{
+		switch (_RandomDirection){
 		case Right:
 			TurnFace(VK_RIGHT);
 			break;
@@ -230,24 +231,12 @@ void Enemy::TankbeHit() {
 		_Tank.SetTopLeft(0, 0);
 	}
 	else {
-		if (_FrameTime > 26){
+		if (_FrameTime > 26) {
 			_FrameTime = 0;
 		}
-		else { 
-			if (_FrameTime % 26 == 5) {
-				_TankBrokenAnimation.SetFrameIndexOfBitmap(1);
-			}
-			else if (_FrameTime % 26 == 10) {
-				_TankBrokenAnimation.SetFrameIndexOfBitmap(2);
-			}
-			else if (_FrameTime % 26 == 15) {
-				_TankBrokenAnimation.SetFrameIndexOfBitmap(3);
-			}
-			else if (_FrameTime % 26 == 20) {
-				_TankBrokenAnimation.SetFrameIndexOfBitmap(4);
-			}
-			else if (_FrameTime % 26 == 25) {
-				_TankBrokenAnimation.SetFrameIndexOfBitmap(0);
+		else {
+			_TankBrokenAnimation.SetFrameIndexOfBitmap((_FrameTime % 26) / 5 % 5);
+			if (_FrameTime % 26 == 25){
 				_SpawnClock = clock();
 			}
 		}

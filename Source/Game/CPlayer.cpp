@@ -42,6 +42,7 @@ void CPlayer::LoadBitmap() {
 								"resources/Tank_Left_1.bmp"  ,"resources/Tank_Left_2.bmp",
 								"resources/Tank_Top_1.bmp"   ,"resources/Tank_Top_2.bmp",
 								"resources/Tank_Bottom_1.bmp","resources/Tank_Bottom_2.bmp" }, RGB(0, 0, 0));
+	_Invicible.LoadBitmapByString({"resources/Spawn1.bmp","resources/Spawn2.bmp"}, RGB(0, 0, 0));
 	_Bullet.LoadBitmap();
 	_SecondBullet.LoadBitmap();
 }
@@ -50,17 +51,19 @@ void CPlayer::SetIfInvicible(bool Status) {
 	_IfInvicible = Status;
 }
 void CPlayer::SetFaceDirection() {
-	if (_OriginAngle == Right) {
+	switch (_OriginAngle) {
+	case Right:
 		_Frameindex = 0;
-	}
-	else if (_OriginAngle == Left) {
+		break;
+	case Left:
 		_Frameindex = 2;
-	}
-	else if (_OriginAngle == Up) {
+		break;
+	case Up:
 		_Frameindex = 4;
-	}
-	else if (_OriginAngle == Down) {
+		break;
+	case Down:
 		_Frameindex = 6;
+		break;
 	}
 }
 void CPlayer::SetBulletStatus(int BulletOrder, bool Status) { // 1 is first bullet , 2 is second bullet 
@@ -126,31 +129,15 @@ void CPlayer::LevelUP() {
 }
 void CPlayer::TankbeHit() {
 	if (_FrameTime == 26){
-		if (true){
-			_TankState = Spawn;
-			_Setinit = false;
-		}
+		_TankState = Spawn;
+		_Setinit = false;
 	}
 	else {
 		if (_FrameTime > 26){
 			_FrameTime = 0;
 		}
 		else { 
-			if (_FrameTime % 26 == 5) {
-				_TankBrokenAnimation.SetFrameIndexOfBitmap(1);
-			}
-			else if (_FrameTime % 26 == 10) {
-				_TankBrokenAnimation.SetFrameIndexOfBitmap(2);
-			}
-			else if (_FrameTime % 26 == 15) {
-				_TankBrokenAnimation.SetFrameIndexOfBitmap(3);
-			}
-			else if (_FrameTime % 26 == 20) {
-				_TankBrokenAnimation.SetFrameIndexOfBitmap(4);
-			}
-			else if (_FrameTime % 26 == 25) {
-				_TankBrokenAnimation.SetFrameIndexOfBitmap(0);
-			}
+			_TankBrokenAnimation.SetFrameIndexOfBitmap((_FrameTime % 26) / 5 % 5);
 		}
 		_FrameTime += 1;
 		_TankBrokenAnimation.ShowBitmap();
@@ -183,23 +170,34 @@ void CPlayer::Animation() {
 	_FrameTime += 1;
 }
 
+void CPlayer::InvicibleAnimation() {
+	_Invicible.SetTopLeft(_X, _Y);
+	_Invicible.SetAnimation(50,false);
+	_Invicible.ShowBitmap(); 
+}
 void CPlayer::OnShow() {
 	if (_IfBattle) {
 		if (_TankState == Spawn) {
 			if (!_Setinit) {
-				//SetEnemyType();
-				//SetEnemyInit();
 				PlayerInit();
 			}
-			//else if(_Setinit){
+			else if(_Setinit){
 				CTank::LoadBitmap();
 				ShowSpawnAnimation();
-			//}
+				_InvicibleClock = clock();
+				_IfInvicible = true;
+			}
 		}
 		else if (_TankState == Live) {
 			_Tank.SetFrameIndexOfBitmap(_Frameindex);
 			_Tank.SetTopLeft(_X, _Y);
 			_Tank.ShowBitmap();
+			if (_IfInvicible){
+				InvicibleAnimation();
+			}
+			if (clock() - _InvicibleClock >= 2500 && clock() - _InvicibleClock <= 2550){
+				_IfInvicible = false;
+			}
 			_Bullet.OnShow();
 			_SecondBullet.OnShow();
 		}

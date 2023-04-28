@@ -6,6 +6,12 @@ namespace game_framework {
 	class Enemy : public CTank
 	{
 	public:
+		enum EnemyType {
+			LightTank,
+			QuickTank,
+			ArmorTank,
+			HeavyTank,
+		};
 		Enemy();
 		void LoadBitmap();
 		int GetEnemyScore();

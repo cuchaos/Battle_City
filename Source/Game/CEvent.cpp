@@ -40,11 +40,16 @@ void Event::TrigUpDateMap(Map& StageMap, int& EnemyNum) {
 		StageMap.SetEnemySignPop();
 	}
 }
-void Event::TrigSetBattleMap(vector<vector<int>>& Stage,Map& StageMap,int& EnemyNum, Menu& BattleMenu) {
+void Event::TrigSetBattleMap(vector<vector<int>>& Stage,Map& StageMap,int& EnemyNum, Menu& BattleMenu, CPlayer& Player, vector<GameProps>& Props) {
+	if (Props.size() != 0) {
+		Props[0].ReStartAllProp();
+	}
 	StageMap.OnInit(Stage);
 	StageMap.SetIfShowMap(true);
 	BattleMenu.SetMenuType(BattleMenu.BattleMenu);
 	EnemyNum = 20;
+	Player.PlayerInit();
+	Player.SetIfBattle(true);
 }
 void Event::TrigSettlement(Menu& SettlementMenu, vector<int>& StageEnemy, int& NowScore,int& TheHighestScore,int& NowStage) {
 	vector<int> EnemyScore = { 100,200,300,400 };
@@ -67,47 +72,48 @@ void Event::TrigSetProps(vector<GameProps>& Props,int NowPropIndex) {
 }
 void Event::TrigGetProps(GameProps& Props,Map& StageMap,CPlayer& Player,vector<Enemy>& AllEnemy) {
 	Props.SetIfShow(false);
-	int type = Props.GetType();
-	if (type == 0) {
+	GameProps::ItemType type = Props.GetType();
+	switch (type)
+	{
+	case GameProps::ItemType::Chariot:
 		Player.SetLife(Player.GetLife() + 1);
 		Props.SetIfExist(false);
-	}
-	else if (type == 1) {
+		break;
+	case GameProps::ItemType::Star:
 		Player.LevelUP();
 		Props.SetIfExist(false);
-	}
-	else if (type == 2) {
+		break;
+	case GameProps::ItemType::Handgrenade:
 		for (int i = 0; i < 4; i++) {
 			AllEnemy[i].SetLife(0);
 		}
 		Props.SetIfExist(false);
-	}
-	else if (type == 3) {
+		break;
+	case GameProps::ItemType::Clock:
 		for (int i = 0; i < 4; i++) {
 			AllEnemy[i].SetIfGetTimeStop(true);
 			AllEnemy[i].SetGetTimeStop(Props.IfEffectExit());
 		}
-	}
-	else if (type == 4) {
+		break;
+	case GameProps::ItemType::Steel_helmet:
 		if (Props.IfEffectExit() == 1) {
 			Player.SetIfInvicible(true);
 		}
 		else {
 			Player.SetIfInvicible(false);
 		}
-	}
-	else if (type == 5) {
+		break;
+	case GameProps::ItemType::Shovel:
 		StageMap.SetGetShovel(Props.IfEffectExit());
-	}
-	else if (type == 6) {
-		int NowLevel = Player.GetLevel();
-		for (int i = NowLevel; i < 5; i++) {
+		break;
+	case GameProps::ItemType::Pistol:
+		for (int i = Player.GetLevel(); i < 5; i++) {
 			Player.LevelUP();
 		}
 		Props.SetIfExist(false);
-	}
-	else if (type == 7) {
+		break;
+	case GameProps::ItemType::Ship:
 		Player.SetIfGetShip(true);
+		break;
 	}
-
 }

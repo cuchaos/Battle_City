@@ -113,6 +113,10 @@ namespace game_framework {
 			Live,
 			Death,
 		};
+		enum BulletOrder {
+			FirstBullet = 1,
+			SecondBullet = 2
+		};
 		void OnShowText();
 		int _MouseX;
 		int _MouseY;
@@ -131,9 +135,12 @@ namespace game_framework {
 		int NowYGrid(int y);
 		Event event;
 
-
 		void AllBulletFly();
 		void AllBulletCollision();
+		void PlayerBulletCollision(BulletOrder Order);
+		void EnemyAllBulletCollision();
+		bool BulletHitTank(CBullet CurrentBullet, CTank *BulletOwner, CTank *DetectTarget, BulletOrder Order);
+		bool BulletHitBullet(CBullet CurrentBullet, CTank *BulletOwner, CTank *DetectTarget, BulletOrder Order);
 		vector<CBullet*> _AllBullet; // index 0 and 1 is player's , index >= 2 is enemy's
 		int _NowStage;
 		int _EnemyNum;
@@ -160,9 +167,8 @@ namespace game_framework {
 		vector<vector<int>> _tempcollision = { {0,0},{0,0} };
 		//vector<vector<int>> _Tanktempcollision = { {0,0},{0,0} };
 		//vector<vector<int>> _tempcollision;
-		Enemy _EnemyTank1, _EnemyTank4, _EnemyTank3, _EnemyTank2;
-		vector<Enemy> EnemyList = {};
-		vector<clock_t> EnemyFireLastTime = {};
+		std::vector<Enemy> EnemyList = std::vector<Enemy>(4);
+		std::vector<clock_t> EnemyFireLastTime = std::vector<clock_t>(4);
 		vector<int> EnemyTypeList = {0,0,0,0};
 	};
 

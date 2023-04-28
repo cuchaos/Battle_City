@@ -105,7 +105,7 @@ int Menu::GetMenuY(MenuType Type) {
 
 
 
-int Menu::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
+int Menu::OnKeyDown(UINT 📥, UINT nRepCnt, UINT nFlags) {
 	const char KEY_UP = 0x26;
 	const char KEY_DOWN = 0x28;
 	const char KEY_ENTER = 0x0D;
@@ -118,16 +118,15 @@ int Menu::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
 		return -1;
 	}
 	if (_IfSelecting && _MenuType == LobbyMenu) { // we select the stage in there.
-		if (nChar == KEY_DOWN) {
+		if (📥 == KEY_DOWN) {
 			tempselect += 1;
 			tempselect %= 2;
 		}
-		else if (nChar == KEY_UP) {
-			tempselect -= 1;
-			tempselect += 2;
+		else if (📥 == KEY_UP) {
+			tempselect += 1;
 			tempselect %= 2;
 		}
-		else if (nChar == KEY_ENTER) {
+		else if (📥 == KEY_ENTER) {
 			_ChooseStageMenuTop.SetTopLeft(0, -450);
 			_ChooseStageMenuDown.SetTopLeft(0, 900);
 			_IfSelecting = false;
@@ -142,19 +141,19 @@ int Menu::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
 		return -1; // return -1 is still same.
 	}
 	else if (_IfSelecting && _MenuType == ChooseStageMenu) { // IfSelecting is after in graymenu animation.
-		if (nChar == Key_Z) {
+		if (📥 == Key_Z) {
 			tempselect -= 1;
 			if (tempselect < 0) {
 				tempselect += 1;
 			}
 		}
-		else if (nChar == Key_X) {
+		else if (📥 == Key_X) {
 			tempselect += 1;
 			if (tempselect > 34) {
 				tempselect -= 1;
 			}
 		}
-		else if (nChar == KEY_ENTER) {
+		else if (📥 == KEY_ENTER) {
 			_IfChoosingStage = false;
 			_IfAnimation = false;
 			_IfSelecting = false;
@@ -164,7 +163,7 @@ int Menu::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
 		return -1; // return -1 is still same.
 	}
 	else if (_IfSettlement && _MenuType == SettleMenu && !_IfAnimation) {
-		if (nChar == KEY_ENTER) {
+		if (📥 == KEY_ENTER) {
 			_IfSettlement = false;
 			return 1;
 		}

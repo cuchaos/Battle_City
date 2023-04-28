@@ -146,16 +146,7 @@ bool CPlayer::GetIfInvicible() {
 	return _IfInvicible;
 }
 void CPlayer::Animation() {
-	if (_FrameTime%_FrameSecond == 0) {
-		if (_Frameindex % 2 == 0) {
-			_Tank.SetFrameIndexOfBitmap(_Frameindex + 1);
-			_Frameindex += 1;
-		}
-		else {
-			_Tank.SetFrameIndexOfBitmap(_Frameindex - 1);
-			_Frameindex -= 1;
-		}
-	}
+	_Tank.SetFrameIndexOfBitmap(_Frameindex + _FrameTime % 6 / 3);
 	_FrameTime += 1;
 }
 
@@ -178,7 +169,7 @@ void CPlayer::OnShow() {
 			}
 		}
 		else if (_TankState == Live) {
-			_Tank.SetFrameIndexOfBitmap(_Frameindex);
+			/*_Tank.SetFrameIndexOfBitmap(_Frameindex);*/
 			_Tank.SetTopLeft(_X, _Y);
 			_Tank.ShowBitmap();
 			if (_IfInvicible){

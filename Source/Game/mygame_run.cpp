@@ -461,46 +461,48 @@ bool CGameStateRun::EnemyTankCollision(CTank *tank) {
 }
 
 bool CGameStateRun::TankCollision(CTank *tank, CTank *who) {
-	_tempcollision = Stage1.GetFrontGridsIndex(tank->GetTankFront());
-	//_Tanktempcollision = Stage1.GetFrontGridsIndex(EnemyList[i].GetTankFront());
-	if (tank->GetOriginAngle() == Right) {
-		if ((_tempcollision[0][0] == NowXGrid(who->GetX1()) && _tempcollision[0][1] == NowYGrid(who->GetY1())) ||
-			(_tempcollision[1][0] == NowXGrid(who->GetX1()) && _tempcollision[1][1] == NowYGrid(who->GetY1())) ||
-			(_tempcollision[0][0] == NowXGrid(who->GetX1()) && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1)||
-			(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1())) ||
-			(_tempcollision[1][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[1][1] == NowYGrid(who->GetY1())) ||
-			(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1)) {
-			return true;
+	if (who->GetTankState()==Live){
+		_tempcollision = Stage1.GetFrontGridsIndex(tank->GetTankFront());
+		//_Tanktempcollision = Stage1.GetFrontGridsIndex(EnemyList[i].GetTankFront());
+		if (tank->GetOriginAngle() == Right) {
+			if ((_tempcollision[0][0] == NowXGrid(who->GetX1()) && _tempcollision[0][1] == NowYGrid(who->GetY1())) ||
+				(_tempcollision[1][0] == NowXGrid(who->GetX1()) && _tempcollision[1][1] == NowYGrid(who->GetY1())) ||
+				(_tempcollision[0][0] == NowXGrid(who->GetX1()) && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1)||
+				(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1())) ||
+				(_tempcollision[1][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[1][1] == NowYGrid(who->GetY1())) ||
+				(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1)) {
+				return true;
+			}
 		}
-	}
-	else if (tank->GetOriginAngle() == Down) {
-		if ((_tempcollision[0][0] == NowXGrid(who->GetX1()) && _tempcollision[0][1] == NowYGrid(who->GetY1())) ||
-			(_tempcollision[1][0] == NowXGrid(who->GetX1()) && _tempcollision[1][1] == NowYGrid(who->GetY1())) ||
-			(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1()))||
-			(_tempcollision[0][0] == NowXGrid(who->GetX1()) && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1 ) ||
-			(_tempcollision[1][0] == NowXGrid(who->GetX1()) && _tempcollision[1][1] == NowYGrid(who->GetY1()) + 1) ||
-			(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1)) {
-			return true;
+		else if (tank->GetOriginAngle() == Down) {
+			if ((_tempcollision[0][0] == NowXGrid(who->GetX1()) && _tempcollision[0][1] == NowYGrid(who->GetY1())) ||
+				(_tempcollision[1][0] == NowXGrid(who->GetX1()) && _tempcollision[1][1] == NowYGrid(who->GetY1())) ||
+				(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1()))||
+				(_tempcollision[0][0] == NowXGrid(who->GetX1()) && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1 ) ||
+				(_tempcollision[1][0] == NowXGrid(who->GetX1()) && _tempcollision[1][1] == NowYGrid(who->GetY1()) + 1) ||
+				(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1)) {
+				return true;
+			}
 		}
-	}
-	else if (tank->GetOriginAngle() == Left) {
-		if ((_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1())) ||
-			(_tempcollision[1][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[1][1] == NowYGrid(who->GetY1())) ||
-			(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1)||
-			(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 2 && _tempcollision[0][1] == NowYGrid(who->GetY1())) ||
-			(_tempcollision[1][0] == NowXGrid(who->GetX1()) + 2 && _tempcollision[1][1] == NowYGrid(who->GetY1())) ||
-			(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 2 && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1)) {
-			return true;
+		else if (tank->GetOriginAngle() == Left) {
+			if ((_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1())) ||
+				(_tempcollision[1][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[1][1] == NowYGrid(who->GetY1())) ||
+				(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1)||
+				(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 2 && _tempcollision[0][1] == NowYGrid(who->GetY1())) ||
+				(_tempcollision[1][0] == NowXGrid(who->GetX1()) + 2 && _tempcollision[1][1] == NowYGrid(who->GetY1())) ||
+				(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 2 && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1)) {
+				return true;
+			}
 		}
-	}
-	else if (tank->GetOriginAngle() == Up) {
-		if ((_tempcollision[0][0] == NowXGrid(who->GetX1()) && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1) ||
-			(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1) ||
-			(_tempcollision[1][0] == NowXGrid(who->GetX1()) && _tempcollision[1][1] == NowYGrid(who->GetY1()) + 1)||
-			(_tempcollision[0][0] == NowXGrid(who->GetX1()) && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 2) ||
-			(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 2) ||
-			(_tempcollision[1][0] == NowXGrid(who->GetX1()) && _tempcollision[1][1] == NowYGrid(who->GetY1()) + 2)) {
-			return true;
+		else if (tank->GetOriginAngle() == Up) {
+			if ((_tempcollision[0][0] == NowXGrid(who->GetX1()) && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1) ||
+				(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1) ||
+				(_tempcollision[1][0] == NowXGrid(who->GetX1()) && _tempcollision[1][1] == NowYGrid(who->GetY1()) + 1)||
+				(_tempcollision[0][0] == NowXGrid(who->GetX1()) && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 2) ||
+				(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 2) ||
+				(_tempcollision[1][0] == NowXGrid(who->GetX1()) && _tempcollision[1][1] == NowYGrid(who->GetY1()) + 2)) {
+				return true;
+			}
 		}
 	}
 	/*

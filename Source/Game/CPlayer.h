@@ -10,6 +10,7 @@ namespace game_framework {
 		CBullet _SecondBullet;
 		void PlayerInit();
 		void LoadBitmap();
+		void InvicibleAnimation();
 		void OnShow() override;
 		void FireBullet(int BulletOrder) override;
 		void TankbeHit() override;
@@ -26,6 +27,8 @@ namespace game_framework {
 		void SetBulletStatus(int BulletOrder, bool Status) override;
 
 	private:
+		CMovingBitmap _Invicible;
+		clock_t _InvicibleClock;
 		bool _IfSecondFire;
 		int _IfInvicible;
 		int _PlayerScore;

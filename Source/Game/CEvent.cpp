@@ -73,46 +73,47 @@ void Event::TrigSetProps(vector<GameProps>& Props,int NowPropIndex) {
 void Event::TrigGetProps(GameProps& Props,Map& StageMap,CPlayer& Player,vector<Enemy>& AllEnemy) {
 	Props.SetIfShow(false);
 	GameProps::ItemType type = Props.GetType();
-	if (type == GameProps::ItemType::Chariot) {
+	switch (type)
+	{
+	case GameProps::ItemType::Chariot:
 		Player.SetLife(Player.GetLife() + 1);
 		Props.SetIfExist(false);
-	}
-	else if (type == GameProps::ItemType::Star) {
+		break;
+	case GameProps::ItemType::Star:
 		Player.LevelUP();
 		Props.SetIfExist(false);
-	}
-	else if (type == GameProps::ItemType::Handgrenade) {
+		break;
+	case GameProps::ItemType::Handgrenade:
 		for (int i = 0; i < 4; i++) {
 			AllEnemy[i].SetLife(0);
 		}
 		Props.SetIfExist(false);
-	}
-	else if (type == GameProps::ItemType::Clock) {
+		break;
+	case GameProps::ItemType::Clock:
 		for (int i = 0; i < 4; i++) {
 			AllEnemy[i].SetIfGetTimeStop(true);
 			AllEnemy[i].SetGetTimeStop(Props.IfEffectExit());
 		}
-	}
-	else if (type == GameProps::ItemType::Steel_helmet) {
+		break;
+	case GameProps::ItemType::Steel_helmet:
 		if (Props.IfEffectExit() == 1) {
 			Player.SetIfInvicible(true);
 		}
 		else {
 			Player.SetIfInvicible(false);
 		}
-	}
-	else if (type == GameProps::ItemType::Shovel) {
+		break;
+	case GameProps::ItemType::Shovel:
 		StageMap.SetGetShovel(Props.IfEffectExit());
-	}
-	else if (type == GameProps::ItemType::Pistol) {
-		int NowLevel = Player.GetLevel();
-		for (int i = NowLevel; i < 5; i++) {
+		break;
+	case GameProps::ItemType::Pistol:
+		for (int i = Player.GetLevel(); i < 5; i++) {
 			Player.LevelUP();
 		}
 		Props.SetIfExist(false);
-	}
-	else if (type == GameProps::ItemType::Ship) {
+		break;
+	case GameProps::ItemType::Ship:
 		Player.SetIfGetShip(true);
+		break;
 	}
-
 }

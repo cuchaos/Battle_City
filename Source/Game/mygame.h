@@ -113,6 +113,10 @@ namespace game_framework {
 			Live,
 			Death,
 		};
+		enum BulletOrder {
+			FirstBullet = 1,
+			SecondBullet = 2
+		};
 		void OnShowText();
 		int _MouseX;
 		int _MouseY;
@@ -125,9 +129,12 @@ namespace game_framework {
 		bool ShootCollision(CBullet Bullet,int TankLevel); 
 		Event event;
 
-
 		void AllBulletFly();
 		void AllBulletCollision();
+		void PlayerBulletCollision(BulletOrder Order);
+		void EnemyAllBulletCollision();
+		bool BulletHitTank(CBullet CurrentBullet, CTank *BulletOwner, CTank *DetectTarget, BulletOrder Order);
+		bool BulletHitBullet(CBullet CurrentBullet, CTank *BulletOwner, CTank *DetectTarget, BulletOrder Order);
 		vector<CBullet*> _AllBullet; // index 0 and 1 is player's , index >= 2 is enemy's
 		int _NowStage;
 		int _EnemyNum;

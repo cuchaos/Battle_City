@@ -32,6 +32,7 @@ void GameProps::SetGameProps() {
 	_IfCountDown = false;
 	_IfTouched = false;
 	_Type = ItemType(rand() % 8);
+	//_Type = ItemType::Shovel;
 	_Props.SetFrameIndexOfBitmap((int)_Type);
 	_X = 100 + rand() % 768;
 	_Y = rand() % 768;

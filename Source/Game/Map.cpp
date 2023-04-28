@@ -137,17 +137,17 @@ void Map::SetIfShowMap(bool Status) {
 	_IfShowMap = Status;
 }
 void Map::SetGetShovel(int EffectTime) {
-	int Type = 0;
+	MapItem::GridType Type;
 	bool IfShine = false;
 	if (EffectTime == 1) { // EffectTime >= 0 mean the effect is exist
-		Type = 5;
+		Type = MapItem::SteelGrid;
 	}
 	else if (EffectTime == 0 ) {
-		Type = 5;
+		Type = MapItem::SteelGrid;
 		IfShine = true;
 	}
 	else if(EffectTime == -1){
-		Type = 4;
+		Type = MapItem::BrickGrid;
 	}
 	_Stage[25][11].SetShovelChangeType(Type, IfShine);
 	_Stage[24][11].SetShovelChangeType(Type, IfShine);

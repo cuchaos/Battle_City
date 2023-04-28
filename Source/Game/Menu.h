@@ -30,12 +30,12 @@ namespace game_framework {
 		
 		void LoadBitMap();
 	private:
+		MenuType _MenuType;
 		int tempselect; //option arrow locate (temp,not the final location)
 		int finalselect;
 		vector<int> _CountNumber;
 		int _NowCountTank;
 		vector<vector<int>> _Dialog;
-		int _MenuType;
 
 		bool _IfAnimation;
 		bool _IfSelecting; // If Selecting (in Main Menu)

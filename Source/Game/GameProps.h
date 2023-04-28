@@ -6,7 +6,6 @@ namespace game_framework {
 		enum class ItemType
 		{
 			Empty = -1,
-
 			Chariot = 0,
 			Star = 1,
 			Handgrenade = 2,

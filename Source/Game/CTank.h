@@ -56,7 +56,7 @@ namespace game_framework {
 		virtual void SetBulletStatus(int BulletOrder, bool Status) = 0;
 		virtual void SetIfFire(int FireOrder, bool Status) = 0;
 		virtual void FireBullet(int BulletOrder) = 0;
-		virtual bool GetIfFire(int FireOrder) = 0;
+		virtual bool GetIfFire(int FireOrder=1) = 0;
 		int GetBulletOwner();
 		CMovingBitmap GetBulletBitmap();
 		void SetBulletOwner(int Who);

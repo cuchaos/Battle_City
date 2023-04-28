@@ -123,8 +123,7 @@ int Menu::OnKeyDown(UINT 📥, UINT nRepCnt, UINT nFlags) {
 			tempselect %= 2;
 		}
 		else if (📥 == KEY_UP) {
-			tempselect -= 1;
-			tempselect += 2;
+			tempselect += 1;
 			tempselect %= 2;
 		}
 		else if (📥 == KEY_ENTER) {

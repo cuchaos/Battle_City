@@ -27,7 +27,7 @@ namespace game_framework {
 		void SetBulletStatus(int BulletOrder, bool Status) override;
 
 	private:
-		CMovingBitmap _Invicible;
+		CMovingBitmap _Invicible,_Ship;
 		clock_t _InvicibleClock;
 		bool _IfSecondFire;
 		int _IfInvicible;

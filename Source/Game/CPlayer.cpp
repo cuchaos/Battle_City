@@ -43,6 +43,7 @@ void CPlayer::LoadBitmap() {
 								"resources/Tank_Top_1.bmp"   ,"resources/Tank_Top_2.bmp",
 								"resources/Tank_Bottom_1.bmp","resources/Tank_Bottom_2.bmp" }, RGB(0, 0, 0));
 	_Invicible.LoadBitmapByString({"resources/Spawn1.bmp","resources/Spawn2.bmp"}, RGB(0, 0, 0));
+	_Ship.LoadBitmapByString({"resources/Ship.bmp"}, RGB(0, 0, 0));
 	_Bullet.LoadBitmap();
 	_SecondBullet.LoadBitmap();
 }
@@ -145,16 +146,7 @@ bool CPlayer::GetIfInvicible() {
 	return _IfInvicible;
 }
 void CPlayer::Animation() {
-	if (_FrameTime%_FrameSecond == 0) {
-		if (_Frameindex % 2 == 0) {
-			_Tank.SetFrameIndexOfBitmap(_Frameindex + 1);
-			_Frameindex += 1;
-		}
-		else {
-			_Tank.SetFrameIndexOfBitmap(_Frameindex - 1);
-			_Frameindex -= 1;
-		}
-	}
+	_Tank.SetFrameIndexOfBitmap(_Frameindex + _FrameTime % 6 / 3);
 	_FrameTime += 1;
 }
 
@@ -177,7 +169,7 @@ void CPlayer::OnShow() {
 			}
 		}
 		else if (_TankState == Live) {
-			_Tank.SetFrameIndexOfBitmap(_Frameindex);
+			/*_Tank.SetFrameIndexOfBitmap(_Frameindex);*/
 			_Tank.SetTopLeft(_X, _Y);
 			_Tank.ShowBitmap();
 			if (_IfInvicible){
@@ -185,6 +177,10 @@ void CPlayer::OnShow() {
 			}
 			if (clock() - _InvicibleClock >= 2500 && clock() - _InvicibleClock <= 2550){
 				_IfInvicible = false;
+			}
+			if (_IfGetShip){
+				_Ship.SetTopLeft(_X,_Y);
+				_Ship.ShowBitmap();
 			}
 			_Bullet.OnShow();
 			_SecondBullet.OnShow();

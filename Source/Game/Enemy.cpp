@@ -156,39 +156,16 @@ void Enemy::SetFaceDirection() {
 void Enemy::Animation() {
 	if (_EnemyHaveItem){
 		if (_FrameTime%15 < 7) {
-			if (_Frameindex % 2 == 0) {
-				_Tank.SetFrameIndexOfBitmap(_Frameindex + 1);
-				_Frameindex += 1;
-			}
-			else {
-				_Tank.SetFrameIndexOfBitmap(_Frameindex - 1);
-				_Frameindex -= 1;
-			}
+			_Tank.SetFrameIndexOfBitmap(_Frameindex + _FrameTime % 2);
 		}
 		else if (_FrameTime%15 > 7) {
-			if (_Frameindex % 2 == 0) {
-				_Tank.SetFrameIndexOfBitmap(_Frameindex + 1 + 32);
-				_Frameindex += 1;
-			}
-			else {
-				_Tank.SetFrameIndexOfBitmap(_Frameindex - 1 + 32);
-				_Frameindex -= 1;
-			}
+			_Tank.SetFrameIndexOfBitmap(_Frameindex + _FrameTime % 2 + 32);
 		}
 	}
 	else if (!_EnemyHaveItem) {
-		if (_FrameTime%_FrameSecond == 0) {
-			if (_Frameindex % 2 == 0) {
-				_Tank.SetFrameIndexOfBitmap(_Frameindex + 1);
-				_Frameindex += 1;
-			}
-			else {
-				_Tank.SetFrameIndexOfBitmap(_Frameindex - 1);
-				_Frameindex -= 1;
-			}
-		}
+		_Tank.SetFrameIndexOfBitmap(_Frameindex + _FrameTime % 6 / 3);
 	}
-	_FrameTime += 1;
+	++_FrameTime;
 }
 
 void Enemy::SetBulletStatus(int BulletOrder, bool Status) {

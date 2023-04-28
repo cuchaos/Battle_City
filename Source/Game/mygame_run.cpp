@@ -81,6 +81,8 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 		// 將Enemy 設定 _IfBattle = true 並重新計時
 		if (!EnemyList[i].GetIfBattle() && !(EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0)) {
 			if (!EnemyList[i].GetIfBattle() && clock() - _TimerSpawn >= 2000) {
+				_EnemyNum -= 1;
+				event.TrigUpDateMap(Stage1, _EnemyNum);
 				RandomSpawnTank(i);
 				EnemyList[i].SetIfBattle(true);
 				_TimerSpawn = clock();
@@ -97,6 +99,8 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 			else if (EnemyList[i].GetTankState() == Spawn && !EnemyList[i].GetEnemySetInit()) {
 				RandomSpawnTank(i);
 				_EnemyQuantity += 1;
+				_EnemyNum -= 1;
+				event.TrigUpDateMap(Stage1, _EnemyNum);
 				if (_EnemyQuantity % 4 == 1) {
 					event.TrigReSetProps(_Prop);
 					EnemyList[i].SetEnemyHaveItem(true);
@@ -261,16 +265,18 @@ void CGameStateRun::OnShowText() {
 	pDC->SetBkMode(TRANSPARENT);
 	pDC->SetTextColor(RGB(0, 180, 0));
 	_TimerFinish = clock();
-	CTextDraw::Print(pDC, 0, 0, (to_string(_TimerSpawn / CLOCKS_PER_SEC) + " " + to_string(_TimerFinish)));
+	/*CTextDraw::Print(pDC, 0, 0, (to_string(_TimerSpawn / CLOCKS_PER_SEC) + " " + to_string(_TimerFinish)));*/
 	CTextDraw::Print(pDC, 0, 25, (to_string(_EnemyQuantity)));
-	CTextDraw::Print(pDC, 0, 50, (to_string(_MouseX) + " " + to_string(_MouseY)));
+	/*CTextDraw::Print(pDC, 0, 50, (to_string(_MouseX) + " " + to_string(_MouseY)));*/
 	
 	CTextDraw::Print(pDC, 0, 150, (to_string(Stage1.GetEnemySignNum())));
-	_tempcollision = Stage1.GetFrontGridsIndex(_PlayerTank.GetTankFront());
+	CTextDraw::Print(pDC, 0, 125, (to_string(_EnemyNum)));
+	/*_tempcollision = Stage1.GetFrontGridsIndex(_PlayerTank.GetTankFront());
 	CTextDraw::Print(pDC, 0, 75, (to_string(_tempcollision[0][0])+ "," + to_string(_tempcollision[0][1]) +" "+ to_string(NowXGrid(EnemyList[0].GetX1())) +"," +to_string(NowYGrid(EnemyList[0].GetY1()) + 1)));
 	CTextDraw::Print(pDC, 0, 100, (to_string(_tempcollision[1][0]) + "," + to_string(_tempcollision[1][1]) + " " + to_string(NowXGrid(EnemyList[0].GetX1()) + 1) + "," + to_string(NowYGrid(EnemyList[0].GetY1()) + 1)));
-	CTextDraw::Print(pDC, 0, 125, (to_string(EnemyTankCollision(&_PlayerTank))));
+	CTextDraw::Print(pDC, 0, 125, (to_string(EnemyTankCollision(&_PlayerTank))));*/
 	_Menu.OnShowText(pDC, fp);
+	
 	for (int i = 0; i < 4; i++){
 		if (EnemyList[i].GetTankState() == Death) {
 			EnemyList[i].OnShowScore(pDC, fp);
@@ -326,9 +332,7 @@ void CGameStateRun::PlayerBulletCollision(BulletOrder Order) {
 	auto& CurrentBullet = Order == FirstBullet ? _AllBullet[0] : _AllBullet[1];
 	for (auto& enemy : EnemyList) {
 		if (BulletHitTank(*CurrentBullet, &_PlayerTank, &enemy, Order)) {
-			event.TrigUpDateMap(Stage1, _EnemyNum);
 			enemy.SetLife(0);
-			_EnemyNum -= 1;
 			if (enemy.isEnemyHaveItem()) {
 				event.TrigSetProps(_Prop, _NowProp);
 				enemy.SetEnemyHaveItem(false);
@@ -351,7 +355,7 @@ void CGameStateRun::EnemyAllBulletCollision() {
 		if (!_AllBullet[i]->GetAlreadyFire()) continue;
 		if (BulletHitTank(*_AllBullet[i], &EnemyList[i - 2], &_PlayerTank, FirstBullet)) {
 			if (!_PlayerTank.GetIfInvicible()) {
-				_PlayerTank.SetLife(0);
+				//_PlayerTank.SetLife(0);
 			}
 			continue;
 		}
@@ -445,12 +449,6 @@ void CGameStateRun::EnemyTankCollisionMap(Enemy *tank) {
 	}
 	tank->Animation();
 }
-
-//bool CGameStateRun::PlayerTankCollision() {
-//	for (int i = 0; i < 4; i++) {
-//		return TankCollision(&_PlayerTank, &EnemyList[i]);
-//	}
-//}
 
 bool CGameStateRun::EnemyTankCollision(CTank *tank) {
 	bool _collision = false;

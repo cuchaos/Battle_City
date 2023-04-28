@@ -15,7 +15,7 @@ namespace game_framework {
 		};
 		enum TankState {
 			Spawn,
-			Live,
+			Alive,
 			Death,
 		};
 		~CTank();

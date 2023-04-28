@@ -49,7 +49,7 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 		return;
 	}
 	TrigAllProp();
-	if (_PlayerTank.GetTankState() == Live){
+	if (_PlayerTank.GetTankState() == _PlayerTank.Alive){
 		PlayerTankMove(&_PlayerTank);
 	}
 	AllEnemyMove();
@@ -226,7 +226,7 @@ void CGameStateRun::EnemyReSpawn() {
 	}
 	*/
 	if (EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0 &&
-		EnemyList[0].GetTankState() == Spawn && EnemyList[1].GetTankState() == Spawn && EnemyList[2].GetTankState() == Spawn && EnemyList[3].GetTankState() == Spawn &&
+		EnemyList[0].GetTankState() == EnemyList[0].Spawn && EnemyList[1].GetTankState() == EnemyList[1].Spawn && EnemyList[2].GetTankState() == EnemyList[2].Spawn && EnemyList[3].GetTankState() == EnemyList[3].Spawn &&
 		!(EnemyList[0].GetIfBattle() && EnemyList[1].GetIfBattle() && EnemyList[2].GetIfBattle() && EnemyList[3].GetIfBattle())) {
 		_IfBattling = false;
 		_IfSettling = true;
@@ -267,7 +267,7 @@ void CGameStateRun::AllEnemyMove() {
 	for (int i = 0; i < 4; i++) {
 		// 當TankState == Spawn 時 檢查EnemyTypeList 是否都生成完畢
 		// 都生成完畢則將Enemy設定為 _IfBattle = false 避免重生
-		if (EnemyList[i].GetTankState() == Spawn) {
+		if (EnemyList[i].GetTankState() == EnemyList[i].Spawn) {
 			if (EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0) {
 				EnemyList[i].SetIfBattle(false);
 			}
@@ -282,14 +282,14 @@ void CGameStateRun::AllEnemyMove() {
 			}
 		}
 		else if (EnemyList[i].GetIfBattle()) { //Enemy On move 
-			if (EnemyList[i].GetTankState() == Live && !EnemyList[i].GetIfGetTimeStop()) {
+			if (EnemyList[i].GetTankState() == EnemyList[i].Alive && !EnemyList[i].GetIfGetTimeStop()) {
 				EnemyTankMove(&EnemyList[i]);
 				if (EnemyList[i].GetIfFire(1) == false && clock() - EnemyFireLastTime[i] >= 1000) {
 					EnemyList[i].FireBullet(1);
 					EnemyFireLastTime[i] = clock();
 				}
 			}
-			else if (EnemyList[i].GetTankState() == Spawn && !EnemyList[i].GetEnemySetInit()) {
+			else if (EnemyList[i].GetTankState() == EnemyList[i].Spawn && !EnemyList[i].GetEnemySetInit()) {
 				RandomSpawnTank(i);
 				_EnemyQuantity += 1;
 				if (_EnemyQuantity % 4 == 1) {
@@ -305,7 +305,7 @@ void CGameStateRun::PlayerTankMove(CPlayer *tank) {
 		_isHoldLeftKey == true || 
 		_isHoldDownKey == true || 
 		_isHoldUpKey == true) && 
-		tank->GetTankState() == Live)
+		tank->GetTankState() == tank->Alive)
 	{
 		tank->TurnFace(_HoldKey);
 		PlayerTankCollisionMap(tank);
@@ -322,7 +322,7 @@ void CGameStateRun::EnemyTankMove(Enemy *tank) {
 }
 bool CGameStateRun::BulletHitTank(CBullet CurrentBullet, CTank *BulletOwner, CTank *DetectTarget,BulletOrder Order) {
 	if (CMovingBitmap::IsOverlap(CurrentBullet.GetBitmap(), DetectTarget->GetTankBitmap())
-		&& DetectTarget->GetTankState() == Live) {
+		&& DetectTarget->GetTankState() == DetectTarget->Alive) {
 		BulletOwner->SetBulletStatus(Order, false);
 		BulletOwner->SetIfFire(Order, false);
 		return true;
@@ -473,7 +473,7 @@ bool CGameStateRun::EnemyTankCollision(CTank *tank) {
 }
 
 bool CGameStateRun::TankCollision(CTank *tank, CTank *who) {
-	if (who->GetTankState()==Live){
+	if (who->GetTankState()== who->Alive){
 		_tempcollision = Stage1.GetFrontGridsIndex(tank->GetTankFront());
 		switch (tank->GetOriginAngle())
 		{

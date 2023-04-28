@@ -176,7 +176,7 @@ void CPlayer::OnShow() {
 				_IfInvicible = true;
 			}
 		}
-		else if (_TankState == Live) {
+		else if (_TankState == Alive) {
 			_Tank.SetFrameIndexOfBitmap(_Frameindex);
 			_Tank.SetTopLeft(_X, _Y);
 			_Tank.ShowBitmap();

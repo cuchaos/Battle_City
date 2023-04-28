@@ -108,11 +108,6 @@ namespace game_framework {
 			Left,
 			Up,
 		};
-		enum TankState {
-			Spawn,
-			Live,
-			Death,
-		};
 		enum BulletOrder {
 			FirstBullet = 1,
 			SecondBullet = 2

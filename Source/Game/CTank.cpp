@@ -14,6 +14,7 @@ using namespace game_framework;
 CTank::CTank() :Width(32), Height(32) {
 	_FrameTime = 0;							// 計時器
 	_Frameindex = 4;						// 動畫偵 (0 is east,1 south, 2 west,3 north)*2
+	                                                            /*why not enum and what is `*2` ?*/
 	_FrameSecond = 2;						// 動畫變換速度
 	_LocationDistance = Height/4;			// 定位點距離
 	_MovementSpeed = 4;						// 移動速度
@@ -163,16 +164,16 @@ void CTank::TankFront() {		// 對坦克前方的兩格格子做XY定位
 		_FrontXY[1][1] = _Y + Height * 3 / 2;
 	}
 	else if (_OriginAngle == Left) {
-		_FrontXY[0][0] = _X ;
+		_FrontXY[0][0] = _X;
 		_FrontXY[0][1] = _Y + Height / 2;
-		_FrontXY[1][0] = _X ;
+		_FrontXY[1][0] = _X;
 		_FrontXY[1][1] = _Y + Height * 3 / 2;
 	}
 	else if (_OriginAngle == Up) {
 		_FrontXY[0][0] = _X + Width / 2;
-		_FrontXY[0][1] = _Y ;
+		_FrontXY[0][1] = _Y;
 		_FrontXY[1][0] = _X + Width * 3 / 2;
-		_FrontXY[1][1] = _Y ;
+		_FrontXY[1][1] = _Y;
 	}
 	else if (_OriginAngle == Down) {
 		_FrontXY[0][0] = _X + Width / 2;
@@ -185,19 +186,11 @@ void CTank::TankFront() {		// 對坦克前方的兩格格子做XY定位
 //show
 
 void CTank::ShowSpawnAnimation() {
-	if (_FrameTime % 12 == 0) {
-		_SpawnAnimation.SetFrameIndexOfBitmap(0);
+	int t;
+	if ( (t = _FrameTime % 12) % 3 == 0) {
+		_SpawnAnimation.SetFrameIndexOfBitmap(t/3);
 	}
-	else if (_FrameTime % 12 == 3) {
-		_SpawnAnimation.SetFrameIndexOfBitmap(1);
-	}
-	else if (_FrameTime % 12 == 6) {
-		_SpawnAnimation.SetFrameIndexOfBitmap(2);
-	}
-	else if (_FrameTime % 12 == 9) {
-		_SpawnAnimation.SetFrameIndexOfBitmap(3);
-	}
-	_FrameTime += 1;
+	++_FrameTime;
 	if (_FrameTime == 60) {
 		_TankState = Live;
 	}

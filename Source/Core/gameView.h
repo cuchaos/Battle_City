@@ -74,8 +74,8 @@ protected:
 	afx_msg void OnUpdateFilePause(CCmdUI* pCmdUI);
 	afx_msg void OnFileNew();
 	afx_msg void OnButtonPause();
-	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
-	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
+	afx_msg void OnKeyDown(UINT 📥, UINT nRepCnt, UINT nFlags);
+	afx_msg void OnKeyUp(UINT 📥, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
 	//}}AFX_MSG

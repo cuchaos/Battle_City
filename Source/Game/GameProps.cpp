@@ -11,7 +11,7 @@
 
 using namespace game_framework;
 
-vector<int> GameProps::_AllPropType = {};
+vector<GameProps::ItemType> GameProps::_AllPropType = {};
 GameProps::GameProps() {
 }
 void GameProps::OnInit() {
@@ -19,7 +19,7 @@ void GameProps::OnInit() {
 	_IfExist = false;
 	_IfCountDown = false;
 	_IfTouched = false;
-	_Type = -1;
+	_Type = ItemType::Empty;
 	vector<string> filename;
 	for (int i = 0; i < 8; i++) {
 		filename.push_back("resources/Prop" + to_string(i) + ".bmp");
@@ -31,16 +31,16 @@ void GameProps::SetGameProps() {
 	_IfExist = true;
 	_IfCountDown = false;
 	_IfTouched = false;
-	//_Type = rand() % 8;
-	_Type = 7;
-	_Props.SetFrameIndexOfBitmap(_Type);
+	_Type = ItemType(rand() % 8);
+	//_Type = ItemType::Shovel;
+	_Props.SetFrameIndexOfBitmap((int)_Type);
 	_X = 100 + rand() % 768;
 	_Y = rand() % 768;
 	_Props.SetTopLeft(_X,_Y);
 	_AllPropType.push_back(_Type);
 	_NowIndex = _AllPropType.size() - 1;
 }
-int GameProps::count(int Type) {
+int GameProps::count(ItemType Type) {
 	int sum = 0;
 	for (int i = 0; i < (int)_AllPropType.size(); i++) {
 		if (_AllPropType[i] == Type) {
@@ -49,7 +49,7 @@ int GameProps::count(int Type) {
 	}
 	return sum;
 }
-int GameProps::find(int Type) {
+int GameProps::find(ItemType Type) {
 	for (int i = 0; i < (int)_AllPropType.size(); i++) {
 		if (_AllPropType[i] == Type) {
 			return i;
@@ -64,21 +64,21 @@ int GameProps::IfEffectExit() { // 1 is effect,-1 is no effect, 0 is 19second
 		_IfTouched = true;
 		_StartTime = clock();
 	}
-	if (_Type == 5) {
+	if (_Type == ItemType::Shovel) {
 		EffectTime = 21000;
 	}
-	if (_Type == 3 || _Type == 4) {
+	if (_Type == ItemType::Clock || _Type == ItemType::Steel_helmet) {
 		EffectTime = 10000;
 	}
-	if (_Type == 5 && EffectTime > clock() - _StartTime && clock() - _StartTime >= EffectTime - 3000) {
+	if (_Type == ItemType::Shovel && EffectTime > clock() - _StartTime && clock() - _StartTime >= EffectTime - 3000) {
 		return 0;
 	}
 	if (clock() - _StartTime >= EffectTime) {
 		_IfCountDown = false;
 		_IfTouched = false;
 		_IfExist = false;
-		_Type = -1;
-		_AllPropType[_NowIndex] = -1;
+		_Type = ItemType::Empty;
+		_AllPropType[_NowIndex] = ItemType::Empty;
 		return -1;
 	}
 	return 1;
@@ -87,8 +87,8 @@ int GameProps::IfEffectExit() { // 1 is effect,-1 is no effect, 0 is 19second
 void GameProps::SetIfExist(bool IfExist) {
 	_IfExist = IfExist;
 	if (_IfExist == false) {
-		_Type = -1;
-		_AllPropType[_NowIndex] = -1;
+		_Type = ItemType::Empty;
+		_AllPropType[_NowIndex] = ItemType::Empty;
 	}
 }
 void GameProps::SetIfShow(bool Status) {
@@ -97,14 +97,17 @@ void GameProps::SetIfShow(bool Status) {
 void GameProps::SetIfCountDown(bool State) {
 	_IfCountDown = State;
 }
+void GameProps::ReStartAllProp() {
+	_AllPropType.clear();
+}
 
-vector<int> GameProps::GetAllPropType() {
+vector<GameProps::ItemType> GameProps::GetAllPropType() {
 	return _AllPropType;
 }
 bool GameProps::GetIfTouched() {
 	return _IfTouched;
 }
-int GameProps::GetType() {
+GameProps::ItemType GameProps::GetType() {
 	return _Type;
 }
 int GameProps::GetX() {

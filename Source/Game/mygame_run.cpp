@@ -40,10 +40,10 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 	}
 	
 	if (_NowStage >= 1 && !_IfBattling && !_IfSettling) {
-		event.TrigSetBattleMap(_AllStage[_NowStage-1],Stage1, _EnemyNum,_Menu);
+		event.TrigSetBattleMap(_AllStage[_NowStage-1],Stage1, _EnemyNum,_Menu,_PlayerTank,_Prop);
 		EnemyTypeList.assign(_AllStageEnemy[_NowStage - 1].begin(), _AllStageEnemy[_NowStage - 1].end());
 		_IfBattling = true;
-		_PlayerTank.SetIfBattle(true);
+		_NowProp = 0;	
 		return;
 	}	
 	if (!_IfBattling) {
@@ -53,7 +53,7 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 		if ((CMovingBitmap::IsOverlap(_PlayerTank.GetTankBitmap(), _Prop[i].GetPropBitmap()) || _Prop[i].GetIfTouched()) 
 			&& _Prop[i].GetIfExist()) {
 			if (i == _NowProp - 1 && _Prop[i].count(_Prop[i].GetType()) > 1
-				&& (_Prop[i].GetType() == 5 || _Prop[i].GetType() == 3)) {
+				&& (_Prop[i].GetType() == GameProps::ItemType::Clock || _Prop[i].GetType() == GameProps::ItemType::Shovel)) {
 				_Prop[_Prop[i].find(_Prop[i].GetType())].SetIfCountDown(false);
 				_Prop[i].SetIfExist(false);
 				continue;
@@ -68,25 +68,26 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 	if (_PlayerTank.GetTankState() == Live){
 		PlayerTankMove(&_PlayerTank);
 	}
+
 	for (int i = 0; i < 4; i++) {
 		// 當TankState == Spawn 時 檢查EnemyTypeList 是否都生成完畢
 		// 都生成完畢則將Enemy設定為 _IfBattle = false 避免重生
-		if (EnemyList[i].GetTankState() == Spawn){
+		if (EnemyList[i].GetTankState() == Spawn) {
 			if (EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0) {
 				EnemyList[i].SetIfBattle(false);
 			}
 		}
 		// 當Enemy 為 _IfBattle = false 而且 EnemyTypeList 都沒生成完畢
 		// 將Enemy 設定 _IfBattle = true 並重新計時
-		if (!EnemyList[i].GetIfBattle() && !(EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0)){
+		if (!EnemyList[i].GetIfBattle() && !(EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0)) {
 			if (!EnemyList[i].GetIfBattle() && clock() - _TimerSpawn >= 2000) {
 				RandomSpawnTank(i);
 				EnemyList[i].SetIfBattle(true);
 				_TimerSpawn = clock();
 			}
 		}
-		else if (EnemyList[i].GetIfBattle()){
-			if(EnemyList[i].GetTankState() == Live && !EnemyList[i].GetIfGetTimeStop()) {
+		else if (EnemyList[i].GetIfBattle()) { //Enemy On move 
+			if (EnemyList[i].GetTankState() == Live && !EnemyList[i].GetIfGetTimeStop()) {
 				EnemyTankMove(&EnemyList[i]);
 				if (EnemyList[i].GetIfFire(1) == false && clock() - EnemyFireLastTime[i] >= 1000) {
 					EnemyList[i].FireBullet(1);
@@ -96,7 +97,7 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 			else if (EnemyList[i].GetTankState() == Spawn && !EnemyList[i].GetEnemySetInit()) {
 				RandomSpawnTank(i);
 				_EnemyQuantity += 1;
-				if (_EnemyQuantity % 4 == 1){
+				if (_EnemyQuantity % 4 == 1) {
 					event.TrigReSetProps(_Prop);
 					EnemyList[i].SetEnemyHaveItem(true);
 				}
@@ -113,6 +114,7 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 		_IfSettling = true;
 		Stage1.SetIfShowMap(false);
 		event.TrigSettlement(_Menu, _AllStageEnemy[_NowStage - 1], _NowTotalScore, _TheHighestScore,_NowStage);
+		_NowProp = 0;
 		//GotoGameState(GAME_STATE_RUN);
 	}
 }
@@ -140,13 +142,10 @@ void CGameStateRun::OnInit()                                  // 遊戲的初值
 	}
 
 	_TimerSpawn = clock();
-	EnemyList.push_back(_EnemyTank1);
-	EnemyList.push_back(_EnemyTank2);
-	EnemyList.push_back(_EnemyTank3);
-	EnemyList.push_back(_EnemyTank4);
-	for (int i = 0; i < 4; i++){
+
+	for (int i=0; i<4; ++i) {
 		EnemyList[i].LoadBitmap();
-		EnemyFireLastTime.push_back(clock());
+		EnemyFireLastTime[i] = clock();
 	}
 	_EnemyQuantity = 4;
 	for (int i = 0; i < 6; i++) {
@@ -176,7 +175,7 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		if (nChar == VK_LEFT)	_isHoldLeftKey = true;
 		if (nChar == VK_RIGHT)	_isHoldRightKey = true;
 		if (nChar == VK_DOWN || nChar == VK_RIGHT || nChar == VK_LEFT || nChar == VK_UP) _HoldKey = nChar;
-		if (nChar == 0x41) {
+		if (nChar == 'A') {
 			_IfBattling = false;
 			_IfSettling = true;
 			Stage1.SetIfShowMap(false);
@@ -303,61 +302,79 @@ void CGameStateRun::EnemyTankMove(Enemy *tank) {
 	tank->EnemyRandomDirection();
 	EnemyTankCollisionMap(tank);
 }
-
-void CGameStateRun::AllBulletCollision() {
-	for (int i = 0; i < 6; i++) {
-		if (_AllBullet[i]->GetAlreadyFire()) {
-			if (i <= 1) {
-				for (auto& enemy : EnemyList) {
-					if (CMovingBitmap::IsOverlap(_AllBullet[i]->GetBitmap(), enemy.GetTankBitmap())
-						//&& _PlayerTank.GetBulletOwner() == 1
-						&& enemy.GetTankState() == Live) {
-						event.TrigUpDateMap(Stage1, _EnemyNum);
-						enemy.SetLife(0);
-						_EnemyNum -= 1;
-						if (enemy.isEnemyHaveItem()){
-							if (_NowProp < 5) {
-								event.TrigSetProps(_Prop, _NowProp);
-								enemy.SetEnemyHaveItem(false);
-							}
-							_NowProp += 1;
-						}
-						_PlayerTank.SetBulletStatus(1 + i, false);
-						_PlayerTank.SetIfFire(1 + i, false);
-						break;
-					}
-					else if (CMovingBitmap::IsOverlap(_AllBullet[i]->GetBitmap(), enemy.GetBulletBitmap())
-						&& enemy.GetIfFire(1) && _PlayerTank.GetIfFire(1+i)) {
-						_PlayerTank.SetBulletStatus(1 + i, false);
-						_PlayerTank.SetIfFire(1 + i, false);
-						enemy.SetBulletStatus(1, false);
-						enemy.SetIfFire(1, false);
-						_NowTotalScore += enemy.GetEnemyScore();
-						break;
-					}
-				}
-				if (ShootCollision(*_AllBullet[i], _PlayerTank.GetLevel()) && _AllBullet[i]->GetAlreadyFire()) {
-					_PlayerTank.SetBulletStatus(1+i, false);
-					_PlayerTank.SetIfFire(1+i, false);
-				}
+bool CGameStateRun::BulletHitTank(CBullet CurrentBullet, CTank *BulletOwner, CTank *DetectTarget,BulletOrder Order) {
+	if (CMovingBitmap::IsOverlap(CurrentBullet.GetBitmap(), DetectTarget->GetTankBitmap())
+		&& DetectTarget->GetTankState() == Live) {
+		BulletOwner->SetBulletStatus(Order, false);
+		BulletOwner->SetIfFire(Order, false);
+		return true;
+	}
+	return false;
+}
+bool CGameStateRun::BulletHitBullet(CBullet CurrentBullet, CTank *BulletOwner, CTank *DetectTarget, BulletOrder Order) {
+	if (CMovingBitmap::IsOverlap(CurrentBullet.GetBitmap(), DetectTarget->GetBulletBitmap())
+		&& DetectTarget->GetIfFire(1) && BulletOwner->GetIfFire(Order)) {
+		_PlayerTank.SetBulletStatus(Order, false);
+		_PlayerTank.SetIfFire(Order, false);
+		DetectTarget->SetBulletStatus(1, false);
+		DetectTarget->SetIfFire(1, false);
+		return true;
+	}
+	return false;
+}
+void CGameStateRun::PlayerBulletCollision(BulletOrder Order) {
+	auto& CurrentBullet = Order == FirstBullet ? _AllBullet[0] : _AllBullet[1];
+	for (auto& enemy : EnemyList) {
+		if (BulletHitTank(*CurrentBullet, &_PlayerTank, &enemy, Order)) {
+			event.TrigUpDateMap(Stage1, _EnemyNum);
+			enemy.SetLife(0);
+			_EnemyNum -= 1;
+			if (enemy.isEnemyHaveItem()) {
+				event.TrigSetProps(_Prop, _NowProp);
+				enemy.SetEnemyHaveItem(false);
+				_NowProp += 1;
 			}
-			else {
-				if (CMovingBitmap::IsOverlap(_AllBullet[i]->GetBitmap(), _PlayerTank.GetTankBitmap())
-						&& _PlayerTank.GetTankState() == Live ) {
-					if (!_PlayerTank.GetIfInvicible()) {
-						//_PlayerTank.SetLife(0);
-					}
-					EnemyList[i - 2].SetBulletStatus(1, false);
-					EnemyList[i - 2].SetIfFire(1,false);
-					continue;
-				}
-				if (ShootCollision(*_AllBullet[i], EnemyList[i-2].GetLevel())) {
-					EnemyList[i - 2].SetBulletStatus(1, false);
-					EnemyList[i - 2].SetIfFire(1, false);
-				}
-			}
+			_NowTotalScore += enemy.GetEnemyScore();
+			break;
+		}
+		if (BulletHitBullet(*CurrentBullet, &_PlayerTank, &enemy, Order)) {
+			break;
 		}
 	}
+	if (ShootCollision(*CurrentBullet, _PlayerTank.GetLevel()) && CurrentBullet->GetAlreadyFire()) {
+		_PlayerTank.SetBulletStatus(Order, false);
+		_PlayerTank.SetIfFire(Order, false);
+	}
+}
+void CGameStateRun::EnemyAllBulletCollision() {
+	for (const auto &i : { 2,3,4,5 }) { // Enemy's bullet
+		if (!_AllBullet[i]->GetAlreadyFire()) continue;
+		if (BulletHitTank(*_AllBullet[i], &EnemyList[i - 2], &_PlayerTank, FirstBullet)) {
+			if (!_PlayerTank.GetIfInvicible()) {
+				_PlayerTank.SetLife(0);
+			}
+			continue;
+		}
+		if (ShootCollision(*_AllBullet[i], EnemyList[i - 2].GetLevel())) {
+			EnemyList[i - 2].SetBulletStatus(1, false);
+			EnemyList[i - 2].SetIfFire(1, false);
+		}
+	}
+}
+void CGameStateRun::AllBulletCollision() {
+	for (const auto &i : {0,1} ) { // player's bullet
+		if ( ! _AllBullet[i]->GetAlreadyFire()) continue; 
+		switch (i)
+		{
+		case 0:
+			PlayerBulletCollision(FirstBullet);
+			break;
+		case 1:
+			PlayerBulletCollision(SecondBullet);
+			break;
+		}
+	}
+	EnemyAllBulletCollision();
 }
 
 void CGameStateRun::AllBulletFly() {

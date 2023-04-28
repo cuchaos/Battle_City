@@ -50,63 +50,53 @@ void CPlayer::SetIfInvicible(bool Status) {
 	_IfInvicible = Status;
 }
 void CPlayer::SetFaceDirection() {
-	if (_OriginAngle == Right) {
+	switch (_OriginAngle) {
+	case Right:
 		_Frameindex = 0;
-	}
-	else if (_OriginAngle == Left) {
+		break;
+	case Left:
 		_Frameindex = 2;
-	}
-	else if (_OriginAngle == Up) {
+		break;
+	case Up:
 		_Frameindex = 4;
-	}
-	else if (_OriginAngle == Down) {
+		break;
+	case Down:
 		_Frameindex = 6;
+		break;
+	default:
+		throw "unpog";
 	}
 }
 void CPlayer::SetBulletStatus(int BulletOrder, bool Status) { // 1 is first bullet , 2 is second bullet 
-	if (BulletOrder == 1) {
-		if (_Bullet.GetAlreadyFire() == true && Status == false) {
-			_Bullet.SetIfBoom(true);
-		}
-		_Bullet.SetBulletAlreadyFire(Status);
+	if (!(BulletOrder == 1 || BulletOrder == 2)) throw "wtf";
+	auto& currentBullet = BulletOrder == 1 ? _Bullet : _SecondBullet;
+	
+	if (currentBullet.GetAlreadyFire() == true && Status == false) {
+		currentBullet.SetIfBoom(true);
 	}
-	else if (BulletOrder == 2) {
-		if (_SecondBullet.GetAlreadyFire() == true && Status == false) {
-			_SecondBullet.SetIfBoom(true);
-		}
-		_SecondBullet.SetBulletAlreadyFire(Status);
-	}
+	currentBullet.SetBulletAlreadyFire(Status);
 }
 void CPlayer::SetIfFire(int FireOrder, bool Status) {
-	if (FireOrder == 1) {
-		_IfFire = Status;
-	}
-	else if (FireOrder == 2) {
-		_IfSecondFire = Status;
-	}
+	if (!(FireOrder == 1 || FireOrder == 2)) throw "wtf";
+	auto& currentFire = FireOrder == 1 ? _IfFire : _IfSecondFire;
+	currentFire = Status;
 }
 void CPlayer::SetIfGetShip(bool Status) {
 	_IfGetShip = Status;
 }
 
 void CPlayer::FireBullet(int BulletOrder) {
-	if (BulletOrder == 1 && _Bullet.GetIfBoom() == false) {
+	if (!(BulletOrder == 1 || BulletOrder == 2)) throw "wtf";
+	auto& currentBullet = BulletOrder == 1 ? _Bullet : _SecondBullet;
+	auto& currentFire = BulletOrder == 1 ? _IfFire : _IfSecondFire;
+	if (currentBullet.GetIfBoom() == false) {
 		if (_OriginAngle == Right || _OriginAngle == Left) {
-			_Bullet.SetBulletFire(_X, _Y + 25, _OriginAngle, _BulletFlySpeed);
+			currentBullet.SetBulletFire(_X, _Y + 25, _OriginAngle, _BulletFlySpeed);
 		}
 		else {
-			_Bullet.SetBulletFire(_X + 25, _Y, _OriginAngle, _BulletFlySpeed);
+			currentBullet.SetBulletFire(_X + 25, _Y, _OriginAngle, _BulletFlySpeed);
 		}
-		_IfFire = true;
-	}
-	else if(BulletOrder == 2 && _SecondBullet.GetIfBoom() == false){
-		if (_OriginAngle == Right || _OriginAngle == Left) {
-			_SecondBullet.SetBulletFire(_X, _Y + 25, _OriginAngle, _BulletFlySpeed);
-		}
-		else {
-			_SecondBullet.SetBulletFire(_X + 25, _Y, _OriginAngle, _BulletFlySpeed);
-		}
-		_IfSecondFire = true;
+		currentFire = true;
 	}
 }
 void CPlayer::LevelUP() {
@@ -128,6 +118,7 @@ void CPlayer::TankbeHit() {
 	if (_FrameTime == 26){
 		if (true){
 			_TankState = Spawn;
+
 			_Setinit = false;
 		}
 	}

@@ -43,6 +43,7 @@ void CPlayer::LoadBitmap() {
 								"resources/Tank_Top_1.bmp"   ,"resources/Tank_Top_2.bmp",
 								"resources/Tank_Bottom_1.bmp","resources/Tank_Bottom_2.bmp" }, RGB(0, 0, 0));
 	_Invicible.LoadBitmapByString({"resources/Spawn1.bmp","resources/Spawn2.bmp"}, RGB(0, 0, 0));
+	_Ship.LoadBitmapByString({"resources/Ship.bmp"}, RGB(0, 0, 0));
 	_Bullet.LoadBitmap();
 	_SecondBullet.LoadBitmap();
 }
@@ -185,6 +186,10 @@ void CPlayer::OnShow() {
 			}
 			if (clock() - _InvicibleClock >= 2500 && clock() - _InvicibleClock <= 2550){
 				_IfInvicible = false;
+			}
+			if (_IfGetShip){
+				_Ship.SetTopLeft(_X,_Y);
+				_Ship.ShowBitmap();
 			}
 			_Bullet.OnShow();
 			_SecondBullet.OnShow();

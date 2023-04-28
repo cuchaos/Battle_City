@@ -192,7 +192,7 @@ void CTank::ShowSpawnAnimation() {
 	}
 	++_FrameTime;
 	if (_FrameTime == 60) {
-		_TankState = Live;
+		_TankState = Alive;
 	}
 	_SpawnAnimation.SetTopLeft(_X, _Y);
 	_SpawnAnimation.ShowBitmap();

@@ -33,6 +33,7 @@ void GameProps::SetGameProps() {
 	_IfTouched = false;
 	_Type = ItemType(rand() % 8);
 	//_Type = ItemType(3);
+	//_Type = ItemType::Ship;
 	_Props.SetFrameIndexOfBitmap((int)_Type);
 	_X = 100 + rand() % 768;
 	_Y = rand() % 768;

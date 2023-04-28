@@ -122,6 +122,8 @@ namespace game_framework {
 		int _MouseY;
 		void OnMove();									// 移動遊戲元素
 		void OnShow();									// 顯示這個狀態的遊戲畫面
+		void EnemyReSpawn();
+		void AllEnemyMove();
 		void PlayerTankMove(CPlayer *tank);
 		void EnemyTankMove(Enemy *tank);
 		void PlayerTankCollisionMap(CPlayer *tank);
@@ -145,7 +147,9 @@ namespace game_framework {
 		int _NowStage;
 		int _EnemyNum;
 
-		int _NowProp;  // the var that record Prop number
+		bool IfResetPropTime(int NowPropIndex,GameProps NowProp);
+		void TrigAllProp();
+		int _NowPropSize;  // the var that record Prop number
 		vector<GameProps> _Prop;
 		
 		Menu _Menu;

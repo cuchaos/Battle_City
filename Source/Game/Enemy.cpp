@@ -104,6 +104,7 @@ void Enemy::SetEnemyInit() {
 	_CanBreakIron = false;
 	_DoubleAttack = false;
 	_IfGetShip = false;
+	_IfGetTimeStop = false;
 	SetFaceDirection();
 	if (_EnemyType == LightTank){
 		_EnemyScore = 100;						// 坦克分數

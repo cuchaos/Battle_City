@@ -16,7 +16,7 @@ CPlayer::CPlayer() : CTank(){
 	_KillEnemyList = {0,0,0,0};
 	_Level = 1;
 	_TankState = Spawn;
-	_Setinit = false;
+	_IfSetinit = false;
 	PlayerInit();
 }
 void CPlayer::PlayerInit() {
@@ -29,13 +29,10 @@ void CPlayer::PlayerInit() {
 	_TurnAngle = Up;
 	_NowGrid = { (_X - 100) / Width, _Y / Height };
 	_OffsetXY = { 0,0 };
-	_AttackSpeedUP = false;
-	_CanBreakIron = false;
-	_DoubleAttack = false;
 	_IfGetShip = false;
 	_IfSecondFire = false;
 	SetFaceDirection();
-	_Setinit = true;
+	_IfSetinit = true;
 }
 void CPlayer::LoadBitmap() {
 	_Tank.LoadBitmapByString({ "resources/Tank_Right_1.bmp" ,"resources/Tank_Right_2.bmp",
@@ -105,21 +102,14 @@ void CPlayer::LevelUP() {
 	if (_Level < 4) {
 		_Level += 1;
 		if (_Level == 2) {
-			_AttackSpeedUP = true;
 			_BulletFlySpeed = 20;
-		}
-		else if (_Level == 3) {
-			_DoubleAttack = true;
-		}
-		else if (_Level == 4) {
-			_CanBreakIron = true;
 		}
 	}
 }
-void CPlayer::TankbeHit() {
+void CPlayer::TankExpolsion() {
 	if (_FrameTime == 26){
 		_TankState = Spawn;
-		_Setinit = false;
+		_IfSetinit = false;
 	}
 	else {
 		if (_FrameTime > 26){
@@ -158,10 +148,10 @@ void CPlayer::InvicibleAnimation() {
 void CPlayer::OnShow() {
 	if (_IfBattle) {
 		if (_TankState == Spawn) {
-			if (!_Setinit) {
+			if (!_IfSetinit) {
 				PlayerInit();
 			}
-			else if(_Setinit){
+			else if(_IfSetinit){
 				CTank::LoadBitmap();
 				ShowSpawnAnimation();
 				_InvicibleClock = clock();
@@ -187,7 +177,7 @@ void CPlayer::OnShow() {
 		}
 		else if (_TankState == Death) {
 			_TankBrokenAnimation.SetTopLeft(_X, _Y);
-			CPlayer::TankbeHit();
+			CPlayer::TankExpolsion();
 		}
 	}
 }

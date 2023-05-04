@@ -14,7 +14,7 @@ using namespace game_framework;
 
 vector<vector<int>> CBullet::_Move = { {1,0},{0,1},{-1,0},{0,-1} }; //Vector 2D
 
-CBullet::CBullet() {
+CBullet::CBullet() : _BulletSpeed(69){
 	//"resources/Bullet0.bmp","resources/Bullet1.bmp","resources/Bullet2.bmp","resources/Bullet3.bmp"
 	//_Boom.LoadBitmapByString({ "resources/Boom0.bmp","resources/Boom1.bmp","resources/Boom2.bmp" }, RGB(0, 0, 0));
 	_AlreadyFire = false;

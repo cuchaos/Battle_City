@@ -14,12 +14,12 @@
 using namespace game_framework;
 
 Enemy::Enemy() : CTank() {
-	_IfGetTimeStop = false;
-	_IfGetShip = false;
+	_EnemyType = 0;
 	_TimeStart = clock();
 	_TimeFinish = clock();
-	_EnemyType = 0;
-	_Setinit = false;
+	_IfSetinit = false;
+	_IfGetTimeStop = false;
+	_IfGetShip = false;
 	_EnemyHaveItem = false;
 }
 void Enemy::LoadBitmap() {
@@ -68,7 +68,7 @@ void Enemy::LoadBitmap() {
 int Enemy::GetEnemyScore() {
 	return _EnemyScore;
 }
-bool Enemy::isEnemyHaveItem() {
+bool Enemy::GetEnemyHaveItem() {
 	return _EnemyHaveItem;
 }
 bool Enemy::GetIfGetTimeStop() {
@@ -78,7 +78,7 @@ CMovingBitmap Enemy::GetEnemyBitmap() {
 	return _Tank;
 }
 bool Enemy::GetEnemySetInit() {
-	return _Setinit;
+	return _IfSetinit;
 }
 bool Enemy::GetIfFire(int FireOrder) {
 	return _IfFire;
@@ -89,6 +89,7 @@ int Enemy::GetEnemyType() {
 bool Enemy::GetIfBattle() {
 	return _IfBattle;
 }
+
 void Enemy::SetEnemyHaveItem(bool has) {
 	_EnemyHaveItem = has;
 }
@@ -100,29 +101,28 @@ void Enemy::SetEnemyInit() {
 	_NowGrid = { (_X - 100) / Width, _Y / Height };
 	_OffsetXY = { 0,0 };
 	_Life = 1;
-	_AttackSpeedUP = false;
-	_CanBreakIron = false;
-	_DoubleAttack = false;
+	_IfSetinit = true;
 	_IfGetShip = false;
 	_IfGetTimeStop = false;
 	SetFaceDirection();
-	if (_EnemyType == LightTank){
-		_EnemyScore = 100;						// 坦克分數
-	}
-	else if (_EnemyType == QuickTank) {
-		_AttackSpeedUP = true;					// 射速
+	switch (_EnemyType)
+	{
+	case LightTank:
+		_EnemyScore = 100;
+		break;
+	case QuickTank:
 		_EnemyScore = 300;						// 坦克分數
-	}
-	else if (_EnemyType == ArmorTank) {
+		break;
+	case ArmorTank:
 		_MovementSpeed = 4;						// 移動速度
-		_EnemyScore = 200;						
-	}
-	else if (_EnemyType == HeavyTank) {
+		_EnemyScore = 200;
+		break;
+	case HeavyTank:
 		_Life = 4;								// 生命
-		_EnemyScore = 400;						
+		_EnemyScore = 400;
+		break;
 	}
-	//SetFaceDirection();
-	_Setinit = true;
+	
 }
 void Enemy::SetEnemyType(int num) {
 	_EnemyType = num;
@@ -200,27 +200,23 @@ void Enemy::EnemyRandomDirection(){
 		_TimeStart = clock();			// 重新開始計時
 	}
 }
-void Enemy::TankbeHit() {
-	if (_FrameTime == 26){
-		if (clock() - _SpawnClock >= 2500){
-			_TankState = Spawn;
-			_Setinit = false;
-		}
-		_Tank.SetTopLeft(0, 0);
+void Enemy::SetEnemyReSpawn() {
+	if (clock() - _SpawnClock >= 2500 && _IfSetinit == false) {
+		_IfSetinit = true;
+		_IfSpawning = true;
+		_TankState = Spawn;
+		_FireClock = clock();
+		_FrameTime = 0;
 	}
-	else {
-		if (_FrameTime > 26) {
-			_FrameTime = 0;
-		}
-		else {
-			_TankBrokenAnimation.SetFrameIndexOfBitmap((_FrameTime % 26) / 5 % 5);
-			if (_FrameTime % 26 == 25){
-				_SpawnClock = clock();
-			}
-		}
-		_FrameTime += 1;
-		_TankBrokenAnimation.ShowBitmap();
+	_Tank.SetTopLeft(0, 0);
+}
+void Enemy::TankExpolsion() {
+	_TankBrokenAnimation.SetFrameIndexOfBitmap((_FrameTime % 26) / 5 % 5);
+	if (_FrameTime % 26 == 25){
+		_SpawnClock = clock();
 	}
+	++_FrameTime;
+	_TankBrokenAnimation.ShowBitmap();
 }
 void Enemy::FireBullet(int BulletOrder) {
 	if (_OriginAngle == Right || _OriginAngle == Left) {
@@ -233,24 +229,26 @@ void Enemy::FireBullet(int BulletOrder) {
 }
 void Enemy::OnShow() {
 	if (_IfBattle) {
-		if (_TankState == Spawn) {
-			if (!_Setinit) {
+		switch (_TankState)
+		{
+		case Spawn:
+			if (!_IfSetinit) {
 				SetEnemyInit();
 			}
-			else if (_Setinit) {
+			else if (_IfSetinit) {
 				CTank::LoadBitmap();
 				ShowSpawnAnimation();
 			}
-		}
-		else if(_TankState == Alive) {
-			//_Tank.SetFrameIndexOfBitmap(_Frameindex);
+			break;
+		case Alive:
 			_Tank.SetTopLeft(_X, _Y);
 			_Tank.ShowBitmap();
 			_Bullet.OnShow();
-		}
-		else if (_TankState == Death) {
+			break;
+		case Death:
 			_TankBrokenAnimation.SetTopLeft(_X, _Y);
-			Enemy::TankbeHit();
+			Enemy::TankExpolsion();
+			break;
 		}
 	}
 }

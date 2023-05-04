@@ -35,21 +35,21 @@ void Event::TrigSelectingStage(Menu& GrayScreen) {
 		GrayScreen.SetIfAnimation(false);
 	}
 }
-void Event::TrigUpDateMap(Map& StageMap, int& EnemyNum) {
-	if (StageMap.GetEnemySignNum() > EnemyNum) {
-		StageMap.SetEnemySignPop();
-	}
+void Event::TrigUpdateMap(Map& StageMap) {
+	StageMap.SetEnemySignPop();
 }
-void Event::TrigSetBattleMap(vector<vector<int>>& Stage,Map& StageMap,int& EnemyNum, Menu& BattleMenu, CPlayer& Player, vector<GameProps>& Props) {
+void Event::TrigSetBattleMap(vector<vector<int>>& Stage,Map& StageMap, Menu& BattleMenu, CPlayer& Player, vector<GameProps>& Props, vector<Enemy>& AllEnemy) {
 	if (Props.size() != 0) {
 		Props[0].ReStartAllProp();
 	}
 	StageMap.OnInit(Stage);
 	StageMap.SetIfShowMap(true);
 	BattleMenu.SetMenuType(BattleMenu.BattleMenu);
-	EnemyNum = 20;
 	Player.PlayerInit();
 	Player.SetIfBattle(true);
+	for (auto& enemy : AllEnemy) {
+		enemy.SetIfBattle(true);
+	}
 }
 void Event::TrigSettlement(Menu& SettlementMenu, vector<int>& StageEnemy, int& NowScore,int& TheHighestScore,int& NowStage) {
 	vector<int> EnemyScore = { 100,200,300,400 };
@@ -64,7 +64,14 @@ void Event::TrigReSetProps(vector<GameProps>& Props) {
 		}
 	}
 }
-void Event::TrigNextStage(Map& StageMap, Menu& BattleMenu, int& EnemyNum, int& NowStage) {
+void Event::TrigNextStage(Map& StageMap, Menu& BattleMenu, int& EnemyNum, int& NowStage, vector<Enemy>& EnemyList) {
+
+	for (auto& enemy : EnemyList) {
+		enemy.SetIfBattle(false);
+	}
+	StageMap.SetIfShowMap(false);
+	EnemyNum = 20;
+	//GotoGameState(GAME_STATE_RUN);
 
 }
 void Event::TrigSetProps(vector<GameProps>& Props,int NowPropIndex) {
@@ -86,6 +93,9 @@ void Event::TrigGetProps(GameProps& Props,Map& StageMap,CPlayer& Player,vector<E
 	case GameProps::ItemType::Handgrenade:
 		for (int i = 0; i < 4; i++) {
 			AllEnemy[i].SetLife(0);
+			if (StageMap.GetEnemySignNum() > 0) {
+				TrigUpdateMap(StageMap);
+			}
 		}
 		Props.SetIfExist(false);
 		break;

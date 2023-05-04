@@ -13,7 +13,7 @@ namespace game_framework {
 		void InvicibleAnimation();
 		void OnShow() override;
 		void FireBullet(int BulletOrder) override;
-		void TankbeHit() override;
+		void TankExpolsion() override;
 		void Animation() override;
 		void LevelUP();
 

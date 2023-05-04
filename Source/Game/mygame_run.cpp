@@ -34,35 +34,38 @@ void CGameStateRun::OnBeginState()
 
 void CGameStateRun::OnMove()                            // 移動遊戲元素
 {
-	if (_NowStage == -1 && !_IfBattling) { // NowStage == -1  代表正在選, == 1 ~ 35代表已經選完了
-		event.TrigSelectingStage(_Menu);
-		return;
+	switch(state) {
+		case Menu:
+			event.TrigSelectingStage(_Menu);
+			break;
+		case prebattle:
+			event.TrigSetBattleMap(_AllStage[_NowStage-1],Stage1, _EnemyNum,_Menu,_PlayerTank,_Prop);
+			EnemyTypeList.assign(_AllStageEnemy[_NowStage - 1].begin(), _AllStageEnemy[_NowStage - 1].end());
+			break;
+		case battle:
+			TrigAllProp();
+			if (_PlayerTank.GetTankState() == _PlayerTank.Alive){
+				PlayerTankMove(&_PlayerTank);
+			}
+			AllEnemyMove();
+			AllBulletCollision();
+			AllBulletFly();
+			_TimerFinish = clock();
+			EnemyReSpawn();
+			break;
 	}
-	if (_NowStage >= 1 && !_IfBattling && !_IfSettling) {
-		event.TrigSetBattleMap(_AllStage[_NowStage-1],Stage1,_Menu,_PlayerTank,_Prop,EnemyList);
-		EnemyTypeList.assign(_AllStageEnemy[_NowStage - 1].begin(), _AllStageEnemy[_NowStage - 1].end());
-		_IfBattling = true;
-		_NowPropSize = 0;	
-		return;
-	}	
-	if (!_IfBattling) {
-		return;
-	}
-	TrigAllProp();
-	if (_PlayerTank.GetTankState() == _PlayerTank.Alive){
-		PlayerTankMove(&_PlayerTank);
-	}
-	AllEnemyMove();
-	AllEnemyReSpawn();
-	AllBulletCollision();
-	AllBulletFly();
-	_TimerFinish = clock();
-	if (_EnemyNum == 0 && IfNoEnemy()) {
-		_IfBattling = false;
-		_IfSettling = true;
-		_NowPropSize = 0;
-		event.TrigNextStage(Stage1, _Menu, _EnemyNum, _NowStage, EnemyList);
-		event.TrigSettlement(_Menu, _AllStageEnemy[_NowStage - 1], _NowTotalScore, _TheHighestScore, _NowStage);
+<<<<<<< Updated upstream
+	// state machine transformation
+	switch(state) {
+		case Menu:
+			if ( _NowStage != -1 ) state = prebattle;
+			break;
+		case prebattle:
+			state = battle;
+			break;
+		case battle:
+			if( _IfSettling == true ) state = prebattle;
+			break;
 	}
 }
 void CGameStateRun::OnInit()                                  // 遊戲的初值及圖形設定

@@ -22,6 +22,8 @@ namespace game_framework {
 		void SetIfShowMap(bool Status);
 		void SetEnemySignPop();
 
+		int GetGridIndexX(int NowX);
+		int GetGridIndexY(int NowY);
 		int GetEnemySignNum();
 		bool GetMapItemInfo(int _x, int _y, InfoType GridAttribute); // 獲取地圖某一格格子的資訊 0:walk ,1:shoot ,2:break
 		int GetType(int _x, int _y);

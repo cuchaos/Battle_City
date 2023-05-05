@@ -292,6 +292,7 @@ void CGameStateRun::AllEnemyMove() {
 		if (!EnemyList[i].GetIfBattle() && !(EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0)) {
 			if (!EnemyList[i].GetIfBattle() && clock() - _TimerSpawn >= 2000) {
 				RandomSpawnTank(i);
+				event.TrigUpDateMap(Stage1);    //Respawn 後右邊顯示圖片減一
 				EnemyList[i].SetIfBattle(true);
 				_TimerSpawn = clock();
 			}
@@ -306,7 +307,8 @@ void CGameStateRun::AllEnemyMove() {
 			}
 			else if (EnemyList[i].GetTankState() == EnemyList[i].Spawn && !EnemyList[i].GetEnemySetInit()) {
 				RandomSpawnTank(i);
-				_EnemyQuantity += 1;
+				++_EnemyQuantity;
+				event.TrigUpDateMap(Stage1);	//Respawn 後右邊顯示圖片減一
 				if (_EnemyQuantity % 4 == 1) {
 					event.TrigReSetProps(_Prop);
 					EnemyList[i].SetEnemyHaveItem(true);
@@ -539,7 +541,7 @@ bool CGameStateRun::TankCollision(CTank *tank, CTank *who) {
 		0
 	01  01   1
 	01   1  01
-			0    ->三種可能(X)->六種可能 因為移動會讓坦克的定位往前一點點但圖片看不出來所以會變成穿模 所以避免穿模就必須判斷六次
+			0    ->三種可能(X)->六種可能 因為移動會讓坦克的定位往前一點點但圖片看不出來所以會變成穿模 所以避免穿模就必須判斷前後
 	*/
 	return false;
 }

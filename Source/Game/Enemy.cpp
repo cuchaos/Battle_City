@@ -192,49 +192,49 @@ void Enemy::EnemyRandomDirection(){
 		DownDistance = 26 - (_Y / Height);
 		LeftDistance = ((_X - 100) / Width);
 		RightDistance = 26 - ((_X - 100) / Width);
-	}
-	if (_RandomFuncChoose % 2 == 0){
-		switch (_RandomDirection) {
-		case Right:
-			TurnFace(VK_RIGHT);
-			break;
-		case Up:
-			TurnFace(VK_UP);
-			break;
-		case Down:
-			TurnFace(VK_DOWN);
-			break;
-		case Left:
-			TurnFace(VK_LEFT);
-			break;
-		}
-	}
-	else if (_RandomFuncChoose % 2 == 1){
-		if (SuccessMove(Down) && !_KeepUP){
-			TurnFace(VK_DOWN);
-		}
-		else if (!SuccessMove(Down) || _KeepUP){
-			if (!_KeepUP){
-				switch (_RandomLR){
-					case 0:
-						_RandomLR = rand() % 2 + 1;
-						break;
-					case 1:
-						TurnFace(VK_LEFT);
-						break;
-					case 2:
-						TurnFace(VK_DOWN);
-						break;
-				}
-			}
-			else {
+		if (_RandomFuncChoose % 2 == 0){
+			switch (_RandomDirection) {
+			case Right:
+				TurnFace(VK_RIGHT);
+				break;
+			case Up:
 				TurnFace(VK_UP);
+				break;
+			case Down:
+				TurnFace(VK_DOWN);
+				break;
+			case Left:
+				TurnFace(VK_LEFT);
+				break;
 			}
-			if (!SuccessMove(Left) && !SuccessMove(Right)){
-				_KeepUP = true;
+		}
+		else if (_RandomFuncChoose % 2 == 1){
+			if (SuccessMove(Down) && !_KeepUP){
+				TurnFace(VK_DOWN);
 			}
-			else {
-				_KeepUP = false;
+			else if (!SuccessMove(Down) || _KeepUP){
+				if (!_KeepUP){
+					switch (_RandomLR){
+						case 0:
+							_RandomLR = rand() % 2 + 1;
+							break;
+						case 1:
+							TurnFace(VK_LEFT);
+							break;
+						case 2:
+							TurnFace(VK_DOWN);
+							break;
+					}
+				}
+				else {
+					TurnFace(VK_UP);
+				}
+				if (!SuccessMove(Left) && !SuccessMove(Right)){
+					_KeepUP = true;
+				}
+				else {
+					_KeepUP = false;
+				}
 			}
 		}
 	}
@@ -325,6 +325,7 @@ void Enemy::OnShow() {
 		}
 	}
 }
+
 void Enemy::OnShowScore(CDC *pDC, CFont* &fp) {
 	pDC->SetBkMode(TRANSPARENT);
 	pDC->SetTextColor(RGB(255, 255, 255));

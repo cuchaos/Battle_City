@@ -20,7 +20,7 @@ CTank::CTank() :Width(32), Height(32) {
 	_MovementSpeed = 4;						// 移動速度
 	_IfFire = false;
 	_IfBattle = false;
-	_IfSpawning = false;
+	_IfRespawnAnimationDone = false;
 	_FrontXY = { {0,0},{0,0} };						// 移動方向前方兩格子的XY
 	_BulletFlySpeed = 15;
 	_TankState = Spawn;
@@ -121,6 +121,20 @@ void CTank::SetIfBattle(bool Status) {
 	_IfBattle = Status;
 }
 
+void CTank::SetTankState(TankState State) {
+	switch (State)
+	{
+	case Spawn:
+		_TankState = Spawn;
+		break;
+	case Alive:
+		_TankState = Alive;
+		break;
+	case Death:
+		_TankState = Death;
+		break;
+	}
+}
 //Bullet
 void CTank::SetBulletOwner(int who) {
 	_Bullet.SetOwner(who);
@@ -188,14 +202,17 @@ void CTank::TankFront() {		// 對坦克前方的兩格格子做XY定位
 //show
 
 void CTank::ShowSpawnAnimation() {
-	int t;
-	if ( (t = _FrameTime % 12) % 3 == 0) {
-		_SpawnAnimation.SetFrameIndexOfBitmap(t/3);
+	if (!_IfRespawnAnimationDone) {
+		int t;
+		if ((t = _FrameTime % 12) % 3 == 0) {
+			_SpawnAnimation.SetFrameIndexOfBitmap(t / 3);
+		}
+		++_FrameTime;
+		if (_FrameTime == 60) { // Already done all animation
+			_FrameTime = 0;
+			_IfRespawnAnimationDone = true;
+		}
+		_SpawnAnimation.SetTopLeft(_X, _Y);
+		_SpawnAnimation.ShowBitmap();
 	}
-	++_FrameTime;
-	if (_FrameTime == 60) { // Already done all animation
-		_TankState = Alive;
-	}
-	_SpawnAnimation.SetTopLeft(_X, _Y);
-	_SpawnAnimation.ShowBitmap();
 }

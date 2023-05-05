@@ -23,6 +23,7 @@ Enemy::Enemy() : CTank() {
 	_EnemyHaveItem = false;
 }
 void Enemy::LoadBitmap() {
+	CTank::LoadBitmap();
 	_Tank.LoadBitmapByString({ //LightTank
 								"resources/Enemy_LightTank_Right1.bmp" ,"resources/Enemy_LightTank_Right2.bmp",
 								"resources/Enemy_LightTank_Left1.bmp"  ,"resources/Enemy_LightTank_Left2.bmp",
@@ -101,9 +102,10 @@ void Enemy::SetEnemyInit() {
 	_NowGrid = { (_X - 100) / Width, _Y / Height };
 	_OffsetXY = { 0,0 };
 	_Life = 1;
-	_IfSetinit = true;
+	_IfRespawnAnimationDone = false;
 	_IfGetShip = false;
 	_IfGetTimeStop = false;
+	_IfFire = false;
 	SetFaceDirection();
 	switch (_EnemyType)
 	{
@@ -111,14 +113,14 @@ void Enemy::SetEnemyInit() {
 		_EnemyScore = 100;
 		break;
 	case QuickTank:
-		_EnemyScore = 300;						// 坦克分數
+		_EnemyScore = 300;					
 		break;
 	case ArmorTank:
-		_MovementSpeed = 4;						// 移動速度
+		_MovementSpeed = 4;					
 		_EnemyScore = 200;
 		break;
 	case HeavyTank:
-		_Life = 4;								// 生命
+		_Life = 4;							
 		_EnemyScore = 400;
 		break;
 	}
@@ -200,23 +202,16 @@ void Enemy::EnemyRandomDirection(){
 		_TimeStart = clock();			// 重新開始計時
 	}
 }
-void Enemy::SetEnemyReSpawn() {
-	if (clock() - _SpawnClock >= 2500 && _IfSetinit == false) {
-		_IfSetinit = true;
-		_IfSpawning = true;
-		_TankState = Spawn;
-		_FireClock = clock();
-		_FrameTime = 0;
-	}
-	_Tank.SetTopLeft(0, 0);
-}
 void Enemy::TankExpolsion() {
-	_TankBrokenAnimation.SetFrameIndexOfBitmap((_FrameTime % 26) / 5 % 5);
-	if (_FrameTime % 26 == 25){
-		_SpawnClock = clock();
+	if (_Ifblasting) {
+		_TankBrokenAnimation.SetFrameIndexOfBitmap((_FrameTime % 26) / 5 % 5);
+		if (_FrameTime % 26 == 25) {
+			_SpawnClock = clock();
+			_Ifblasting = false;
+		}
+		++_FrameTime;
+		_TankBrokenAnimation.ShowBitmap();
 	}
-	++_FrameTime;
-	_TankBrokenAnimation.ShowBitmap();
 }
 void Enemy::FireBullet(int BulletOrder) {
 	if (_OriginAngle == Right || _OriginAngle == Left) {
@@ -227,18 +222,19 @@ void Enemy::FireBullet(int BulletOrder) {
 	}
 	_IfFire = _Bullet.GetAlreadyFire();
 }
+void Enemy::SetEnemyReSpawn() {
+	if (_IfRespawnAnimationDone) {
+		SetEnemyInit();
+		_TankState = Alive;
+		_Tank.SetTopLeft(0, 0);
+	}
+}
 void Enemy::OnShow() {
 	if (_IfBattle) {
 		switch (_TankState)
 		{
 		case Spawn:
-			if (!_IfSetinit) {
-				SetEnemyInit();
-			}
-			else if (_IfSetinit) {
-				CTank::LoadBitmap();
-				ShowSpawnAnimation();
-			}
+			ShowSpawnAnimation();
 			break;
 		case Alive:
 			_Tank.SetTopLeft(_X, _Y);

@@ -39,7 +39,7 @@ namespace game_framework {
 		void SetIfBattle(bool Battle);
 		void SetXY(int x, int y);			//座標設定
 		void SetLife(int num);
-
+		void SetTankState(TankState State);
 		// location
 		void TankFront();					//坦克前方的格子做定位
 		void LocationPoint();				//位置校正
@@ -71,13 +71,14 @@ namespace game_framework {
 		CMovingBitmap _TankBrokenAnimation;
 		
 		bool _IfBattle; //the var that decide onshow
-		bool _IfSpawning;
 		int _Level, _Life;							//坦克等級&生命
 		int _MovementSpeed;							//移動速度
 		bool _IfSetinit;
 		int _TankState;
 
 		bool _IfGetShip;
+		bool _IfRespawning;
+		bool _IfRespawnAnimationDone;
 		bool _Ifblasting;
 
 

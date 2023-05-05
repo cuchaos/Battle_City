@@ -16,7 +16,7 @@ namespace game_framework {
 		void LoadBitmap();
 		void OnShow() override;
 		void TankExpolsion() override;
-		void EnemyRandomDirection();			// 隨機設定前進方向
+		void EnemyRandomDirection();			
 		void Animation() override;
 		
 		int GetEnemyScore();

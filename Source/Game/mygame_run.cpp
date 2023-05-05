@@ -35,14 +35,17 @@ void CGameStateRun::OnBeginState()
 void CGameStateRun::OnMove()                            // 移動遊戲元素
 {
 	switch(state) {
-		case Menu:
+		case SelectStage:
 			event.TrigSelectingStage(_Menu);
 			break;
-		case prebattle:
-			event.TrigSetBattleMap(_AllStage[_NowStage-1],Stage1, _EnemyNum,_Menu,_PlayerTank,_Prop);
+		case PreBattle:
+			event.TrigSetBattleMap(_AllStage[_NowStage-1],Stage1,_Menu,_PlayerTank,_Prop,EnemyList);
 			EnemyTypeList.assign(_AllStageEnemy[_NowStage - 1].begin(), _AllStageEnemy[_NowStage - 1].end());
+			_IfBattling = true;
+			_NowPropSize = 0;
+			_EnemyNum = 20;
 			break;
-		case battle:
+		case Battle:
 			TrigAllProp();
 			if (_PlayerTank.GetTankState() == _PlayerTank.Alive){
 				PlayerTankMove(&_PlayerTank);
@@ -51,25 +54,25 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 			AllBulletCollision();
 			AllBulletFly();
 			_TimerFinish = clock();
-			EnemyReSpawn();
+			AllEnemyReSpawn();
 			break;
 	}
-<<<<<<< Updated upstream
 	// state machine transformation
 	switch(state) {
-		case Menu:
-			if ( _NowStage != -1 ) state = prebattle;
+		case SelectStage:
+			if ( _NowStage != -1 && !_IfBattling && !_IfSettling) state = PreBattle;
 			break;
-		case prebattle:
-			state = battle;
+		case PreBattle:
+			state = Battle;
 			break;
-		case battle:
-			if( _IfSettling == true ) state = prebattle;
+		case Battle:
+			if( _IfSettling == true ) state = PreBattle;
 			break;
 	}
 }
 void CGameStateRun::OnInit()                                  // 遊戲的初值及圖形設定
 {
+	state = SelectStage;
 	srand((unsigned)time(NULL));
 	_NowStage = -1;
 	_IfBattling = false;
@@ -95,7 +98,7 @@ void CGameStateRun::OnInit()                                  // 遊戲的初值
 
 	for (int i=0; i<4; ++i) {
 		EnemyList[i].LoadBitmap();
-		EnemyFireLastTime[i] = clock();
+		EnemyReSpawnLastTime[i] = clock();
 	}
 	_EnemyQuantity = 4;
 	for (int i = 0; i < 6; i++) {
@@ -221,7 +224,7 @@ void CGameStateRun::OnShowText() {
 	/*CTextDraw::Print(pDC, 0, 50, (to_string(_MouseX) + " " + to_string(_MouseY)));*/
 	CTextDraw::ChangeFontLog(pDC, 15, "STZhongsong", RGB(255, 255, 255));
 	//CTextDraw::Print(pDC, 0, 150, (to_string(Stage1.GetEnemySignNum())));
-	//CTextDraw::Print(pDC, 0, 125, (to_string(_EnemyNum)));
+	CTextDraw::Print(pDC, 0, 200, (to_string(_EnemyNum)));
 
 	for (int i = 0; i < 4; i++) {
 		CTextDraw::Print(pDC, 0 + i * 25, 125, (to_string(EnemyTypeList[i])));
@@ -234,22 +237,14 @@ void CGameStateRun::OnShowText() {
 			EnemyList[i].OnShowScore(pDC, fp);
 		}
 	}
+	/*
 	if (_IfEatItem[0] && clock() - _IfEatItem[3] <= 300) {
 		CTextDraw::ChangeFontLog(pDC, 48, "STZhongsong", RGB(255, 255, 255));
 		CTextDraw::Print(pDC, _IfEatItem[1], _IfEatItem[2], to_string(500));
 	}
+	*/
 	CDDraw::ReleaseBackCDC();
 }
-void CGameStateRun::AllEnemyReSpawn() {
-	for (int i = 0; i < 4; i++) {
-		auto& enemy = EnemyList[i];
-		if (_EnemyNum > 0 && enemy.GetTankState() == enemy.Death) {
-			RandomSpawnTank(i);
-			_EnemyNum -= 1;
-		}
-	}
-}
-
 bool CGameStateRun::IfNoEnemy() {
 	for (int i = 0; i < 4; i++) {
 		auto& enemy = EnemyList[i];
@@ -320,10 +315,12 @@ void CGameStateRun::PlayerTankMove(CPlayer *tank) {
 }
 void CGameStateRun::EnemyTankMove(int Order) {
 	EnemyList[Order].EnemyRandomDirection();
+	/*
 	if (EnemyList[Order].GetIfFire(1) == false && clock() - EnemyFireLastTime[Order] >= 1000) {
 		EnemyList[Order].FireBullet(1);
 		EnemyFireLastTime[Order] = clock();
 	}
+	*/
 	EnemyTankCollisionMap(&EnemyList[Order]);
 }
 bool CGameStateRun::BulletHitTank(CBullet CurrentBullet, CTank *BulletOwner, CTank *DetectTarget,BulletOrder Order) {
@@ -529,19 +526,23 @@ bool CGameStateRun::TankCollision(CTank *tank, CTank *who) {
 	*/
 	return false;
 }
-// tempIndex先亂數決定要生成的TankType 
-//如果TankType已生成完畢就繼續亂數生成直到尚未生成完畢的Tank
-//生成完畢就break跳出while
-//尚未生成完畢重設定SetEnemyType
-void CGameStateRun::RandomSpawnTank(int num) {
-	if (EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0) {
-		return;
+void CGameStateRun::AllEnemyReSpawn() {
+	for (int i = 0; i < 4; i++) {
+		auto& enemy = EnemyList[i];
+		if (_EnemyNum > 0 && enemy.GetTankState() == enemy.Death
+			&& clock() - EnemyReSpawnLastTime[i] >= 2500) {
+			enemy.SetTankState(CTank::Spawn);
+			_EnemyNum -= 1;
+		}
 	}
+}
+void CGameStateRun::RandomSpawnTank(int num) {
 	tempIndex = rand() % 4;							
 	while (EnemyTypeList[tempIndex] == 0) {
 		tempIndex = rand() % 4;
 	}
 	EnemyTypeList[tempIndex] -= 1;
+	EnemyReSpawnLastTime[num] = clock();
 	EnemyList[num].SetEnemyType(tempIndex);
 	EnemyList[num].SetEnemyReSpawn();
 }

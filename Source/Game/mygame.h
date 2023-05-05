@@ -112,11 +112,17 @@ namespace game_framework {
 			FirstBullet = 1,
 			SecondBullet = 2
 		};
+		enum InGameState {
+			SelectStage,
+			PreBattle,
+			Battle
+		};
 		void OnShowText();
 		int _MouseX;
 		int _MouseY;
 		void OnMove();									// 移動遊戲元素
 		void OnShow();									// 顯示這個狀態的遊戲畫面
+		InGameState state;
 		void PlayerTankMove(CPlayer *tank);
 		void EnemyTankMove(int Order);
 		void PlayerTankCollisionMap(CPlayer *tank);
@@ -167,7 +173,7 @@ namespace game_framework {
 		//vector<vector<int>> _Tanktempcollision = { {0,0},{0,0} };
 		//vector<vector<int>> _tempcollision;
 		std::vector<Enemy> EnemyList = std::vector<Enemy>(4);
-		std::vector<clock_t> EnemyFireLastTime = std::vector<clock_t>(4);
+		std::vector<clock_t> EnemyReSpawnLastTime = std::vector<clock_t>(4);
 		vector<int> EnemyTypeList = {0,0,0,0};
 	};
 

@@ -16,6 +16,7 @@ namespace game_framework {
 		void LoadBitmap();
 		int GetEnemyScore();
 		bool GetIfBattle();
+		bool SuccessMove(int direction);
 
 		void SetEnemyHaveItem(bool has);		// 設定有道具
 		void SetEnemyType(int _num);			// 設定敵人類型
@@ -49,6 +50,9 @@ namespace game_framework {
 
 		int _RandomDirection,_RandomMoveTime;	// 隨機轉向方向,隨機移動時間
 		bool _IfGetTimeStop;
+		int DownDistance;
+		int LeftDistance;
+		int RightDistance;
 	};
 
 }

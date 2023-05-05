@@ -179,11 +179,22 @@ void Enemy::SetIfFire(int FireOrder, bool Status) {
 	_IfFire = Status;
 }
 void Enemy::EnemyRandomDirection(){
-	_RandomDirection = rand() % 4;		// 隨機移動四個方向
-	_RandomMoveTime = rand() % 5 + 1;	// 移動時間 1~6sec
-	_TimeFinish = clock();
-	if ((_TimeFinish - _TimeStart) / CLOCKS_PER_SEC > _RandomMoveTime) {	// > :因為要播放重生動畫
-		switch (_RandomDirection){
+	//_TimeFinish = clock();
+	//int _RandomFuncChoose = rand() % 2;
+	int _RandomFuncChoose = 1;
+	bool _KeepUP= false;
+	int _RandomLR = 0;
+	
+	if ((clock() - _TimeStart) / CLOCKS_PER_SEC > _RandomMoveTime) {	// > :因為要播放重生動畫
+		_RandomDirection = rand() % 4;		// 隨機移動四個方向
+		_RandomMoveTime = rand() % 5 + 1;	// 移動時間 1~6sec
+		_TimeStart = clock();			// 重新開始計時
+		DownDistance = 26 - (_Y / Height);
+		LeftDistance = ((_X - 100) / Width);
+		RightDistance = 26 - ((_X - 100) / Width);
+	}
+	if (_RandomFuncChoose % 2 == 0){
+		switch (_RandomDirection) {
 		case Right:
 			TurnFace(VK_RIGHT);
 			break;
@@ -197,8 +208,68 @@ void Enemy::EnemyRandomDirection(){
 			TurnFace(VK_LEFT);
 			break;
 		}
-		_TimeStart = clock();			// 重新開始計時
 	}
+	else if (_RandomFuncChoose % 2 == 1){
+		if (SuccessMove(Down) && !_KeepUP){
+			TurnFace(VK_DOWN);
+		}
+		else if (!SuccessMove(Down) || _KeepUP){
+			if (!_KeepUP){
+				switch (_RandomLR){
+					case 0:
+						_RandomLR = rand() % 2 + 1;
+						break;
+					case 1:
+						TurnFace(VK_LEFT);
+						break;
+					case 2:
+						TurnFace(VK_DOWN);
+						break;
+				}
+			}
+			else {
+				TurnFace(VK_UP);
+			}
+			if (!SuccessMove(Left) && !SuccessMove(Right)){
+				_KeepUP = true;
+			}
+			else {
+				_KeepUP = false;
+			}
+		}
+	}
+}
+bool Enemy::SuccessMove(int direction) {
+	switch (direction){
+		case Down:
+			if (DownDistance > 26 - (_Y / Height)){
+				DownDistance = 26 - (_Y / Height);
+				return true;
+			}
+			else{
+				return false;
+			}
+			break;
+		case Left:
+			if (LeftDistance > ((_X - 100)/Width)) {
+				LeftDistance = ((_X - 100) / Width);
+				return true;
+			}
+			else {
+				return false;
+			}
+			break;
+		case Right:
+			if (RightDistance > 26 - ((_X - 100) / Width)) {
+				RightDistance = 26 - ((_X - 100) / Width);
+				return true;
+			}
+			else {
+				return false;
+			}
+			break;
+	}
+	return false;
 }
 void Enemy::TankbeHit() {
 	if (_FrameTime == 26){

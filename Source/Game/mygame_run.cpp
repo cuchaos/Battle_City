@@ -219,7 +219,7 @@ void CGameStateRun::OnShowText() {
 	_Menu.OnShowText(pDC, fp);
 	
 	for (int i = 0; i < 4; i++){
-		if (EnemyList[i].GetTankState() == Death) {
+		if (EnemyList[i].GetTankState() == CTank::Death) {
 			EnemyList[i].OnShowScore(pDC, fp);
 		}
 	}

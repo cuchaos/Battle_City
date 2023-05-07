@@ -45,7 +45,7 @@ void Event::TrigSetBattleMap(vector<vector<int>>& Stage,Map& StageMap, Menu& Bat
 	StageMap.OnInit(Stage);
 	StageMap.SetIfShowMap(true);
 	BattleMenu.SetMenuType(BattleMenu.BattleMenu);
-	Player.PlayerInit();
+	Player.SetIfBattle(true);
 	Player.SetIfBattle(true);
 	for (auto& enemy : AllEnemy) {
 		enemy.SetIfBattle(true);

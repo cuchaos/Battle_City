@@ -17,7 +17,6 @@ Enemy::Enemy() : CTank() {
 	_EnemyType = 0;
 	_TimeStart = clock();
 	_TimeFinish = clock();
-	_IfSetinit = false;
 	_IfGetTimeStop = false;
 	_IfGetShip = false;
 	_EnemyHaveItem = false;
@@ -66,6 +65,13 @@ void Enemy::LoadBitmap() {
 								"resources/Enemy_HeavyTank_Red_Bottom1.bmp","resources/Enemy_HeavyTank_Red_Bottom2.bmp" }, RGB(0, 0, 0));
 	_Bullet.LoadBitmap();
 }
+void Enemy::OnMove() {
+	EnemyRandomDirection();
+	if (_IfFire == false && clock() - _FireClock >= 1000) {
+		FireBullet(1);
+		_FireClock = clock();
+	}
+}
 int Enemy::GetEnemyScore() {
 	return _EnemyScore;
 }
@@ -95,36 +101,36 @@ void Enemy::SetEnemyHaveItem(bool has) {
 	_EnemyHaveItem = has;
 }
 void Enemy::SetEnemyInit() {
-	_X = Width * (rand()%4*8) + 100;
-	_Y = Height * 0;
+	_SpawnClock = clock();
+	_TankState = Alive;
 	_OriginAngle = Down;
 	_TurnAngle = Down;
 	_NowGrid = { (_X - 100) / Width, _Y / Height };
 	_OffsetXY = { 0,0 };
 	_Life = 1;
-	_IfRespawnAnimationDone = false;
 	_IfGetShip = false;
 	_IfGetTimeStop = false;
 	_IfFire = false;
+	_IfExploded = false;
 	SetFaceDirection();
+	_RespawnAnimationNum = 0;
 	switch (_EnemyType)
 	{
 	case LightTank:
 		_EnemyScore = 100;
 		break;
 	case QuickTank:
-		_EnemyScore = 300;					
+		_EnemyScore = 300;
 		break;
 	case ArmorTank:
-		_MovementSpeed = 4;					
+		_MovementSpeed = 4;
 		_EnemyScore = 200;
 		break;
 	case HeavyTank:
-		_Life = 4;							
+		_Life = 4;
 		_EnemyScore = 400;
 		break;
 	}
-	
 }
 void Enemy::SetEnemyType(int num) {
 	_EnemyType = num;
@@ -203,11 +209,11 @@ void Enemy::EnemyRandomDirection(){
 	}
 }
 void Enemy::TankExpolsion() {
-	if (_Ifblasting) {
+	if (!_IfExploded) {
 		_TankBrokenAnimation.SetFrameIndexOfBitmap((_FrameTime % 26) / 5 % 5);
 		if (_FrameTime % 26 == 25) {
 			_SpawnClock = clock();
-			_Ifblasting = false;
+			_IfExploded = true;
 		}
 		++_FrameTime;
 		_TankBrokenAnimation.ShowBitmap();
@@ -223,10 +229,13 @@ void Enemy::FireBullet(int BulletOrder) {
 	_IfFire = _Bullet.GetAlreadyFire();
 }
 void Enemy::SetEnemyReSpawn() {
-	if (_IfRespawnAnimationDone) {
-		SetEnemyInit();
-		_TankState = Alive;
+	if (_IfExploded) {
+		_TankState = Spawn;
+		_IfRespawnAnimationDone = false;
 		_Tank.SetTopLeft(0, 0);
+		_X = Width * (rand() % 4 * 8) + 100;
+		_Y = Height * 0;
+		_SpawnAnimation.SetTopLeft(_X, _Y);
 	}
 }
 void Enemy::OnShow() {
@@ -234,7 +243,10 @@ void Enemy::OnShow() {
 		switch (_TankState)
 		{
 		case Spawn:
-			ShowSpawnAnimation();
+			if (!_IfRespawnAnimationDone && _SpawnAnimation.IsAnimationDone()) {
+				ShowSpawnAnimation();
+			}
+			_SpawnAnimation.ShowBitmap();
 			break;
 		case Alive:
 			_Tank.SetTopLeft(_X, _Y);
@@ -242,8 +254,10 @@ void Enemy::OnShow() {
 			_Bullet.OnShow();
 			break;
 		case Death:
-			_TankBrokenAnimation.SetTopLeft(_X, _Y);
-			Enemy::TankExpolsion();
+			if (!_IfExploded) {
+				_TankBrokenAnimation.SetTopLeft(_X, _Y);
+				Enemy::TankExpolsion();
+			}
 			break;
 		}
 	}

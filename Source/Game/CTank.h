@@ -34,6 +34,8 @@ namespace game_framework {
 		bool GetIfGetShip();
 		int GetLevel();
 		int GetTankState();
+		bool GetIfRespawnanimationdone();
+		bool GetIfexploded();
 		CMovingBitmap GetTankBitmap();
 
 		void SetIfBattle(bool Battle);
@@ -77,9 +79,9 @@ namespace game_framework {
 		int _TankState;
 
 		bool _IfGetShip;
-		bool _IfRespawning;
 		bool _IfRespawnAnimationDone;
-		bool _Ifblasting;
+		int _RespawnAnimationNum;
+		bool _IfExploded;
 
 
 		bool _IfFire;

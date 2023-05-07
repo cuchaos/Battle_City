@@ -123,8 +123,6 @@ namespace game_framework {
 		void OnMove();									// 移動遊戲元素
 		void OnShow();									// 顯示這個狀態的遊戲畫面
 		InGameState state;
-		void PlayerTankMove(CPlayer *tank);
-		void EnemyTankMove(int Order);
 		void PlayerTankCollisionMap(CPlayer *tank);
 		void EnemyTankCollisionMap(Enemy *tank);
 		//bool PlayerTankCollision();
@@ -135,8 +133,8 @@ namespace game_framework {
 
 		bool IfNoEnemy();
 		void RandomSpawnTank(int num);
-		void AllEnemyMove();
-		void AllEnemyReSpawn();
+		void PlayerOnMove(CPlayer &tank);
+		void AllEnemyOnMove();
 
 		void AllBulletFly();
 		void AllBulletCollision();

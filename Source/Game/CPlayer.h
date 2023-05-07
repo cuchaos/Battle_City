@@ -8,7 +8,8 @@ namespace game_framework {
 	public:
 		CPlayer();
 		CBullet _SecondBullet;
-		void PlayerInit();
+		void SetPlayerInit();
+		void SetPlayerReSpawn();
 		void LoadBitmap();
 		void InvicibleAnimation();
 		void OnShow() override;

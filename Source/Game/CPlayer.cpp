@@ -187,9 +187,9 @@ void CPlayer::OnShow() {
 				_InvicibleClock = clock();
 				_IfInvicible = true;
 			}
+			_Tank.SetFrameIndexOfBitmap(_Frameindex);
 		}
 		else if (_TankState == Alive) {
-			//_Tank.SetFrameIndexOfBitmap(_Frameindex);
 			_Tank.SetTopLeft(_X, _Y);
 			_Tank.ShowBitmap();
 			if (_IfInvicible){

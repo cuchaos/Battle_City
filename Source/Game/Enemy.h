@@ -23,6 +23,9 @@ namespace game_framework {
 		int GetEnemyScore();
 		bool GetIfBattle();
 		bool GetIfFire(int FireOrder) override;
+		bool SuccessMove();
+		int GetEnemyDirectionInfo(int num);
+
 
 		void SetFaceDirection() override;
 		void SetEnemyHaveItem(bool has);		// 設定有道具
@@ -34,6 +37,9 @@ namespace game_framework {
 		int GetEnemyType();
 		bool GetEnemySetInit();
 		bool GetIfGetTimeStop();
+		void EnemyMove();
+		void EnemyRandomDirection();			// 隨機設定前進方向
+		void ENemyMoveDown();
 		// Prop
 		void SetGetTimeStop(int Status);
 		void SetIfGetTimeStop(bool IfGetTimeStop);
@@ -47,13 +53,18 @@ namespace game_framework {
 		CMovingBitmap GetEnemyBitmap();
 		void OnShowScore(CDC *pDC, CFont* &fp);
 	private:
-		clock_t _TimeFinish, _TimeStart, _SpawnClock,_FireClock;		// 計時器 (結束-開始 = 經過時間)
+		clock_t _TimeFinish, _TimeStart, _StopClock, _UpClock, _ChooseClock, _SpawnClock,_SuccessClock;		// 計時器 (結束-開始 = 經過時間)
 		int _EnemyType;
 		int _EnemyScore;
 		bool _EnemyHaveItem;					// 道具
-
-		int _RandomDirection,_RandomMoveTime;	// 隨機轉向方向,隨機移動時間
+		
+		int _Times;
+		bool _Success;
+		int _RandomDirection,_RandomMoveTime, _RandomLR;	// 隨機轉向方向,隨機移動時間
 		bool _IfGetTimeStop;
+		int _MoveDownDistance,_MoveLRDistance;
+		int _RandomFuncChoose;
+		bool _KeepUP;
 	};
 
 }

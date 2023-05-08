@@ -225,11 +225,11 @@ void CGameStateRun::OnShowText() {
 	pDC->SetBkMode(TRANSPARENT);
 	pDC->SetTextColor(RGB(0, 180, 0));
 	_TimerFinish = clock();
-	/*CTextDraw::Print(pDC, 0, 0, (to_string(_TimerSpawn / CLOCKS_PER_SEC) + " " + to_string(_TimerFinish)));*/
-	CTextDraw::Print(pDC, 0, 25, (to_string(_EnemyQuantity)));
+	CTextDraw::Print(pDC, 0, 0, (to_string(_TimerSpawn / CLOCKS_PER_SEC) + " " + to_string(_TimerFinish)));
+	/*CTextDraw::Print(pDC, 0, 25, (to_string(_EnemyQuantity)));
 	CTextDraw::Print(pDC, 0, 50, (to_string(_MouseX) + " " + to_string(_MouseY)));
 	CTextDraw::Print(pDC, 0, 150, (to_string(Stage1.GetEnemySignNum())));
-	CTextDraw::Print(pDC, 0, 125, (to_string(EnemyTankCollision(&_PlayerTank))));
+	CTextDraw::Print(pDC, 0, 125, (to_string(EnemyTankCollision(&_PlayerTank))));*/
 	_Menu.OnShowText(pDC, fp);
 	
 	/*CTextDraw::Print(pDC, 0, 50, (to_string(_MouseX) + " " + to_string(_MouseY)));*/
@@ -245,8 +245,17 @@ void CGameStateRun::OnShowText() {
 	*/
 	CTextDraw::Print(pDC, 0 , 375, (to_string(state)));
 	CTextDraw::Print(pDC, 0, 475, (to_string(_NowStage)));
-	_Menu.OnShowText(pDC, fp);
 	
+	/*CTextDraw::Print(pDC, 0, 150, (to_string(Stage1.GetEnemySignNum())));
+	CTextDraw::Print(pDC, 0, 125, (to_string(_EnemyNum)));*/
+	/*_tempcollision = Stage1.GetFrontGridsIndex(_PlayerTank.GetTankFront());
+	CTextDraw::Print(pDC, 0, 75, (to_string(_tempcollision[0][0])+ "," + to_string(_tempcollision[0][1]) +" "+ to_string(NowXGrid(EnemyList[0].GetX1())) +"," +to_string(NowYGrid(EnemyList[0].GetY1()) + 1)));
+	CTextDraw::Print(pDC, 0, 100, (to_string(_tempcollision[1][0]) + "," + to_string(_tempcollision[1][1]) + " " + to_string(NowXGrid(EnemyList[0].GetX1()) + 1) + "," + to_string(NowYGrid(EnemyList[0].GetY1()) + 1)));
+	CTextDraw::Print(pDC, 0, 125, (to_string(EnemyTankCollision(&_PlayerTank))));*/
+	_Menu.OnShowText(pDC, fp);
+	for (int i = 0; i < 6; i++){
+		CTextDraw::Print(pDC, 0, i*50+50, (to_string(EnemyList[0].GetEnemyDirectionInfo(i))));
+	}
 	for (int i = 0; i < 4; i++){
 		if (EnemyList[i].GetTankState() == EnemyList[i].Death) {
 			EnemyList[i].OnShowScore(pDC, fp);
@@ -545,7 +554,7 @@ bool CGameStateRun::TankCollision(CTank *tank, CTank *who) {
 		0
 	01  01   1
 	01   1  01
-			0    ->三種可能(X)->六種可能 因為移動會讓坦克的定位往前一點點但圖片看不出來所以會變成穿模 所以避免穿模就必須判斷六次
+			0    ->三種可能(X)->六種可能 因為移動會讓坦克的定位往前一點點但圖片看不出來所以會變成穿模 所以避免穿模就必須判斷前後
 	*/
 	return false;
 }

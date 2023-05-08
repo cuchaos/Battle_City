@@ -18,9 +18,16 @@ Enemy::Enemy() : CTank() {
 	_IfGetShip = false;
 	_TimeStart = clock();
 	_TimeFinish = clock();
+	_ChooseClock = clock();
+	_UpClock = clock();
+	_SuccessClock = clock();
+	_Success = true;
+	_RandomLR = rand() % 3;
 	_EnemyType = 0;
 	_Setinit = false;
 	_EnemyHaveItem = false;
+	_Times = 0;
+	//_RandomMoveTime = (rand() % 5 + 1) * 500;
 }
 void Enemy::LoadBitmap() {
 	_Tank.LoadBitmapByString({ //LightTank
@@ -178,27 +185,113 @@ void Enemy::SetBulletStatus(int BulletOrder, bool Status) {
 void Enemy::SetIfFire(int FireOrder, bool Status) {
 	_IfFire = Status;
 }
-void Enemy::EnemyRandomDirection(){
-	_RandomDirection = rand() % 4;		// 隨機移動四個方向
-	_RandomMoveTime = rand() % 5 + 1;	// 移動時間 1~6sec
-	_TimeFinish = clock();
-	if ((_TimeFinish - _TimeStart) / CLOCKS_PER_SEC > _RandomMoveTime) {	// > :因為要播放重生動畫
-		switch (_RandomDirection){
-		case Right:
-			TurnFace(VK_RIGHT);
-			break;
-		case Up:
-			TurnFace(VK_UP);
-			break;
-		case Down:
-			TurnFace(VK_DOWN);
-			break;
-		case Left:
-			TurnFace(VK_LEFT);
-			break;
-		}
-		_TimeStart = clock();			// 重新開始計時
+
+int Enemy::GetEnemyDirectionInfo(int num) {
+	switch (num)
+	{
+	case 0:
+		return _OriginAngle;
+		break;
+	case 1:
+		return _RandomLR;
+		break;
+	case 2:
+		return _Success;
+		break;
+	case 3:
+		return  _UpClock;
+		break;
+	case 4:
+		return _KeepUP;
+		break;
+	case 5:
+		return _Times;
+		break;
 	}
+	return -1;
+}
+void Enemy::EnemyMove() {
+	if (clock() -_ChooseClock >= 500 /*_RandomMoveTime*/) {
+		_RandomFuncChoose = rand() % 2;
+		 _RandomDirection = rand() % 4;
+		//_RandomFuncChoose = 1;
+		//_RandomMoveTime = (rand() % 5 + 1) *500;	// 移動時間 1~6sec
+		//_TimeStart = clock();			// 重新開始計時
+		_ChooseClock = clock();
+	}
+	else if (_RandomFuncChoose % 2 == 0) {
+		EnemyRandomDirection();
+	}
+	else if (_RandomFuncChoose % 2 == 1) {
+		ENemyMoveDown();
+	}
+}
+void Enemy::EnemyRandomDirection(){
+	switch (_RandomDirection) {
+	case Right:
+		TurnFace(VK_RIGHT);
+		break;
+	case Up:
+		TurnFace(VK_UP);
+		break;
+	case Down:
+		TurnFace(VK_DOWN);
+		break;
+	case Left:
+		TurnFace(VK_LEFT);
+		break;
+	}
+}
+
+void Enemy::ENemyMoveDown() {
+	if (clock() - _SuccessClock > 500){
+		_Success = SuccessMove();
+		_SuccessClock = clock();
+	}
+	if (_KeepUP){
+		TurnFace(VK_UP);
+		if (clock() - _UpClock >= 1000) {
+			_KeepUP = false;
+		}
+	}
+	else{
+		if (_Success) {
+			TurnFace(VK_DOWN);
+		}
+		else {
+			if (_Times >=20) {
+				_RandomLR = rand() % 3;
+				_Times = 0;
+			}
+			else{
+				switch (_RandomLR) {
+					case 0:
+						TurnFace(VK_LEFT);
+						break;
+					case 1:
+						TurnFace(VK_RIGHT);
+						break;
+					/*case 2:
+						TurnFace(VK_DOWN);
+						break;*/
+				}
+			}
+			++_Times;
+		}
+	}
+}
+bool Enemy::SuccessMove() {
+	if (_MoveDownDistance > 832 - _Y || _MoveLRDistance != _X){
+		_StopClock = clock();
+		_MoveLRDistance = _X;
+		_MoveDownDistance = 832 - _Y;
+		return true;
+	}
+	else if (clock() - _StopClock >= 1000){
+		_UpClock = clock();
+		_KeepUP = true;
+	}
+	return false;
 }
 void Enemy::TankbeHit() {
 	if (_FrameTime == 26){
@@ -254,6 +347,7 @@ void Enemy::OnShow() {
 		}
 	}
 }
+
 void Enemy::OnShowScore(CDC *pDC, CFont* &fp) {
 	pDC->SetBkMode(TRANSPARENT);
 	pDC->SetTextColor(RGB(255, 255, 255));

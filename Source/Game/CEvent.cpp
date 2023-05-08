@@ -35,10 +35,8 @@ void Event::TrigSelectingStage(Menu& GrayScreen) {
 		GrayScreen.SetIfAnimation(false);
 	}
 }
-void Event::TrigUpDateMap(Map& StageMap, int& EnemyNum) {
-	if (StageMap.GetEnemySignNum() > EnemyNum) {
-		StageMap.SetEnemySignPop();
-	}
+void Event::TrigUpDateMap(Map& StageMap) {
+	StageMap.SetEnemySignPop();
 }
 void Event::TrigSetBattleMap(vector<vector<int>>& Stage,Map& StageMap,int& EnemyNum, Menu& BattleMenu, CPlayer& Player, vector<GameProps>& Props) {
 	if (Props.size() != 0) {

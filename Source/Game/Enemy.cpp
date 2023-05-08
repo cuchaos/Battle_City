@@ -17,8 +17,6 @@ Enemy::Enemy() : CTank() {
 	_EnemyType = 0;
 	_TimeStart = clock();
 	_TimeFinish = clock();
-	_IfGetTimeStop = false;
-	_IfGetShip = false;
 	_ChooseClock = clock();
 	_UpClock = clock();
 	_SuccessClock = clock();
@@ -74,7 +72,20 @@ void Enemy::LoadBitmap() {
 	_Bullet.LoadBitmap();
 }
 void Enemy::OnMove() {
-	EnemyRandomDirection();
+	if (_IfGetTimeStop) {
+		return;
+	}
+	if (clock() - _ChooseClock >= 500 /*_RandomMoveTime*/) {
+		_RandomFuncChoose = rand() % 2;
+		_RandomDirection = rand() % 4;
+		_ChooseClock = clock();
+	}
+	else if (_RandomFuncChoose % 2 == 0) {
+		EnemyRandomDirection();
+	}
+	else if (_RandomFuncChoose % 2 == 1) {
+		ENemyMoveDown();
+	}
 	if (_IfFire == false && clock() - _FireClock >= 1000) {
 		FireBullet(1);
 		_FireClock = clock();
@@ -117,7 +128,6 @@ void Enemy::SetEnemyInit() {
 	_OffsetXY = { 0,0 };
 	_Life = 1;
 	_IfGetShip = false;
-	_IfGetTimeStop = false;
 	_IfFire = false;
 	_IfExploded = false;
 	SetFaceDirection();
@@ -171,6 +181,9 @@ void Enemy::SetFaceDirection() {
 	}
 }
 void Enemy::Animation() {
+	if (_IfGetTimeStop) {
+		return;
+	}
 	if (_EnemyHaveItem){
 		if (_FrameTime%15 < 7) {
 			_Tank.SetFrameIndexOfBitmap(_Frameindex + _FrameTime % 2);
@@ -218,22 +231,6 @@ int Enemy::GetEnemyDirectionInfo(int num) {
 		break;
 	}
 	return -1;
-}
-void Enemy::EnemyMove() {
-	if (clock() -_ChooseClock >= 500 /*_RandomMoveTime*/) {
-		_RandomFuncChoose = rand() % 2;
-		 _RandomDirection = rand() % 4;
-		//_RandomFuncChoose = 1;
-		//_RandomMoveTime = (rand() % 5 + 1) *500;	// 移動時間 1~6sec
-		//_TimeStart = clock();			// 重新開始計時
-		_ChooseClock = clock();
-	}
-	else if (_RandomFuncChoose % 2 == 0) {
-		EnemyRandomDirection();
-	}
-	else if (_RandomFuncChoose % 2 == 1) {
-		ENemyMoveDown();
-	}
 }
 void Enemy::EnemyRandomDirection(){
 	switch (_RandomDirection) {

@@ -63,6 +63,7 @@ namespace game_framework {
 		CMovingBitmap GetBulletBitmap();
 		void SetBulletOwner(int Who);
 	protected:
+		static vector<vector<int>> _Move;
 		int _X, _Y;									//地圖座標
 		int Width, Height;							//OneGrid寬,高
 
@@ -79,6 +80,7 @@ namespace game_framework {
 		int _TankState;
 
 		bool _IfGetShip;
+		bool _IfGetTimeStop;
 		bool _IfRespawnAnimationDone;
 		int _RespawnAnimationNum;
 		bool _IfExploded;

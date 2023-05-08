@@ -110,7 +110,6 @@ void CGameStateRun::OnInit()                                  // 遊戲的初值
 		EnemyList[i].LoadBitmap();
 		EnemyReSpawnLastTime[i] = clock();
 	}
-	_EnemyQuantity = 4;
 	for (int i = 0; i < 6; i++) {
 		if (i == 0) {
 			_AllBullet.push_back(&_PlayerTank._Bullet);
@@ -348,6 +347,10 @@ void CGameStateRun::AllEnemyOnMove() {
 			enemy.TankExpolsion();
 			if (_EnemyNum > 0 && clock() - EnemyReSpawnLastTime[i] >= 2500
 				&& enemy.GetIfexploded()) {
+				if (_EnemyNum % 4 == 0) {
+					event.TriggerReSetProps(_Prop);
+					EnemyList[i].SetEnemyHaveItem(true);
+				}
 				enemy.SetEnemyReSpawn();
 				_EnemyNum -= 1;
 			}

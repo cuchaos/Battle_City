@@ -10,7 +10,7 @@
 
 // Tank Parent
 using namespace game_framework;
-
+vector<vector<int>> CTank::_Move = { {1,0},{0,1},{-1,0},{0,-1} }; //Vector 2D
 CTank::CTank() :Width(32), Height(32) {
 	_FrameTime = 0;							// 計時器
 	_Frameindex = 4;						// 動畫偵 (0 is east,1 south, 2 west,3 north)*2
@@ -21,6 +21,8 @@ CTank::CTank() :Width(32), Height(32) {
 	_IfFire = false;
 	_IfBattle = false;
 	_IfExploded = true; // the first One that cant explode
+	_IfGetShip = false;
+	_IfGetTimeStop = false;
 	_IfRespawnAnimationDone = false;
 	_RespawnAnimationNum = 0;
 	_FrontXY = { {0,0},{0,0} };						// 移動方向前方兩格子的XY
@@ -40,22 +42,15 @@ void CTank::LoadBitmap() {
 											 "resources/Boom4.bmp" }, RGB(0, 0, 0));
 }
 void CTank::Move() {
-	if (_OriginAngle == Right) {
-		_X += _MovementSpeed;
-		_OffsetXY[0] += _MovementSpeed;
+	if (_IfGetTimeStop) {
+		return;
 	}
-	else if (_OriginAngle == Left) {
-		_X -= _MovementSpeed;
-		_OffsetXY[0] -= _MovementSpeed;
-	}
-	else if (_OriginAngle == Up) {
-		_Y -= _MovementSpeed;
-		_OffsetXY[1] -= _MovementSpeed;
-	}
-	else if (_OriginAngle == Down) {
-		_Y += _MovementSpeed;
-		_OffsetXY[1] += _MovementSpeed;
-	}
+	int tempx = _MovementSpeed * _Move[_OriginAngle][0];
+	int tempy = _MovementSpeed * _Move[_OriginAngle][1];
+	_X += tempx;
+	_Y += tempy;
+	_OffsetXY[0] += tempx;
+	_OffsetXY[1] += tempy;
 	for (int i = 0; i < 2; i++) {
 		if (abs(_OffsetXY[i]) >= Width) {	//當坦克持續移動到下一格時 偏移要歸零 不然_NowGrid會加太多次
 			_OffsetXY[i] = 0;

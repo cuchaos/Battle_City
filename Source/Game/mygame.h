@@ -112,25 +112,30 @@ namespace game_framework {
 			FirstBullet = 1,
 			SecondBullet = 2
 		};
+		enum InGameState {
+			SelectStage,
+			PreBattle,
+			Battle,
+			Settlement
+		};
 		void OnShowText();
 		int _MouseX;
 		int _MouseY;
 		void OnMove();									// 移動遊戲元素
 		void OnShow();									// 顯示這個狀態的遊戲畫面
-		void EnemyReSpawn();
-		void AllEnemyMove();
-		void PlayerTankMove(CPlayer *tank);
-		void EnemyTankMove(Enemy *tank);
+		InGameState state;
 		void PlayerTankCollisionMap(CPlayer *tank);
 		void EnemyTankCollisionMap(Enemy *tank);
 		//bool PlayerTankCollision();
 		bool EnemyTankCollision(CTank *tank);
 		bool TankCollision(CTank *tank ,CTank *who);
-		void RandomSpawnTank(int num);
 		bool ShootCollision(CBullet Bullet,int TankLevel); 
-		int NowXGrid(int x);
-		int NowYGrid(int y);
 		Event event;
+
+		bool IfNoEnemy();
+		void RandomSpawnTank(int num);
+		void PlayerOnMove(CPlayer &tank);
+		void AllEnemyOnMove();
 
 		void AllBulletFly();
 		void AllBulletCollision();
@@ -167,7 +172,7 @@ namespace game_framework {
 		//vector<vector<int>> _Tanktempcollision = { {0,0},{0,0} };
 		//vector<vector<int>> _tempcollision;
 		std::vector<Enemy> EnemyList = std::vector<Enemy>(4);
-		std::vector<clock_t> EnemyFireLastTime = std::vector<clock_t>(4);
+		std::vector<clock_t> EnemyReSpawnLastTime = std::vector<clock_t>(4);
 		vector<int> EnemyTypeList = {0,0,0,0};
 	};
 

@@ -66,6 +66,12 @@ void Map::ShootWall(int Direction, int TankLevel, int x, int y) {
 	_Stage[x][y].ChangeGridState(Direction, TankLevel);
 }
 
+int Map::GetGridIndexX(int NowX) {
+	return (NowX - 100) / 32;
+}
+int Map::GetGridIndexY(int NowY) {
+	return NowY / 32;
+}
 int Map::GetEnemySignNum() {
 	return _EnemySign.size();
 }

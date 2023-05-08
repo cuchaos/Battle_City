@@ -20,15 +20,19 @@ CTank::CTank() :Width(32), Height(32) {
 	_MovementSpeed = 4;						// 移動速度
 	_IfFire = false;
 	_IfBattle = false;
+	_IfExploded = true; // the first One that cant explode
+	_IfRespawnAnimationDone = false;
+	_RespawnAnimationNum = 0;
 	_FrontXY = { {0,0},{0,0} };						// 移動方向前方兩格子的XY
 	_BulletFlySpeed = 15;
-	_TankState = Spawn;
+	_TankState = Death;
 }
 void CTank::LoadBitmap() {
 	_SpawnAnimation.LoadBitmapByString({ "resources/Spawn_1.bmp",
 										"resources/Spawn_2.bmp",
 										"resources/Spawn_3.bmp",
 										"resources/Spawn_4.bmp" }, RGB(0, 0, 0));
+	_SpawnAnimation.SetAnimation(100, true);
 	_TankBrokenAnimation.LoadBitmapByString({ "resources/Boom0.bmp",
 											 "resources/Boom1.bmp",
 											 "resources/Boom2.bmp",
@@ -103,6 +107,12 @@ CMovingBitmap CTank::GetBulletBitmap() {
 	return _Bullet.GetBitmap();
 }
 
+bool CTank::GetIfRespawnanimationdone() {
+	return _IfRespawnAnimationDone;
+}
+bool CTank::GetIfexploded() {
+	return _IfExploded;
+}
 void CTank::SetXY(int _x, int _y) {
 	_X = _x;
 	_Y = _y;
@@ -113,12 +123,27 @@ void CTank::SetLife(int num) {
 	}
 	if (_Life == 0) {
 		_TankState = Death;
+		_IfExploded = false;
 	}
 }
 void CTank::SetIfBattle(bool Status) {
 	_IfBattle = Status;
 }
 
+void CTank::SetTankState(TankState State) {
+	switch (State)
+	{
+	case Spawn:
+		_TankState = Spawn;
+		break;
+	case Alive:
+		_TankState = Alive;
+		break;
+	case Death:
+		_TankState = Death;
+		break;
+	}
+}
 //Bullet
 void CTank::SetBulletOwner(int who) {
 	_Bullet.SetOwner(who);
@@ -186,14 +211,11 @@ void CTank::TankFront() {		// 對坦克前方的兩格格子做XY定位
 //show
 
 void CTank::ShowSpawnAnimation() {
-	int t;
-	if ( (t = _FrameTime % 12) % 3 == 0) {
-		_SpawnAnimation.SetFrameIndexOfBitmap(t/3);
+	if (_SpawnAnimation.IsAnimationDone()) {
+		++_RespawnAnimationNum;
 	}
-	++_FrameTime;
-	if (_FrameTime == 60) {
-		_TankState = Alive;
+	if (_RespawnAnimationNum > 3) { // Already done all animation
+		_IfRespawnAnimationDone = true;
 	}
-	_SpawnAnimation.SetTopLeft(_X, _Y);
-	_SpawnAnimation.ShowBitmap();
+	_SpawnAnimation.ToggleAnimation();
 }

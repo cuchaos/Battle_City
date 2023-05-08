@@ -14,35 +14,43 @@ namespace game_framework {
 		};
 		Enemy();
 		void LoadBitmap();
+		void OnMove();
+		void OnShow() override;
+		void TankExpolsion() override;
+		void EnemyRandomDirection();			
+		void Animation() override;
+		
 		int GetEnemyScore();
 		bool GetIfBattle();
+		bool GetIfFire(int FireOrder) override;
 		bool SuccessMove();
 		int GetEnemyDirectionInfo(int num);
 
+
+		void SetFaceDirection() override;
 		void SetEnemyHaveItem(bool has);		// 設定有道具
 		void SetEnemyType(int _num);			// 設定敵人類型
 		void SetEnemyInit();					// 設定初始化
 		void SetOriginAngle(int _direction);	// 設定轉向方向 
+		void SetEnemyReSpawn();
+		
+		int GetEnemyType();
+		bool GetEnemySetInit();
+		bool GetIfGetTimeStop();
 		void EnemyMove();
 		void EnemyRandomDirection();			// 隨機設定前進方向
 		void ENemyMoveDown();
 		// Prop
 		void SetGetTimeStop(int Status);
 		void SetIfGetTimeStop(bool IfGetTimeStop);
-		bool isEnemyHaveItem();					// 是否有道具
+		
+		bool GetEnemyHaveItem();					
 		// bullet
 		void FireBullet(int BulletOrder) override;
 		void SetBulletStatus(int BulletOrder,bool Status) override;
 		void SetIfFire(int FireOrder, bool Status) override;
-		bool GetIfFire(int FireOrder) override;
-		int GetEnemyType();
-		bool GetEnemySetInit();
-		bool GetIfGetTimeStop();
+
 		CMovingBitmap GetEnemyBitmap();
-		void SetFaceDirection() override;
-		void OnShow() override;
-		void TankbeHit() override;
-		void Animation() override;
 		void OnShowScore(CDC *pDC, CFont* &fp);
 	private:
 		clock_t _TimeFinish, _TimeStart, _StopClock, _UpClock, _ChooseClock, _SpawnClock,_SuccessClock;		// 計時器 (結束-開始 = 經過時間)

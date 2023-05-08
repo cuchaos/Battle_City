@@ -34,32 +34,55 @@ void CGameStateRun::OnBeginState()
 
 void CGameStateRun::OnMove()                            // 移動遊戲元素
 {
-	if (_NowStage == -1 && !_IfBattling) { // NowStage == -1  代表正在選, == 1 ~ 35代表已經選完了
-		event.TrigSelectingStage(_Menu);
-		return;
+	switch(state) {
+		case SelectStage:
+			event.TriggerSelectingStage(_Menu);
+			break;
+		case PreBattle:
+			event.TriggerSetBattleMap(_AllStage[_NowStage-1],Stage1,_Menu,_PlayerTank,_Prop,EnemyList);
+			EnemyTypeList.assign(_AllStageEnemy[_NowStage - 1].begin(), _AllStageEnemy[_NowStage - 1].end());
+			_IfBattling = true;
+			_IfSettling = false;
+			_NowPropSize = 0;
+			_EnemyNum = 20;
+			break;
+		case Battle:
+			TrigAllProp();
+			PlayerOnMove(_PlayerTank);
+			AllEnemyOnMove();
+			AllBulletCollision();
+			AllBulletFly();
+			_TimerFinish = clock();
+			break;
+		case Settlement:
+			break;
 	}
-	if (_NowStage >= 1 && !_IfBattling && !_IfSettling) {
-		event.TrigSetBattleMap(_AllStage[_NowStage-1],Stage1, _EnemyNum,_Menu,_PlayerTank,_Prop);
-		EnemyTypeList.assign(_AllStageEnemy[_NowStage - 1].begin(), _AllStageEnemy[_NowStage - 1].end());
-		_IfBattling = true;
-		_NowPropSize = 0;	
-		return;
-	}	
-	if (!_IfBattling) {
-		return;
+	// state machine transformation
+	switch (state) {
+	case SelectStage:
+		if (_NowStage != -1 && !_IfBattling && !_IfSettling) state = PreBattle;
+		break;
+	case PreBattle:
+		state = Battle;
+		break;
+	case Battle:
+		if (IfNoEnemy()) {
+			_IfBattling = false;
+			_IfSettling = true;
+			Stage1.SetIfShowMap(false);
+			event.TriggerSettlement(_Menu, _AllStageEnemy[_NowStage - 1], _NowTotalScore, _TheHighestScore, _NowStage);
+			state = Settlement;
+		}
+		break;
+	case Settlement:
+		if (!_IfSettling) {
+			state = PreBattle;
+		}
 	}
-	TrigAllProp();
-	if (_PlayerTank.GetTankState() == _PlayerTank.Alive){
-		PlayerTankMove(&_PlayerTank);
-	}
-	AllEnemyMove();
-	AllBulletCollision();
-	AllBulletFly();
-	_TimerFinish = clock();
-	EnemyReSpawn();
 }
 void CGameStateRun::OnInit()                                  // 遊戲的初值及圖形設定
 {
+	state = SelectStage;
 	srand((unsigned)time(NULL));
 	_NowStage = -1;
 	_IfBattling = false;
@@ -85,7 +108,7 @@ void CGameStateRun::OnInit()                                  // 遊戲的初值
 
 	for (int i=0; i<4; ++i) {
 		EnemyList[i].LoadBitmap();
-		EnemyFireLastTime[i] = clock();
+		EnemyReSpawnLastTime[i] = clock();
 	}
 	_EnemyQuantity = 4;
 	for (int i = 0; i < 6; i++) {
@@ -103,7 +126,7 @@ void CGameStateRun::OnInit()                                  // 遊戲的初值
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	if (_IfBattling) {
+	if (_IfBattling && _PlayerTank.GetTankState() == CPlayer::Alive) {
 		if (nChar == 0x5A || nChar == 0x58) {
 			if (_PlayerTank.GetLevel() > 3 && _PlayerTank.GetIfFire(1) == true) {
 				_PlayerTank.FireBullet(2);
@@ -119,11 +142,12 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			_IfBattling = false;
 			_IfSettling = true;
 			Stage1.SetIfShowMap(false);
-			event.TrigSettlement(_Menu, _AllStageEnemy[_NowStage - 1], _NowTotalScore, _TheHighestScore,_NowStage);
+			event.TriggerSettlement(_Menu, _AllStageEnemy[_NowStage - 1], _NowTotalScore, _TheHighestScore,_NowStage);
+			state = Settlement;
 		}
 	}	
 	else {
-		if (!_IfSettling) {
+		if (!_IfSettling && state == SelectStage) {
 			_NowStage = _Menu.OnKeyDown(nChar, nRepCnt, nFlags);
 		}
 		else {
@@ -209,6 +233,18 @@ void CGameStateRun::OnShowText() {
 	_Menu.OnShowText(pDC, fp);
 	
 	/*CTextDraw::Print(pDC, 0, 50, (to_string(_MouseX) + " " + to_string(_MouseY)));*/
+	CTextDraw::ChangeFontLog(pDC, 15, "STZhongsong", RGB(255, 255, 255));
+	//CTextDraw::Print(pDC, 0, 150, (to_string(Stage1.GetEnemySignNum())));
+
+	/*
+	for (int i = 0; i < 4; i++) {
+		CTextDraw::Print(pDC, 0 + i * 25, 125, (to_string(EnemyTypeList[i])));
+		CTextDraw::Print(pDC, 0 + i * 25, 150, (to_string(EnemyList[i].GetTankState())));
+		CTextDraw::Print(pDC, 0 + i * 25, 175, (to_string(EnemyList[i].GetIfRespawnanimationdone())));
+	}
+	*/
+	CTextDraw::Print(pDC, 0 , 375, (to_string(state)));
+	CTextDraw::Print(pDC, 0, 475, (to_string(_NowStage)));
 	
 	/*CTextDraw::Print(pDC, 0, 150, (to_string(Stage1.GetEnemySignNum())));
 	CTextDraw::Print(pDC, 0, 125, (to_string(_EnemyNum)));*/
@@ -221,37 +257,26 @@ void CGameStateRun::OnShowText() {
 		CTextDraw::Print(pDC, 0, i*50+50, (to_string(EnemyList[0].GetEnemyDirectionInfo(i))));
 	}
 	for (int i = 0; i < 4; i++){
-		if (EnemyList[i].GetTankState() == CTank::Death) {
+		if (EnemyList[i].GetTankState() == EnemyList[i].Death) {
 			EnemyList[i].OnShowScore(pDC, fp);
 		}
 	}
+	/*
 	if (_IfEatItem[0] && clock() - _IfEatItem[3] <= 300) {
 		CTextDraw::ChangeFontLog(pDC, 48, "STZhongsong", RGB(255, 255, 255));
 		CTextDraw::Print(pDC, _IfEatItem[1], _IfEatItem[2], to_string(500));
 	}
+	*/
 	CDDraw::ReleaseBackCDC();
 }
-
-void CGameStateRun::EnemyReSpawn() {
-	/*
-	if (_EnemyNum == 0) {
-		for (auto& enemy : EnemyList) {
-			if (enemy.GetTankState() == Spawn) {
-
-			}
+bool CGameStateRun::IfNoEnemy() {
+	for (int i = 0; i < 4; i++) {
+		auto& enemy = EnemyList[i];
+		if (EnemyTypeList[i] != 0 || enemy.GetTankState() != enemy.Death) {
+			return false;
 		}
 	}
-	*/
-	if (EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0 &&
-		EnemyList[0].GetTankState() == EnemyList[0].Spawn && EnemyList[1].GetTankState() == EnemyList[1].Spawn && EnemyList[2].GetTankState() == EnemyList[2].Spawn && EnemyList[3].GetTankState() == EnemyList[3].Spawn &&
-		!(EnemyList[0].GetIfBattle() && EnemyList[1].GetIfBattle() && EnemyList[2].GetIfBattle() && EnemyList[3].GetIfBattle())) {
-		_IfBattling = false;
-		_IfSettling = true;
-		Stage1.SetIfShowMap(false);
-		event.TrigSettlement(_Menu, _AllStageEnemy[_NowStage - 1], _NowTotalScore, _TheHighestScore, _NowStage);
-		_NowPropSize = 0;
-		//GotoGameState(GAME_STATE_RUN);
-	}
+	return true;
 }
 bool CGameStateRun::IfResetPropTime(int NowPropIndex, GameProps NowProp) {
 	GameProps::ItemType NowPropType = _Prop[NowPropIndex].GetType();
@@ -276,68 +301,59 @@ void CGameStateRun::TrigAllProp() {
 			_IfEatItem[1] = _Prop[i].GetX();
 			_IfEatItem[2] = _Prop[i].GetY();
 			_IfEatItem[3] = clock();
-			event.TrigGetProps(_Prop[i], Stage1, _PlayerTank, EnemyList);
+			event.TriggerGetProps(_Prop[i], Stage1, _PlayerTank, EnemyList);
 		}
 	}
 }
-void CGameStateRun::AllEnemyMove() {
-	for (int i = 0; i < 4; i++) {
-		// 當TankState == Spawn 時 檢查EnemyTypeList 是否都生成完畢
-		// 都生成完畢則將Enemy設定為 _IfBattle = false 避免重生
-		if (EnemyList[i].GetTankState() == EnemyList[i].Spawn) {
-			if (EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0) {
-				EnemyList[i].SetIfBattle(false);
-			}
-		}
-		// 當Enemy 為 _IfBattle = false 而且 EnemyTypeList 都沒生成完畢
-		// 將Enemy 設定 _IfBattle = true 並重新計時
-		if (!EnemyList[i].GetIfBattle() && !(EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0)) {
-			if (!EnemyList[i].GetIfBattle() && clock() - _TimerSpawn >= 2000) {
-				RandomSpawnTank(i);
-				event.TrigUpDateMap(Stage1);    //Respawn 後右邊顯示圖片減一
-				EnemyList[i].SetIfBattle(true);
-				_TimerSpawn = clock();
-			}
-		}
-		else if (EnemyList[i].GetIfBattle()) { //Enemy On move 
-			if (EnemyList[i].GetTankState() == EnemyList[i].Alive && !EnemyList[i].GetIfGetTimeStop()) {
-				EnemyTankMove(&EnemyList[i]);
-				if (EnemyList[i].GetIfFire(1) == false && clock() - EnemyFireLastTime[i] >= 1000) {
-					EnemyList[i].FireBullet(1);
-					EnemyFireLastTime[i] = clock();
-				}
-			}
-			else if (EnemyList[i].GetTankState() == EnemyList[i].Spawn && !EnemyList[i].GetEnemySetInit()) {
-				RandomSpawnTank(i);
-				++_EnemyQuantity;
-				event.TrigUpDateMap(Stage1);	//Respawn 後右邊顯示圖片減一
-				if (_EnemyQuantity % 4 == 1) {
-					event.TrigReSetProps(_Prop);
-					EnemyList[i].SetEnemyHaveItem(true);
-				}
-			}
-		}
-	}
-}
-void CGameStateRun::PlayerTankMove(CPlayer *tank) {
-	if ((_isHoldRightKey == true || 
-		_isHoldLeftKey == true || 
-		_isHoldDownKey == true || 
-		_isHoldUpKey == true) && 
-		tank->GetTankState() == tank->Alive)
+void CGameStateRun::PlayerOnMove(CPlayer &Player) {
+	switch (Player.GetTankState())
 	{
-		tank->TurnFace(_HoldKey);
-		PlayerTankCollisionMap(tank);
-	}
-	else if ( _OnIceCountDown > 0) {
-		tank->TurnFace(_HoldKey);
-		PlayerTankCollisionMap(tank);
-		_OnIceCountDown -= 4;
+	case CPlayer::Spawn:
+		if (Player.GetIfRespawnanimationdone()) {
+			Player.SetPlayerInit();
+		}
+		break;
+	case CPlayer::Alive:
+		if (_isHoldRightKey == true || _isHoldLeftKey == true
+			|| _isHoldDownKey == true || _isHoldUpKey == true) {
+			Player.TurnFace(_HoldKey);
+			PlayerTankCollisionMap(&Player);
+		}
+		else if (_OnIceCountDown > 0) {
+			Player.TurnFace(_HoldKey);
+			PlayerTankCollisionMap(&Player);
+			_OnIceCountDown -= 4;
+		}
+		break;
+	case CPlayer::Death:
+		if (Player.GetLife() > 0) {
+			Player.SetPlayerReSpawn();
+		}
+		break;
 	}
 }
-void CGameStateRun::EnemyTankMove(Enemy *tank) {
-	tank->EnemyMove();
-	EnemyTankCollisionMap(tank);
+void CGameStateRun::AllEnemyOnMove() {
+	for (int i = 0; i < 4; i++) {
+		auto& enemy = EnemyList[i];
+		switch (enemy.GetTankState())
+		{
+		case Enemy::Spawn:
+			RandomSpawnTank(i);
+			break;
+		case Enemy::Alive:
+			EnemyList[i].OnMove();
+			EnemyTankCollisionMap(&EnemyList[i]);
+			break;
+		case Enemy::Death:
+			enemy.TankExpolsion();
+			if (_EnemyNum > 0 && clock() - EnemyReSpawnLastTime[i] >= 2500
+				&& enemy.GetIfexploded()) {
+				enemy.SetEnemyReSpawn();
+				_EnemyNum -= 1;
+			}
+			break;
+		}
+	}
 }
 bool CGameStateRun::BulletHitTank(CBullet CurrentBullet, CTank *BulletOwner, CTank *DetectTarget,BulletOrder Order) {
 	if (CMovingBitmap::IsOverlap(CurrentBullet.GetBitmap(), DetectTarget->GetTankBitmap())
@@ -364,8 +380,8 @@ void CGameStateRun::PlayerBulletCollision(BulletOrder Order) {
 	for (auto& enemy : EnemyList) {
 		if (BulletHitTank(*CurrentBullet, &_PlayerTank, &enemy, Order)) {
 			enemy.SetLife(0);
-			if (enemy.isEnemyHaveItem()) {
-				event.TrigSetProps(_Prop, _NowPropSize);
+			if (enemy.GetEnemyHaveItem()) {
+				event.TriggerSetProps(_Prop, _NowPropSize);
 				enemy.SetEnemyHaveItem(false);
 				_NowPropSize += 1;
 			}
@@ -411,7 +427,6 @@ void CGameStateRun::AllBulletCollision() {
 	}
 	EnemyAllBulletCollision();
 }
-
 void CGameStateRun::AllBulletFly() {
 	for (int i = 0; i < 6; i++) {
 		if (_AllBullet[i]->GetAlreadyFire()) {
@@ -419,7 +434,6 @@ void CGameStateRun::AllBulletFly() {
 		}
 	}
 }
-
 bool CGameStateRun::ShootCollision(CBullet Bullet, int TankLevel) {
 	if (Stage1.GetIfBoardEdge(Bullet.GetNowBackPlace()[0][0], Bullet.GetNowBackPlace()[0][1]
 		, Bullet.GetHeight(), Bullet.GetWidth(), Bullet.GetDirection()) == true) {
@@ -440,7 +454,6 @@ bool CGameStateRun::ShootCollision(CBullet Bullet, int TankLevel) {
 	}
 	return false;
 }
-
 void CGameStateRun::PlayerTankCollisionMap(CPlayer *tank) {
 	tank->TankFront();
 	_tempcollision = Stage1.GetFrontGridsIndex(tank->GetTankFront());
@@ -480,7 +493,6 @@ void CGameStateRun::EnemyTankCollisionMap(Enemy *tank) {
 	}
 	tank->Animation();
 }
-
 bool CGameStateRun::EnemyTankCollision(CTank *tank) {
 	bool _collision = false;
 	for (int i = 0; i < 4; i++) {
@@ -488,49 +500,48 @@ bool CGameStateRun::EnemyTankCollision(CTank *tank) {
 	}
 	return _collision || TankCollision(tank, &_PlayerTank);
 }
-
 bool CGameStateRun::TankCollision(CTank *tank, CTank *who) {
 	if (who->GetTankState()== who->Alive){
 		_tempcollision = Stage1.GetFrontGridsIndex(tank->GetTankFront());
 		switch (tank->GetOriginAngle())
 		{
 		case Right:
-			if ((_tempcollision[0][0] == NowXGrid(who->GetX1()) && _tempcollision[0][1] == NowYGrid(who->GetY1())) ||
-				(_tempcollision[1][0] == NowXGrid(who->GetX1()) && _tempcollision[1][1] == NowYGrid(who->GetY1())) ||
-				(_tempcollision[0][0] == NowXGrid(who->GetX1()) && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1) ||
-				(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1())) ||
-				(_tempcollision[1][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[1][1] == NowYGrid(who->GetY1())) ||
-				(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1)) {
+			if ((_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1())) ||
+				(_tempcollision[1][0] == Stage1.GetGridIndexX(who->GetX1()) && _tempcollision[1][1] == Stage1.GetGridIndexY(who->GetY1())) ||
+				(_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1()) + 1) ||
+				(_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) + 1 && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1())) ||
+				(_tempcollision[1][0] == Stage1.GetGridIndexX(who->GetX1()) + 1 && _tempcollision[1][1] == Stage1.GetGridIndexY(who->GetY1())) ||
+				(_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) + 1 && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1()) + 1)) {
 				return true;
 			}
 			break;
 		case Down:
-			if ((_tempcollision[0][0] == NowXGrid(who->GetX1()) && _tempcollision[0][1] == NowYGrid(who->GetY1())) ||
-				(_tempcollision[1][0] == NowXGrid(who->GetX1()) && _tempcollision[1][1] == NowYGrid(who->GetY1())) ||
-				(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1())) ||
-				(_tempcollision[0][0] == NowXGrid(who->GetX1()) && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1) ||
-				(_tempcollision[1][0] == NowXGrid(who->GetX1()) && _tempcollision[1][1] == NowYGrid(who->GetY1()) + 1) ||
-				(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1)) {
+			if ((_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1())) ||
+				(_tempcollision[1][0] == Stage1.GetGridIndexX(who->GetX1()) && _tempcollision[1][1] == Stage1.GetGridIndexY(who->GetY1())) ||
+				(_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) + 1 && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1())) ||
+				(_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1()) + 1) ||
+				(_tempcollision[1][0] == Stage1.GetGridIndexX(who->GetX1()) && _tempcollision[1][1] == Stage1.GetGridIndexY(who->GetY1()) + 1) ||
+				(_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) + 1 && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1()) + 1)) {
 				return true;
 			}
 			break;
 		case Left:
-			if ((_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1())) ||
-				(_tempcollision[1][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[1][1] == NowYGrid(who->GetY1())) ||
-				(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1) ||
-				(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 2 && _tempcollision[0][1] == NowYGrid(who->GetY1())) ||
-				(_tempcollision[1][0] == NowXGrid(who->GetX1()) + 2 && _tempcollision[1][1] == NowYGrid(who->GetY1())) ||
-				(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 2 && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1)) {
+			if ((_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) + 1 && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1())) ||
+				(_tempcollision[1][0] == Stage1.GetGridIndexX(who->GetX1()) + 1 && _tempcollision[1][1] == Stage1.GetGridIndexY(who->GetY1())) ||
+				(_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) + 1 && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1()) + 1) ||
+				(_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) + 2 && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1())) ||
+				(_tempcollision[1][0] == Stage1.GetGridIndexX(who->GetX1()) + 2 && _tempcollision[1][1] == Stage1.GetGridIndexY(who->GetY1())) ||
+				(_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) + 2 && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1()) + 1)) {
 				return true;
 			}
 			break;
 		case Up:
-			if ((_tempcollision[0][0] == NowXGrid(who->GetX1()) && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1) ||
-				(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 1) ||
-				(_tempcollision[1][0] == NowXGrid(who->GetX1()) && _tempcollision[1][1] == NowYGrid(who->GetY1()) + 1) ||
-				(_tempcollision[0][0] == NowXGrid(who->GetX1()) && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 2) ||
-				(_tempcollision[0][0] == NowXGrid(who->GetX1()) + 1 && _tempcollision[0][1] == NowYGrid(who->GetY1()) + 2) ||
-				(_tempcollision[1][0] == NowXGrid(who->GetX1()) && _tempcollision[1][1] == NowYGrid(who->GetY1()) + 2)) {
+			if ((_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1()) + 1) ||
+				(_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) + 1 && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1()) + 1) ||
+				(_tempcollision[1][0] == Stage1.GetGridIndexX(who->GetX1()) && _tempcollision[1][1] == Stage1.GetGridIndexY(who->GetY1()) + 1) ||
+				(_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1()) + 2) ||
+				(_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) + 1 && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1()) + 2) ||
+				(_tempcollision[1][0] == Stage1.GetGridIndexX(who->GetX1()) && _tempcollision[1][1] == Stage1.GetGridIndexY(who->GetY1()) + 2)) {
 				return true;
 			}
 			break;
@@ -547,25 +558,16 @@ bool CGameStateRun::TankCollision(CTank *tank, CTank *who) {
 	*/
 	return false;
 }
-// tempIndex先亂數決定要生成的TankType 
-//如果TankType已生成完畢就繼續亂數生成直到尚未生成完畢的Tank
-//生成完畢就break跳出while
-//尚未生成完畢重設定SetEnemyType
 void CGameStateRun::RandomSpawnTank(int num) {
+	if (!EnemyList[num].GetIfRespawnanimationdone() || clock() - EnemyReSpawnLastTime[num] <= 2500) {
+		return;
+	}
 	tempIndex = rand() % 4;							
 	while (EnemyTypeList[tempIndex] == 0) {
 		tempIndex = rand() % 4;
-		if (EnemyTypeList[0] == 0 && EnemyTypeList[1] == 0 && EnemyTypeList[2] == 0 && EnemyTypeList[3] == 0) {
-			break;
-		}
 	}
+	EnemyReSpawnLastTime[num] = clock();
 	EnemyTypeList[tempIndex] -= 1;
 	EnemyList[num].SetEnemyType(tempIndex);
-}
-int CGameStateRun::NowXGrid(int x) {
-	return (x - 100) / 32;
-}
-
-int CGameStateRun::NowYGrid(int y) {
-	return y / 32;
+	EnemyList[num].SetEnemyInit();
 }

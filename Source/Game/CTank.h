@@ -34,12 +34,14 @@ namespace game_framework {
 		bool GetIfGetShip();
 		int GetLevel();
 		int GetTankState();
+		bool GetIfRespawnanimationdone();
+		bool GetIfexploded();
 		CMovingBitmap GetTankBitmap();
 
 		void SetIfBattle(bool Battle);
 		void SetXY(int x, int y);			//座標設定
 		void SetLife(int num);
-
+		void SetTankState(TankState State);
 		// location
 		void TankFront();					//坦克前方的格子做定位
 		void LocationPoint();				//位置校正
@@ -49,7 +51,7 @@ namespace game_framework {
 
 		// virtual Direction (LoadBitmapIndex)
 		virtual void SetFaceDirection() = 0;
-		virtual void TankbeHit() = 0;
+		virtual void TankExpolsion() = 0;
 
 		// bullet
 		CBullet _Bullet;
@@ -73,13 +75,14 @@ namespace game_framework {
 		bool _IfBattle; //the var that decide onshow
 		int _Level, _Life;							//坦克等級&生命
 		int _MovementSpeed;							//移動速度
-		bool _Setinit;
+		bool _IfSetinit;
 		int _TankState;
 
 		bool _IfGetShip;
-		bool _AttackSpeedUP;						//功速提升		 level >= 2
-		bool _CanBreakIron;							//可破壞鐵牆		 level >= 4
-		bool _DoubleAttack;							//可發射兩發子彈   level >= 3
+		bool _IfRespawnAnimationDone;
+		int _RespawnAnimationNum;
+		bool _IfExploded;
+
 
 		bool _IfFire;
 		int _BulletFlySpeed;

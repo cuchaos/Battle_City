@@ -16,7 +16,7 @@ Event::Event() {
 	_IfStart = false;
 }
 
-void Event::TrigLobbyMenu(Menu& LobbyMenu) {
+void Event::TriggerLobbyMenu(Menu& LobbyMenu) {
 	if (LobbyMenu.GetMenuY(LobbyMenu.LobbyMenu) > 0) {
 		LobbyMenu.SetIfAnimation(true);
 		LobbyMenu.SetMenuRaise(LobbyMenu.LobbyMenu);
@@ -26,7 +26,7 @@ void Event::TrigLobbyMenu(Menu& LobbyMenu) {
 		LobbyMenu.SetIfAnimation(false);
 	}
 }
-void Event::TrigSelectingStage(Menu& GrayScreen) {
+void Event::TriggerSelectingStage(Menu& GrayScreen) {
 	if (GrayScreen.GetMenuY(GrayScreen.ChooseStageMenu) < 0) {
 		GrayScreen.SetMenuRaise(GrayScreen.ChooseStageMenu);
 	}
@@ -35,26 +35,27 @@ void Event::TrigSelectingStage(Menu& GrayScreen) {
 		GrayScreen.SetIfAnimation(false);
 	}
 }
-void Event::TrigUpDateMap(Map& StageMap) {
+void Event::TriggerUpdateMap(Map& StageMap) {
 	StageMap.SetEnemySignPop();
 }
-void Event::TrigSetBattleMap(vector<vector<int>>& Stage,Map& StageMap,int& EnemyNum, Menu& BattleMenu, CPlayer& Player, vector<GameProps>& Props) {
+void Event::TriggerSetBattleMap(vector<vector<int>>& Stage,Map& StageMap, Menu& BattleMenu, CPlayer& Player, vector<GameProps>& Props, vector<Enemy>& AllEnemy) {
 	if (Props.size() != 0) {
 		Props[0].ReStartAllProp();
 	}
 	StageMap.OnInit(Stage);
 	StageMap.SetIfShowMap(true);
 	BattleMenu.SetMenuType(BattleMenu.BattleMenu);
-	EnemyNum = 20;
-	Player.PlayerInit();
 	Player.SetIfBattle(true);
+	for (auto& enemy : AllEnemy) {
+		enemy.SetIfBattle(true);
+	}
 }
-void Event::TrigSettlement(Menu& SettlementMenu, vector<int>& StageEnemy, int& NowScore,int& TheHighestScore,int& NowStage) {
+void Event::TriggerSettlement(Menu& SettlementMenu, vector<int>& StageEnemy, int& NowScore,int& TheHighestScore,int& NowStage) {
 	vector<int> EnemyScore = { 100,200,300,400 };
 	SettlementMenu.SetMenuType(SettlementMenu.SettleMenu);
 	SettlementMenu.SetSettlement(StageEnemy, EnemyScore, NowScore, TheHighestScore,NowStage);
 }
-void Event::TrigReSetProps(vector<GameProps>& Props) {
+void Event::TriggerReSetProps(vector<GameProps>& Props) {
 	int _LastProps = Props[0].GetAllPropType().size() - 1;
 	if (_LastProps+1 >= 1) {
 		if (!Props[_LastProps].GetIfTouched() && Props[_LastProps].GetIfExist()) {
@@ -62,13 +63,20 @@ void Event::TrigReSetProps(vector<GameProps>& Props) {
 		}
 	}
 }
-void Event::TrigNextStage(Map& StageMap, Menu& BattleMenu, int& EnemyNum, int& NowStage) {
+void Event::TriggerNextStage(Map& StageMap, Menu& BattleMenu, int& EnemyNum, int& NowStage, vector<Enemy>& EnemyList) {
+
+	for (auto& enemy : EnemyList) {
+		enemy.SetIfBattle(false);
+	}
+	StageMap.SetIfShowMap(false);
+	EnemyNum = 20;
+	//GotoGameState(GAME_STATE_RUN);
 
 }
-void Event::TrigSetProps(vector<GameProps>& Props,int NowPropIndex) {
+void Event::TriggerSetProps(vector<GameProps>& Props,int NowPropIndex) {
 	Props[NowPropIndex].SetGameProps();
 }
-void Event::TrigGetProps(GameProps& Props,Map& StageMap,CPlayer& Player,vector<Enemy>& AllEnemy) {
+void Event::TriggerGetProps(GameProps& Props,Map& StageMap,CPlayer& Player,vector<Enemy>& AllEnemy) {
 	Props.SetIfShow(false);
 	GameProps::ItemType type = Props.GetType();
 	switch (type)
@@ -84,6 +92,9 @@ void Event::TrigGetProps(GameProps& Props,Map& StageMap,CPlayer& Player,vector<E
 	case GameProps::ItemType::Handgrenade:
 		for (int i = 0; i < 4; i++) {
 			AllEnemy[i].SetLife(0);
+			if (StageMap.GetEnemySignNum() > 0) {
+				TriggerUpdateMap(StageMap);
+			}
 		}
 		Props.SetIfExist(false);
 		break;

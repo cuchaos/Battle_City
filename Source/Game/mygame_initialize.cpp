@@ -103,7 +103,7 @@ void CGameStateInit::OnBeginState()
 {
 }
 void CGameStateInit::OnMove() {
-	event.TrigLobbyMenu(_Lobby);
+	event.TriggerLobbyMenu(_Lobby);
 }
 void CGameStateInit::OnKeyUp(UINT 📥, UINT nRepCnt, UINT nFlags)
 {

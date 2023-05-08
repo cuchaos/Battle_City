@@ -201,23 +201,25 @@ void CGameStateRun::OnShowText() {
 	pDC->SetBkMode(TRANSPARENT);
 	pDC->SetTextColor(RGB(0, 180, 0));
 	_TimerFinish = clock();
-	/*CTextDraw::Print(pDC, 0, 0, (to_string(_TimerSpawn / CLOCKS_PER_SEC) + " " + to_string(_TimerFinish)));*/
-	CTextDraw::Print(pDC, 0, 25, (to_string(_EnemyQuantity)));
+	CTextDraw::Print(pDC, 0, 0, (to_string(_TimerSpawn / CLOCKS_PER_SEC) + " " + to_string(_TimerFinish)));
+	/*CTextDraw::Print(pDC, 0, 25, (to_string(_EnemyQuantity)));
 	CTextDraw::Print(pDC, 0, 50, (to_string(_MouseX) + " " + to_string(_MouseY)));
 	CTextDraw::Print(pDC, 0, 150, (to_string(Stage1.GetEnemySignNum())));
-	CTextDraw::Print(pDC, 0, 125, (to_string(EnemyTankCollision(&_PlayerTank))));
+	CTextDraw::Print(pDC, 0, 125, (to_string(EnemyTankCollision(&_PlayerTank))));*/
 	_Menu.OnShowText(pDC, fp);
 	
 	/*CTextDraw::Print(pDC, 0, 50, (to_string(_MouseX) + " " + to_string(_MouseY)));*/
 	
-	CTextDraw::Print(pDC, 0, 150, (to_string(Stage1.GetEnemySignNum())));
-	CTextDraw::Print(pDC, 0, 125, (to_string(_EnemyNum)));
+	/*CTextDraw::Print(pDC, 0, 150, (to_string(Stage1.GetEnemySignNum())));
+	CTextDraw::Print(pDC, 0, 125, (to_string(_EnemyNum)));*/
 	/*_tempcollision = Stage1.GetFrontGridsIndex(_PlayerTank.GetTankFront());
 	CTextDraw::Print(pDC, 0, 75, (to_string(_tempcollision[0][0])+ "," + to_string(_tempcollision[0][1]) +" "+ to_string(NowXGrid(EnemyList[0].GetX1())) +"," +to_string(NowYGrid(EnemyList[0].GetY1()) + 1)));
 	CTextDraw::Print(pDC, 0, 100, (to_string(_tempcollision[1][0]) + "," + to_string(_tempcollision[1][1]) + " " + to_string(NowXGrid(EnemyList[0].GetX1()) + 1) + "," + to_string(NowYGrid(EnemyList[0].GetY1()) + 1)));
 	CTextDraw::Print(pDC, 0, 125, (to_string(EnemyTankCollision(&_PlayerTank))));*/
 	_Menu.OnShowText(pDC, fp);
-	
+	for (int i = 0; i < 6; i++){
+		CTextDraw::Print(pDC, 0, i*50+50, (to_string(EnemyList[0].GetEnemyDirectionInfo(i))));
+	}
 	for (int i = 0; i < 4; i++){
 		if (EnemyList[i].GetTankState() == CTank::Death) {
 			EnemyList[i].OnShowScore(pDC, fp);
@@ -334,7 +336,7 @@ void CGameStateRun::PlayerTankMove(CPlayer *tank) {
 	}
 }
 void CGameStateRun::EnemyTankMove(Enemy *tank) {
-	tank->EnemyRandomDirection();
+	tank->EnemyMove();
 	EnemyTankCollisionMap(tank);
 }
 bool CGameStateRun::BulletHitTank(CBullet CurrentBullet, CTank *BulletOwner, CTank *DetectTarget,BulletOrder Order) {

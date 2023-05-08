@@ -18,9 +18,16 @@ Enemy::Enemy() : CTank() {
 	_IfGetShip = false;
 	_TimeStart = clock();
 	_TimeFinish = clock();
+	_ChooseClock = clock();
+	_UpClock = clock();
+	_SuccessClock = clock();
+	_Success = true;
+	_RandomLR = rand() % 3;
 	_EnemyType = 0;
 	_Setinit = false;
 	_EnemyHaveItem = false;
+	_Times = 0;
+	//_RandomMoveTime = (rand() % 5 + 1) * 500;
 }
 void Enemy::LoadBitmap() {
 	_Tank.LoadBitmapByString({ //LightTank
@@ -178,96 +185,111 @@ void Enemy::SetBulletStatus(int BulletOrder, bool Status) {
 void Enemy::SetIfFire(int FireOrder, bool Status) {
 	_IfFire = Status;
 }
+
+int Enemy::GetEnemyDirectionInfo(int num) {
+	switch (num)
+	{
+	case 0:
+		return _OriginAngle;
+		break;
+	case 1:
+		return _RandomLR;
+		break;
+	case 2:
+		return _Success;
+		break;
+	case 3:
+		return  _UpClock;
+		break;
+	case 4:
+		return _KeepUP;
+		break;
+	case 5:
+		return _Times;
+		break;
+	}
+	return -1;
+}
+void Enemy::EnemyMove() {
+	if (clock() -_ChooseClock >= 500 /*_RandomMoveTime*/) {
+		_RandomFuncChoose = rand() % 2;
+		 _RandomDirection = rand() % 4;
+		//_RandomFuncChoose = 1;
+		//_RandomMoveTime = (rand() % 5 + 1) *500;	// 移動時間 1~6sec
+		//_TimeStart = clock();			// 重新開始計時
+		_ChooseClock = clock();
+	}
+	else if (_RandomFuncChoose % 2 == 0) {
+		EnemyRandomDirection();
+	}
+	else if (_RandomFuncChoose % 2 == 1) {
+		ENemyMoveDown();
+	}
+}
 void Enemy::EnemyRandomDirection(){
-	//_TimeFinish = clock();
-	//int _RandomFuncChoose = rand() % 2;
-	int _RandomFuncChoose = 1;
-	bool _KeepUP= false;
-	int _RandomLR = 0;
-	
-	if ((clock() - _TimeStart) / CLOCKS_PER_SEC > _RandomMoveTime) {	// > :因為要播放重生動畫
-		_RandomDirection = rand() % 4;		// 隨機移動四個方向
-		_RandomMoveTime = rand() % 5 + 1;	// 移動時間 1~6sec
-		_TimeStart = clock();			// 重新開始計時
-		DownDistance = 26 - (_Y / Height);
-		LeftDistance = ((_X - 100) / Width);
-		RightDistance = 26 - ((_X - 100) / Width);
-		if (_RandomFuncChoose % 2 == 0){
-			switch (_RandomDirection) {
-			case Right:
-				TurnFace(VK_RIGHT);
-				break;
-			case Up:
-				TurnFace(VK_UP);
-				break;
-			case Down:
-				TurnFace(VK_DOWN);
-				break;
-			case Left:
-				TurnFace(VK_LEFT);
-				break;
-			}
+	switch (_RandomDirection) {
+	case Right:
+		TurnFace(VK_RIGHT);
+		break;
+	case Up:
+		TurnFace(VK_UP);
+		break;
+	case Down:
+		TurnFace(VK_DOWN);
+		break;
+	case Left:
+		TurnFace(VK_LEFT);
+		break;
+	}
+}
+
+void Enemy::ENemyMoveDown() {
+	if (clock() - _SuccessClock > 500){
+		_Success = SuccessMove();
+		_SuccessClock = clock();
+	}
+	if (_KeepUP){
+		TurnFace(VK_UP);
+		if (clock() - _UpClock >= 1000) {
+			_KeepUP = false;
 		}
-		else if (_RandomFuncChoose % 2 == 1){
-			if (SuccessMove(Down) && !_KeepUP){
-				TurnFace(VK_DOWN);
+	}
+	else{
+		if (_Success) {
+			TurnFace(VK_DOWN);
+		}
+		else {
+			if (_Times >=20) {
+				_RandomLR = rand() % 3;
+				_Times = 0;
 			}
-			else if (!SuccessMove(Down) || _KeepUP){
-				if (!_KeepUP){
-					switch (_RandomLR){
-						case 0:
-							_RandomLR = rand() % 2 + 1;
-							break;
-						case 1:
-							TurnFace(VK_LEFT);
-							break;
-						case 2:
-							TurnFace(VK_DOWN);
-							break;
-					}
-				}
-				else {
-					TurnFace(VK_UP);
-				}
-				if (!SuccessMove(Left) && !SuccessMove(Right)){
-					_KeepUP = true;
-				}
-				else {
-					_KeepUP = false;
+			else{
+				switch (_RandomLR) {
+					case 0:
+						TurnFace(VK_LEFT);
+						break;
+					case 1:
+						TurnFace(VK_RIGHT);
+						break;
+					/*case 2:
+						TurnFace(VK_DOWN);
+						break;*/
 				}
 			}
+			++_Times;
 		}
 	}
 }
-bool Enemy::SuccessMove(int direction) {
-	switch (direction){
-		case Down:
-			if (DownDistance > 26 - (_Y / Height)){
-				DownDistance = 26 - (_Y / Height);
-				return true;
-			}
-			else{
-				return false;
-			}
-			break;
-		case Left:
-			if (LeftDistance > ((_X - 100)/Width)) {
-				LeftDistance = ((_X - 100) / Width);
-				return true;
-			}
-			else {
-				return false;
-			}
-			break;
-		case Right:
-			if (RightDistance > 26 - ((_X - 100) / Width)) {
-				RightDistance = 26 - ((_X - 100) / Width);
-				return true;
-			}
-			else {
-				return false;
-			}
-			break;
+bool Enemy::SuccessMove() {
+	if (_MoveDownDistance > 832 - _Y || _MoveLRDistance != _X){
+		_StopClock = clock();
+		_MoveLRDistance = _X;
+		_MoveDownDistance = 832 - _Y;
+		return true;
+	}
+	else if (clock() - _StopClock >= 1000){
+		_UpClock = clock();
+		_KeepUP = true;
 	}
 	return false;
 }

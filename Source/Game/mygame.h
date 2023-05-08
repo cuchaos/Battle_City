@@ -115,7 +115,8 @@ namespace game_framework {
 		enum InGameState {
 			SelectStage,
 			PreBattle,
-			Battle
+			Battle,
+			Settlement
 		};
 		void OnShowText();
 		int _MouseX;

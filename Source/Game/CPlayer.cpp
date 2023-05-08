@@ -25,7 +25,7 @@ void CPlayer::SetPlayerInit() {
 	_TurnAngle = Up;
 	_NowGrid = { (_X - 100) / Width, _Y / Height };
 	_OffsetXY = { 0,0 };
-	_IfInvicible = false;
+	_IfInvicible = true;
 	_IfGetShip = false;
 	_IfSecondFire = false;
 	_RespawnAnimationNum = 0;
@@ -170,7 +170,7 @@ void CPlayer::OnShow() {
 			_SecondBullet.OnShow();
 			break;
 		case Death:
-			if (_IfExploded) {
+			if (!_IfExploded) {
 				_TankBrokenAnimation.SetTopLeft(_X, _Y);
 				CPlayer::TankExpolsion();
 			}

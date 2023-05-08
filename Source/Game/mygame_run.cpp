@@ -36,12 +36,13 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 {
 	switch(state) {
 		case SelectStage:
-			event.TrigSelectingStage(_Menu);
+			event.TriggerSelectingStage(_Menu);
 			break;
 		case PreBattle:
-			event.TrigSetBattleMap(_AllStage[_NowStage-1],Stage1,_Menu,_PlayerTank,_Prop,EnemyList);
+			event.TriggerSetBattleMap(_AllStage[_NowStage-1],Stage1,_Menu,_PlayerTank,_Prop,EnemyList);
 			EnemyTypeList.assign(_AllStageEnemy[_NowStage - 1].begin(), _AllStageEnemy[_NowStage - 1].end());
 			_IfBattling = true;
+			_IfSettling = false;
 			_NowPropSize = 0;
 			_EnemyNum = 20;
 			break;
@@ -53,18 +54,30 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 			AllBulletFly();
 			_TimerFinish = clock();
 			break;
+		case Settlement:
+			break;
 	}
 	// state machine transformation
-	switch(state) {
-		case SelectStage:
-			if ( _NowStage != -1 && !_IfBattling && !_IfSettling) state = PreBattle;
-			break;
-		case PreBattle:
-			state = Battle;
-			break;
-		case Battle:
-			if( _IfSettling == true ) state = PreBattle;
-			break;
+	switch (state) {
+	case SelectStage:
+		if (_NowStage != -1 && !_IfBattling && !_IfSettling) state = PreBattle;
+		break;
+	case PreBattle:
+		state = Battle;
+		break;
+	case Battle:
+		if (IfNoEnemy()) {
+			_IfBattling = false;
+			_IfSettling = true;
+			Stage1.SetIfShowMap(false);
+			event.TriggerSettlement(_Menu, _AllStageEnemy[_NowStage - 1], _NowTotalScore, _TheHighestScore, _NowStage);
+			state = Settlement;
+		}
+		break;
+	case Settlement:
+		if (!_IfSettling) {
+			state = PreBattle;
+		}
 	}
 }
 void CGameStateRun::OnInit()                                  // 遊戲的初值及圖形設定
@@ -129,11 +142,12 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			_IfBattling = false;
 			_IfSettling = true;
 			Stage1.SetIfShowMap(false);
-			event.TrigSettlement(_Menu, _AllStageEnemy[_NowStage - 1], _NowTotalScore, _TheHighestScore,_NowStage);
+			event.TriggerSettlement(_Menu, _AllStageEnemy[_NowStage - 1], _NowTotalScore, _TheHighestScore,_NowStage);
+			state = Settlement;
 		}
 	}	
 	else {
-		if (!_IfSettling) {
+		if (!_IfSettling && state == SelectStage) {
 			_NowStage = _Menu.OnKeyDown(nChar, nRepCnt, nFlags);
 		}
 		else {
@@ -222,12 +236,15 @@ void CGameStateRun::OnShowText() {
 	CTextDraw::ChangeFontLog(pDC, 15, "STZhongsong", RGB(255, 255, 255));
 	//CTextDraw::Print(pDC, 0, 150, (to_string(Stage1.GetEnemySignNum())));
 
+	/*
 	for (int i = 0; i < 4; i++) {
 		CTextDraw::Print(pDC, 0 + i * 25, 125, (to_string(EnemyTypeList[i])));
 		CTextDraw::Print(pDC, 0 + i * 25, 150, (to_string(EnemyList[i].GetTankState())));
 		CTextDraw::Print(pDC, 0 + i * 25, 175, (to_string(EnemyList[i].GetIfRespawnanimationdone())));
 	}
-	CTextDraw::Print(pDC, 0 , 375, (to_string(_EnemyNum)));
+	*/
+	CTextDraw::Print(pDC, 0 , 375, (to_string(state)));
+	CTextDraw::Print(pDC, 0, 475, (to_string(_NowStage)));
 	_Menu.OnShowText(pDC, fp);
 	
 	for (int i = 0; i < 4; i++){
@@ -275,7 +292,7 @@ void CGameStateRun::TrigAllProp() {
 			_IfEatItem[1] = _Prop[i].GetX();
 			_IfEatItem[2] = _Prop[i].GetY();
 			_IfEatItem[3] = clock();
-			event.TrigGetProps(_Prop[i], Stage1, _PlayerTank, EnemyList);
+			event.TriggerGetProps(_Prop[i], Stage1, _PlayerTank, EnemyList);
 		}
 	}
 }
@@ -355,7 +372,7 @@ void CGameStateRun::PlayerBulletCollision(BulletOrder Order) {
 		if (BulletHitTank(*CurrentBullet, &_PlayerTank, &enemy, Order)) {
 			enemy.SetLife(0);
 			if (enemy.GetEnemyHaveItem()) {
-				event.TrigSetProps(_Prop, _NowPropSize);
+				event.TriggerSetProps(_Prop, _NowPropSize);
 				enemy.SetEnemyHaveItem(false);
 				_NowPropSize += 1;
 			}

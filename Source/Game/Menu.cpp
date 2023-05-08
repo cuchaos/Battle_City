@@ -117,12 +117,8 @@ int Menu::OnKeyDown(UINT 📥, UINT nRepCnt, UINT nFlags) {
 		_IfAnimation = false;
 		return -1;
 	}
-	if (_IfSelecting && _MenuType == LobbyMenu) { // we select the stage in there.
-		if (📥 == KEY_DOWN) {
-			tempselect += 1;
-			tempselect %= 2;
-		}
-		else if (📥 == KEY_UP) {
+	if (_IfSelecting && _MenuType == LobbyMenu) { 
+		if (📥 == KEY_DOWN || 📥 == KEY_UP) {
 			tempselect += 1;
 			tempselect %= 2;
 		}

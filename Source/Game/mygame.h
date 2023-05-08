@@ -126,7 +126,6 @@ namespace game_framework {
 		InGameState state;
 		void PlayerTankCollisionMap(CPlayer *tank);
 		void EnemyTankCollisionMap(Enemy *tank);
-		//bool PlayerTankCollision();
 		bool EnemyTankCollision(CTank *tank);
 		bool TankCollision(CTank *tank ,CTank *who);
 		bool ShootCollision(CBullet Bullet,int TankLevel); 

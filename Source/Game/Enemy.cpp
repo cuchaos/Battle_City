@@ -74,7 +74,7 @@ void Enemy::LoadBitmap() {
 	_Bullet.LoadBitmap();
 }
 void Enemy::OnMove() {
-	EnemyRandomDirection();
+	EnemyMove();
 	if (_IfFire == false && clock() - _FireClock >= 1000) {
 		FireBullet(1);
 		_FireClock = clock();
@@ -223,9 +223,6 @@ void Enemy::EnemyMove() {
 	if (clock() -_ChooseClock >= 500 /*_RandomMoveTime*/) {
 		_RandomFuncChoose = rand() % 2;
 		 _RandomDirection = rand() % 4;
-		//_RandomFuncChoose = 1;
-		//_RandomMoveTime = (rand() % 5 + 1) *500;	// 移動時間 1~6sec
-		//_TimeStart = clock();			// 重新開始計時
 		_ChooseClock = clock();
 	}
 	else if (_RandomFuncChoose % 2 == 0) {
@@ -274,12 +271,12 @@ void Enemy::ENemyMoveDown() {
 			}
 			else{
 				switch (_RandomLR) {
-					case 0:
-						TurnFace(VK_LEFT);
-						break;
-					case 1:
-						TurnFace(VK_RIGHT);
-						break;
+				case 0:
+					TurnFace(VK_LEFT);
+					break;
+				case 1:
+					TurnFace(VK_RIGHT);
+					break;
 					/*case 2:
 						TurnFace(VK_DOWN);
 						break;*/
@@ -304,8 +301,8 @@ bool Enemy::SuccessMove() {
 }
 void Enemy::TankExpolsion() {
 	if (!_IfExploded) {
-		_TankBrokenAnimation.SetFrameIndexOfBitmap((_FrameTime % 26) / 5 % 5);
-		if (_FrameTime % 26 == 25) {
+		_TankBrokenAnimation.SetFrameIndexOfBitmap((_FrameTime % 50) / 10 % 5);
+		if (_FrameTime % 51 == 50) {
 			_SpawnClock = clock();
 			_IfExploded = true;
 		}

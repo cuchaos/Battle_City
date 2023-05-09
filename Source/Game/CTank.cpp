@@ -213,4 +213,5 @@ void CTank::ShowSpawnAnimation() {
 		_IfRespawnAnimationDone = true;
 	}
 	_SpawnAnimation.ToggleAnimation();
+	
 }

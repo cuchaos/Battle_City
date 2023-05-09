@@ -271,12 +271,12 @@ void Enemy::ENemyMoveDown() {
 			}
 			else{
 				switch (_RandomLR) {
-					case 0:
-						TurnFace(VK_LEFT);
-						break;
-					case 1:
-						TurnFace(VK_RIGHT);
-						break;
+				case 0:
+					TurnFace(VK_LEFT);
+					break;
+				case 1:
+					TurnFace(VK_RIGHT);
+					break;
 					/*case 2:
 						TurnFace(VK_DOWN);
 						break;*/
@@ -301,8 +301,8 @@ bool Enemy::SuccessMove() {
 }
 void Enemy::TankExpolsion() {
 	if (!_IfExploded) {
-		_TankBrokenAnimation.SetFrameIndexOfBitmap((_FrameTime % 26) / 5 % 5);
-		if (_FrameTime % 26 == 25) {
+		_TankBrokenAnimation.SetFrameIndexOfBitmap((_FrameTime % 50) / 10 % 5);
+		if (_FrameTime % 51 == 50) {
 			_SpawnClock = clock();
 			_IfExploded = true;
 		}

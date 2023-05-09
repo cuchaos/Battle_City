@@ -30,6 +30,7 @@ void CPlayer::SetPlayerInit() {
 	_IfSecondFire = false;
 	_RespawnAnimationNum = 0;
 	_SpawnInvicibleClock = clock();
+	_Tank.SetFrameIndexOfBitmap(_Frameindex);
 	SetFaceDirection();
 }
 void CPlayer::SetPlayerReSpawn() {

@@ -16,8 +16,7 @@ namespace game_framework {
 		void LoadBitmap();
 		void OnMove();
 		void OnShow() override;
-		void TankExpolsion() override;
-		void EnemyRandomDirection();			
+		void TankExpolsion() override;			
 		void Animation() override;
 		
 		int GetEnemyScore();

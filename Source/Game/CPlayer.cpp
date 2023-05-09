@@ -15,7 +15,7 @@ CPlayer::CPlayer() : CTank(){
 	_PlayerScore = 0;
 	_KillEnemyList = {0,0,0,0};
 	_Level = 1;
-	_Life = 3;
+	_Life = 1;
 	_TankState = Death;
 }
 void CPlayer::SetPlayerInit() {
@@ -35,6 +35,7 @@ void CPlayer::SetPlayerInit() {
 void CPlayer::SetPlayerReSpawn() {
 	if (_IfExploded) {
 		_TankState = Spawn;
+		_IfRespawnAnimationDone = false;
 		_X = Width * 8 + 100;
 		_Y = Height * 24;
 		_Tank.SetTopLeft(_X, _Y);
@@ -115,10 +116,10 @@ void CPlayer::LevelUP() {
 	}
 }
 void CPlayer::TankExpolsion() {
-	if (_IfExploded) {
+	if (!_IfExploded) {
 		_TankBrokenAnimation.SetFrameIndexOfBitmap((_FrameTime % 26) / 5 % 5);
 		if (_FrameTime % 26 == 25) {
-			_IfExploded = false;
+			_IfExploded = true;
 		}
 		++_FrameTime;
 		_TankBrokenAnimation.ShowBitmap();

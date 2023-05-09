@@ -12,7 +12,7 @@
 
 // Tank Child
 using namespace game_framework;
-
+clock_t Enemy::_SpawnClock = clock();
 Enemy::Enemy() : CTank() {
 	_EnemyType = 0;
 	_TimeStart = clock();

@@ -9,7 +9,6 @@
 #include <string>
 #include "CEvent.h"
 
-// 地圖物件發生事件
 using namespace game_framework;
 
 Event::Event() {
@@ -45,8 +44,11 @@ void Event::TriggerSetBattleMap(vector<vector<int>>& Stage,Map& StageMap, Menu& 
 	StageMap.OnInit(Stage);
 	StageMap.SetIfShowMap(true);
 	BattleMenu.SetMenuType(BattleMenu.BattleMenu);
+	Player.SetLife(0);
 	Player.SetIfBattle(true);
 	for (auto& enemy : AllEnemy) {
+		enemy.SetLife(0);
+		enemy.SetIfGetTimeStop(false);
 		enemy.SetIfBattle(true);
 	}
 }

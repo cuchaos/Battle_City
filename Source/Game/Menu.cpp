@@ -226,10 +226,12 @@ void Menu::OnShow() {
 		_BattleMenuGray.ShowBitmap();
 	}
 	if (_MenuType == SettleMenu) {
-		for (int i = 0; i < 4; i++) {
-			_SettleArrow[i].ShowBitmap();
-			_SettlementMenuEnemy[i].ShowBitmap();
-			_Settlementdivided.ShowBitmap();
+		if (_IfSettlement) {
+			for (int i = 0; i < 4; i++) {
+				_SettleArrow[i].ShowBitmap();
+				_SettlementMenuEnemy[i].ShowBitmap();
+				_Settlementdivided.ShowBitmap();
+			}
 		}
 	}
 }

@@ -14,9 +14,6 @@
 
 using namespace game_framework;
 
-/////////////////////////////////////////////////////////////////////////////
-// 這個class為遊戲的遊戲執行物件，主要的遊戲程式都在這裡
-/////////////////////////////////////////////////////////////////////////////
 
 CGameStateRun::CGameStateRun(CGame *g) : CGameState(g)
 {
@@ -32,13 +29,14 @@ void CGameStateRun::OnBeginState()
 
 
 
-void CGameStateRun::OnMove()                            // 移動遊戲元素
+void CGameStateRun::OnMove()                            
 {
 	switch(state) {
 		case SelectStage:
 			event.TriggerSelectingStage(_Menu);
 			break;
 		case PreBattle:
+			_PlayerLife += 1;
 			event.TriggerSetBattleMap(_AllStage[_NowStage-1],Stage1,_Menu,_PlayerTank,_Prop,EnemyList);
 			EnemyTypeList.assign(_AllStageEnemy[_NowStage - 1].begin(), _AllStageEnemy[_NowStage - 1].end());
 			_IfBattling = true;
@@ -80,7 +78,7 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 		}
 	}
 }
-void CGameStateRun::OnInit()                                  // 遊戲的初值及圖形設定
+void CGameStateRun::OnInit()                                  
 {
 	state = SelectStage;
 	srand((unsigned)time(NULL));
@@ -97,7 +95,7 @@ void CGameStateRun::OnInit()                                  // 遊戲的初值
 	_PlayerTank.LoadBitmap();
 	_PlayerTankFrontX = 0;
 	_PlayerTankFrontY = 0;
-	
+	_PlayerLife = 2;
 	_NowPropSize = 0;
 	for (int i = 0; i < 5; i++) {
 		_Prop.push_back(GameProps());
@@ -176,32 +174,31 @@ void CGameStateRun::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 	}
 }
 
-void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
+void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  
 {
 	
 }
 
-void CGameStateRun::OnLButtonUp(UINT nFlags, CPoint point)    // 處理滑鼠的動作
+void CGameStateRun::OnLButtonUp(UINT nFlags, CPoint point)    
 {
 }
 
-void CGameStateRun::OnMouseMove(UINT nFlags, CPoint point)    // 處理滑鼠的動作
+void CGameStateRun::OnMouseMove(UINT nFlags, CPoint point)    
 {
 	_MouseX = point.x;
 	_MouseY = point.y;
 }
 
-void CGameStateRun::OnRButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
+void CGameStateRun::OnRButtonDown(UINT nFlags, CPoint point)  
 {
 }
 
-void CGameStateRun::OnRButtonUp(UINT nFlags, CPoint point)    // 處理滑鼠的動作
+void CGameStateRun::OnRButtonUp(UINT nFlags, CPoint point)    
 {
 }
 
 void CGameStateRun::OnShow()
 {
-	
 	_Menu.OnShow();
 	if (_IfBattling) {
 		Stage1.OnShow();
@@ -232,8 +229,8 @@ void CGameStateRun::OnShowText() {
 	_Menu.OnShowText(pDC, fp);
 	
 	CTextDraw::ChangeFontLog(pDC, 15, "STZhongsong", RGB(255, 255, 255));
-	CTextDraw::Print(pDC, 0, 150, (to_string(_PlayerTank.GetLife())));
-	CTextDraw::Print(pDC, 0, 175, (to_string(Stage1.GetEnemySignNum())));
+	CTextDraw::Print(pDC, 0, 150, (to_string(_PlayerTank.GetTankState())));
+	CTextDraw::Print(pDC, 0, 175, (to_string(_PlayerLife)));
 
 	CTextDraw::Print(pDC, 0 , 450, (to_string(state)));
 	CTextDraw::Print(pDC, 0, 475, (to_string(_NowStage)));
@@ -287,6 +284,7 @@ void CGameStateRun::PlayerOnMove(CPlayer &Player) {
 	case CPlayer::Spawn:
 		if (Player.GetIfRespawnanimationdone()) {
 			Player.SetPlayerInit();
+			_PlayerLife -= 1;
 		}
 		break;
 	case CPlayer::Alive:
@@ -302,7 +300,7 @@ void CGameStateRun::PlayerOnMove(CPlayer &Player) {
 		}
 		break;
 	case CPlayer::Death:
-		if (Player.GetLife() > 0) {
+		if ( _PlayerLife > 0) {
 			Player.SetPlayerReSpawn();
 		}
 		break;

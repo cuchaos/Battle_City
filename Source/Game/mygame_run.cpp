@@ -14,9 +14,6 @@
 
 using namespace game_framework;
 
-/////////////////////////////////////////////////////////////////////////////
-// 這個class為遊戲的遊戲執行物件，主要的遊戲程式都在這裡
-/////////////////////////////////////////////////////////////////////////////
 
 CGameStateRun::CGameStateRun(CGame *g) : CGameState(g)
 {
@@ -32,13 +29,14 @@ void CGameStateRun::OnBeginState()
 
 
 
-void CGameStateRun::OnMove()                            // 移動遊戲元素
+void CGameStateRun::OnMove()                            
 {
 	switch(state) {
 		case SelectStage:
 			event.TriggerSelectingStage(_Menu);
 			break;
 		case PreBattle:
+			_PlayerLife += 1;
 			event.TriggerSetBattleMap(_AllStage[_NowStage-1],Stage1,_Menu,_PlayerTank,_Prop,EnemyList);
 			EnemyTypeList.assign(_AllStageEnemy[_NowStage - 1].begin(), _AllStageEnemy[_NowStage - 1].end());
 			_IfBattling = true;
@@ -80,7 +78,7 @@ void CGameStateRun::OnMove()                            // 移動遊戲元素
 		}
 	}
 }
-void CGameStateRun::OnInit()                                  // 遊戲的初值及圖形設定
+void CGameStateRun::OnInit()                                  
 {
 	state = SelectStage;
 	srand((unsigned)time(NULL));
@@ -97,7 +95,7 @@ void CGameStateRun::OnInit()                                  // 遊戲的初值
 	_PlayerTank.LoadBitmap();
 	_PlayerTankFrontX = 0;
 	_PlayerTankFrontY = 0;
-	
+	_PlayerLife = 2;
 	_NowPropSize = 0;
 	for (int i = 0; i < 5; i++) {
 		_Prop.push_back(GameProps());
@@ -110,7 +108,6 @@ void CGameStateRun::OnInit()                                  // 遊戲的初值
 		EnemyList[i].LoadBitmap();
 		EnemyReSpawnLastTime[i] = clock();
 	}
-	_EnemyQuantity = 4;
 	for (int i = 0; i < 6; i++) {
 		if (i == 0) {
 			_AllBullet.push_back(&_PlayerTank._Bullet);
@@ -177,32 +174,31 @@ void CGameStateRun::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 	}
 }
 
-void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
+void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  
 {
 	
 }
 
-void CGameStateRun::OnLButtonUp(UINT nFlags, CPoint point)    // 處理滑鼠的動作
+void CGameStateRun::OnLButtonUp(UINT nFlags, CPoint point)    
 {
 }
 
-void CGameStateRun::OnMouseMove(UINT nFlags, CPoint point)    // 處理滑鼠的動作
+void CGameStateRun::OnMouseMove(UINT nFlags, CPoint point)    
 {
 	_MouseX = point.x;
 	_MouseY = point.y;
 }
 
-void CGameStateRun::OnRButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
+void CGameStateRun::OnRButtonDown(UINT nFlags, CPoint point)  
 {
 }
 
-void CGameStateRun::OnRButtonUp(UINT nFlags, CPoint point)    // 處理滑鼠的動作
+void CGameStateRun::OnRButtonUp(UINT nFlags, CPoint point)    
 {
 }
 
 void CGameStateRun::OnShow()
 {
-	
 	_Menu.OnShow();
 	if (_IfBattling) {
 		Stage1.OnShow();
@@ -232,41 +228,18 @@ void CGameStateRun::OnShowText() {
 	CTextDraw::Print(pDC, 0, 125, (to_string(EnemyTankCollision(&_PlayerTank))));*/
 	_Menu.OnShowText(pDC, fp);
 	
-	/*CTextDraw::Print(pDC, 0, 50, (to_string(_MouseX) + " " + to_string(_MouseY)));*/
 	CTextDraw::ChangeFontLog(pDC, 15, "STZhongsong", RGB(255, 255, 255));
-	//CTextDraw::Print(pDC, 0, 150, (to_string(Stage1.GetEnemySignNum())));
+	CTextDraw::Print(pDC, 0, 150, (to_string(_PlayerTank.GetTankState())));
+	CTextDraw::Print(pDC, 0, 175, (to_string(_PlayerLife)));
 
-	/*
-	for (int i = 0; i < 4; i++) {
-		CTextDraw::Print(pDC, 0 + i * 25, 125, (to_string(EnemyTypeList[i])));
-		CTextDraw::Print(pDC, 0 + i * 25, 150, (to_string(EnemyList[i].GetTankState())));
-		CTextDraw::Print(pDC, 0 + i * 25, 175, (to_string(EnemyList[i].GetIfRespawnanimationdone())));
-	}
-	*/
-	CTextDraw::Print(pDC, 0 , 375, (to_string(state)));
+	CTextDraw::Print(pDC, 0 , 450, (to_string(state)));
 	CTextDraw::Print(pDC, 0, 475, (to_string(_NowStage)));
 	
-	/*CTextDraw::Print(pDC, 0, 150, (to_string(Stage1.GetEnemySignNum())));
-	CTextDraw::Print(pDC, 0, 125, (to_string(_EnemyNum)));*/
-	/*_tempcollision = Stage1.GetFrontGridsIndex(_PlayerTank.GetTankFront());
-	CTextDraw::Print(pDC, 0, 75, (to_string(_tempcollision[0][0])+ "," + to_string(_tempcollision[0][1]) +" "+ to_string(NowXGrid(EnemyList[0].GetX1())) +"," +to_string(NowYGrid(EnemyList[0].GetY1()) + 1)));
-	CTextDraw::Print(pDC, 0, 100, (to_string(_tempcollision[1][0]) + "," + to_string(_tempcollision[1][1]) + " " + to_string(NowXGrid(EnemyList[0].GetX1()) + 1) + "," + to_string(NowYGrid(EnemyList[0].GetY1()) + 1)));
-	CTextDraw::Print(pDC, 0, 125, (to_string(EnemyTankCollision(&_PlayerTank))));*/
-	_Menu.OnShowText(pDC, fp);
-	for (int i = 0; i < 6; i++){
-		CTextDraw::Print(pDC, 0, i*50+50, (to_string(EnemyList[0].GetEnemyDirectionInfo(i))));
-	}
 	for (int i = 0; i < 4; i++){
 		if (EnemyList[i].GetTankState() == EnemyList[i].Death) {
 			EnemyList[i].OnShowScore(pDC, fp);
 		}
 	}
-	/*
-	if (_IfEatItem[0] && clock() - _IfEatItem[3] <= 300) {
-		CTextDraw::ChangeFontLog(pDC, 48, "STZhongsong", RGB(255, 255, 255));
-		CTextDraw::Print(pDC, _IfEatItem[1], _IfEatItem[2], to_string(500));
-	}
-	*/
 	CDDraw::ReleaseBackCDC();
 }
 bool CGameStateRun::IfNoEnemy() {
@@ -311,6 +284,7 @@ void CGameStateRun::PlayerOnMove(CPlayer &Player) {
 	case CPlayer::Spawn:
 		if (Player.GetIfRespawnanimationdone()) {
 			Player.SetPlayerInit();
+			_PlayerLife -= 1;
 		}
 		break;
 	case CPlayer::Alive:
@@ -326,7 +300,7 @@ void CGameStateRun::PlayerOnMove(CPlayer &Player) {
 		}
 		break;
 	case CPlayer::Death:
-		if (Player.GetLife() > 0) {
+		if ( _PlayerLife > 0) {
 			Player.SetPlayerReSpawn();
 		}
 		break;
@@ -348,6 +322,11 @@ void CGameStateRun::AllEnemyOnMove() {
 			enemy.TankExpolsion();
 			if (_EnemyNum > 0 && clock() - EnemyReSpawnLastTime[i] >= 2500
 				&& enemy.GetIfexploded()) {
+				event.TriggerUpdateMap(Stage1);
+				if (_EnemyNum % 4 == 0) {
+					event.TriggerReSetProps(_Prop);
+					EnemyList[i].SetEnemyHaveItem(true);
+				}
 				enemy.SetEnemyReSpawn();
 				_EnemyNum -= 1;
 			}
@@ -402,7 +381,7 @@ void CGameStateRun::EnemyAllBulletCollision() {
 		if (!_AllBullet[i]->GetAlreadyFire()) continue;
 		if (BulletHitTank(*_AllBullet[i], &EnemyList[i - 2], &_PlayerTank, FirstBullet)) {
 			if (!_PlayerTank.GetIfInvicible()) {
-				//_PlayerTank.SetLife(0);
+				_PlayerTank.SetLife(_PlayerTank.GetLife()-1);
 			}
 			continue;
 		}
@@ -547,15 +526,6 @@ bool CGameStateRun::TankCollision(CTank *tank, CTank *who) {
 			break;
 		}
 	}
-	/*
-	00   00  00
-	11  11    11 
-
-		0
-	01  01   1
-	01   1  01
-			0    ->三種可能(X)->六種可能 因為移動會讓坦克的定位往前一點點但圖片看不出來所以會變成穿模 所以避免穿模就必須判斷前後
-	*/
 	return false;
 }
 void CGameStateRun::RandomSpawnTank(int num) {

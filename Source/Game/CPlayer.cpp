@@ -15,26 +15,28 @@ CPlayer::CPlayer() : CTank(){
 	_PlayerScore = 0;
 	_KillEnemyList = {0,0,0,0};
 	_Level = 1;
-	_Life = 3;
+	_Life = 1;
 	_TankState = Death;
 }
 void CPlayer::SetPlayerInit() {
 	_TankState = Alive;
-	_IfGetShip = false;
 	_OriginAngle = Up;
 	_TurnAngle = Up;
 	_NowGrid = { (_X - 100) / Width, _Y / Height };
 	_OffsetXY = { 0,0 };
-	_IfInvicible = true;
+	_IfInvicible = false;
+	_IfSpawnInvicible = true;
 	_IfGetShip = false;
 	_IfSecondFire = false;
 	_RespawnAnimationNum = 0;
+	_SpawnInvicibleClock = clock();
 	_Tank.SetFrameIndexOfBitmap(_Frameindex);
 	SetFaceDirection();
 }
 void CPlayer::SetPlayerReSpawn() {
 	if (_IfExploded) {
 		_TankState = Spawn;
+		_IfRespawnAnimationDone = false;
 		_X = Width * 8 + 100;
 		_Y = Height * 24;
 		_Tank.SetTopLeft(_X, _Y);
@@ -58,16 +60,16 @@ void CPlayer::SetIfInvicible(bool Status) {
 }
 void CPlayer::SetFaceDirection() {
 	switch (_OriginAngle) {
-	case Right:
+	case Right: 
 		_Frameindex = 0;
 		break;
-	case Left:
+	case Left: 
 		_Frameindex = 2;
 		break;
-	case Up:
+	case Up: 
 		_Frameindex = 4;
 		break;
-	case Down:
+	case Down: 
 		_Frameindex = 6;
 		break;
 	default:
@@ -115,10 +117,10 @@ void CPlayer::LevelUP() {
 	}
 }
 void CPlayer::TankExpolsion() {
-	if (_IfExploded) {
+	if (!_IfExploded) {
 		_TankBrokenAnimation.SetFrameIndexOfBitmap((_FrameTime % 26) / 5 % 5);
 		if (_FrameTime % 26 == 25) {
-			_IfExploded = false;
+			_IfExploded = true;
 		}
 		++_FrameTime;
 		_TankBrokenAnimation.ShowBitmap();
@@ -135,7 +137,7 @@ bool CPlayer::GetIfFire(int FireOrder) {
 	return false;
 }
 bool CPlayer::GetIfInvicible() {
-	return _IfInvicible;
+	return _IfInvicible || _IfSpawnInvicible;
 }
 void CPlayer::Animation() {
 	_Tank.SetFrameIndexOfBitmap(_Frameindex + _FrameTime % 6 / 3);
@@ -146,6 +148,9 @@ void CPlayer::InvicibleAnimation() {
 	_Invicible.SetTopLeft(_X, _Y);
 	_Invicible.SetAnimation(50,false);
 	_Invicible.ShowBitmap(); 
+	if (clock() - _SpawnInvicibleClock >= 2500) {
+		_IfSpawnInvicible = false;
+	}
 }
 void CPlayer::OnShow() {
 	if (_IfBattle) {
@@ -160,7 +165,7 @@ void CPlayer::OnShow() {
 		case Alive:
 			_Tank.SetTopLeft(_X, _Y);
 			_Tank.ShowBitmap();
-			if (_IfInvicible) {
+			if (_IfInvicible || _IfSpawnInvicible) {
 				InvicibleAnimation();
 			}
 			if (_IfGetShip) {
@@ -177,40 +182,6 @@ void CPlayer::OnShow() {
 			}
 			break;
 		}
-		/*
-		if (_TankState == Spawn) {
-			if (!_IfSetinit) {
-				PlayerInit();
-			}
-			else if(_IfSetinit){
-				CTank::LoadBitmap();
-				ShowSpawnAnimation();
-				_InvicibleClock = clock();
-				_IfInvicible = true;
-			}
-			_Tank.SetFrameIndexOfBitmap(_Frameindex);
-		}
-		else if (_TankState == Alive) {
-			_Tank.SetTopLeft(_X, _Y);
-			_Tank.ShowBitmap();
-			if (_IfInvicible){
-				InvicibleAnimation();
-			}
-			if (clock() - _InvicibleClock >= 2500 && clock() - _InvicibleClock <= 2550){
-				_IfInvicible = false;
-			}
-			if (_IfGetShip){
-				_Ship.SetTopLeft(_X,_Y);
-				_Ship.ShowBitmap();
-			}
-			_Bullet.OnShow();
-			_SecondBullet.OnShow();
-		}
-		else if (_TankState == Death) {
-			_TankBrokenAnimation.SetTopLeft(_X, _Y);
-			CPlayer::TankExpolsion();
-		}
-		*/
 	}
 }
 

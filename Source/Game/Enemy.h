@@ -36,8 +36,6 @@ namespace game_framework {
 		int GetEnemyType();
 		bool GetEnemySetInit();
 		bool GetIfGetTimeStop();
-		void EnemyMove();
-		void EnemyRandomDirection();			// 隨機設定前進方向
 		void ENemyMoveDown();
 		// Prop
 		void SetGetTimeStop(int Status);
@@ -52,7 +50,8 @@ namespace game_framework {
 		CMovingBitmap GetEnemyBitmap();
 		void OnShowScore(CDC *pDC, CFont* &fp);
 	private:
-		clock_t _TimeFinish, _TimeStart, _StopClock, _UpClock, _ChooseClock, _SpawnClock,_SuccessClock,_FireClock;		// 計時器 (結束-開始 = 經過時間)
+		clock_t _TimeFinish, _TimeStart, _StopClock, _UpClock, _ChooseClock,_SuccessClock,_FireClock;		// 計時器 (結束-開始 = 經過時間)
+		static clock_t _SpawnClock;
 		int _EnemyType;
 		int _EnemyScore;
 		bool _EnemyHaveItem;					// 道具
@@ -60,7 +59,6 @@ namespace game_framework {
 		int _Times;
 		bool _Success;
 		int _RandomDirection,_RandomMoveTime, _RandomLR;	// 隨機轉向方向,隨機移動時間
-		bool _IfGetTimeStop;
 		int _MoveDownDistance,_MoveLRDistance;
 		int _RandomFuncChoose;
 		bool _KeepUP;

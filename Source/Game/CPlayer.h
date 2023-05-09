@@ -29,8 +29,9 @@ namespace game_framework {
 
 	private:
 		CMovingBitmap _Invicible,_Ship;
-		clock_t _InvicibleClock;
+		clock_t _SpawnInvicibleClock;
 		bool _IfSecondFire;
+		bool _IfSpawnInvicible;
 		int _IfInvicible;
 		int _PlayerScore;
 		vector<int> _KillEnemyList;

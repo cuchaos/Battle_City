@@ -16,8 +16,7 @@ namespace game_framework {
 		void LoadBitmap();
 		void OnMove();
 		void OnShow() override;
-		void TankExpolsion() override;
-		void EnemyRandomDirection();			
+		void TankExpolsion() override;			
 		void Animation() override;
 		
 		int GetEnemyScore();
@@ -53,7 +52,7 @@ namespace game_framework {
 		CMovingBitmap GetEnemyBitmap();
 		void OnShowScore(CDC *pDC, CFont* &fp);
 	private:
-		clock_t _TimeFinish, _TimeStart, _StopClock, _UpClock, _ChooseClock, _SpawnClock,_SuccessClock;		// 計時器 (結束-開始 = 經過時間)
+		clock_t _TimeFinish, _TimeStart, _StopClock, _UpClock, _ChooseClock, _SpawnClock,_SuccessClock,_FireClock;		// 計時器 (結束-開始 = 經過時間)
 		int _EnemyType;
 		int _EnemyScore;
 		bool _EnemyHaveItem;					// 道具

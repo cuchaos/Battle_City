@@ -97,8 +97,6 @@ void Event::TriggerGetProps(GameProps& Props,Map& StageMap,CPlayer& Player,vecto
 			if (AllEnemy[i].GetLife() > 0) {
 				AllEnemy[i].SetLife(0);
 				EnemyNum -= 1;
-			}
-			if (StageMap.GetEnemySignNum() > 0) {
 				TriggerUpdateMap(StageMap);
 			}
 		}

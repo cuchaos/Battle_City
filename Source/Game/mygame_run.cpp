@@ -42,7 +42,7 @@ void CGameStateRun::OnMove()
 			_IfBattling = true;
 			_IfSettling = false;
 			_NowPropSize = 0;
-			_EnemyNum = 20;
+			_EnemyNum = 16;
 			break;
 		case Battle:
 			TrigAllProp();
@@ -234,7 +234,7 @@ void CGameStateRun::OnShowText() {
 
 	CTextDraw::Print(pDC, 0 , 450, (to_string(state)));
 	CTextDraw::Print(pDC, 0, 475, (to_string(_NowStage)));
-	
+	CTextDraw::Print(pDC, 0, 500, (to_string(_EnemyNum)));
 	for (int i = 0; i < 4; i++){
 		if (EnemyList[i].GetTankState() == EnemyList[i].Death) {
 			EnemyList[i].OnShowScore(pDC, fp);
@@ -274,7 +274,7 @@ void CGameStateRun::TrigAllProp() {
 			_IfEatItem[1] = _Prop[i].GetX();
 			_IfEatItem[2] = _Prop[i].GetY();
 			_IfEatItem[3] = clock();
-			event.TriggerGetProps(_Prop[i], Stage1, _PlayerTank, EnemyList);
+			event.TriggerGetProps(_Prop[i], Stage1, _PlayerTank, EnemyList,_EnemyNum);
 		}
 	}
 }
@@ -320,7 +320,7 @@ void CGameStateRun::AllEnemyOnMove() {
 			break;
 		case Enemy::Death:
 			enemy.TankExpolsion();
-			if (_EnemyNum > 0 && clock() - EnemyReSpawnLastTime[i] >= 2500
+			if (_EnemyNum > 0 && clock() - enemy.GetSpawnClock() >= 2500
 				&& enemy.GetIfexploded()) {
 				event.TriggerUpdateMap(Stage1);
 				if (_EnemyNum % 4 == 0) {

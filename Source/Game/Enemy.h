@@ -24,8 +24,9 @@ namespace game_framework {
 		bool GetIfFire(int FireOrder) override;
 		bool SuccessMove();
 		int GetEnemyDirectionInfo(int num);
+		clock_t GetSpawnClock();
 
-
+		void EnemyRandomDirection();
 		void SetFaceDirection() override;
 		void SetEnemyHaveItem(bool has);		// 設定有道具
 		void SetEnemyType(int _num);			// 設定敵人類型

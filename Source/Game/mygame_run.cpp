@@ -25,6 +25,24 @@ CGameStateRun::~CGameStateRun()
 
 void CGameStateRun::OnBeginState()
 {
+
+	state = SelectStage;
+	_NowStage = -1;
+	_IfBattling = false;
+	_IfSettling = false;
+	_isHoldDownKey = _isHoldUpKey = _isHoldLeftKey = _isHoldRightKey = false;
+	_IfEatItem = {0,0,0,0};
+	_ScoreClock = { 0,0,0,0 };
+	_MouseX = 0;
+	_MouseY = 0;
+	_OnIceCountDown = 0;
+	_PlayerTankFrontX = 0;
+	_PlayerTankFrontY = 0;
+	_PlayerLife = 2;
+	_NowPropSize = 0;
+
+	_TimerSpawn = clock();
+
 }
 
 
@@ -50,6 +68,9 @@ void CGameStateRun::OnMove()
 			AllEnemyOnMove();
 			AllBulletCollision();
 			AllBulletFly();
+			if (_PlayerLife == 0) {
+				GotoGameState(GAME_STATE_INIT);
+			}
 			_TimerFinish = clock();
 			break;
 		case Settlement:
@@ -80,30 +101,13 @@ void CGameStateRun::OnMove()
 }
 void CGameStateRun::OnInit()                                  
 {
-	state = SelectStage;
 	srand((unsigned)time(NULL));
-	_NowStage = -1;
-	_IfBattling = false;
-	_IfSettling = false;
 	_Menu.LoadBitMap();
-	_isHoldDownKey = _isHoldUpKey = _isHoldLeftKey = _isHoldRightKey = false;
-	_IfEatItem = {0,0,0,0};
-
-	_MouseX = 0;
-	_MouseY = 0;
-	_OnIceCountDown = 0;
 	_PlayerTank.LoadBitmap();
-	_PlayerTankFrontX = 0;
-	_PlayerTankFrontY = 0;
-	_PlayerLife = 2;
-	_NowPropSize = 0;
 	for (int i = 0; i < 5; i++) {
 		_Prop.push_back(GameProps());
 		_Prop[i].OnInit();
 	}
-
-	_TimerSpawn = clock();
-
 	for (int i=0; i<4; ++i) {
 		EnemyList[i].LoadBitmap();
 		EnemyReSpawnLastTime[i] = clock();
@@ -119,6 +123,7 @@ void CGameStateRun::OnInit()
 			_AllBullet.push_back(&EnemyList[i - 2]._Bullet);
 		}
 	}
+	
 }
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -235,11 +240,14 @@ void CGameStateRun::OnShowText() {
 	CTextDraw::Print(pDC, 0 , 450, (to_string(state)));
 	CTextDraw::Print(pDC, 0, 475, (to_string(_NowStage)));
 	CTextDraw::Print(pDC, 0, 500, (to_string(_EnemyNum)));
+	
 	for (int i = 0; i < 4; i++){
-		if (EnemyList[i].GetTankState() == EnemyList[i].Death) {
-			EnemyList[i].OnShowScore(pDC, fp);
+		if (EnemyList[i].GetTankState() == EnemyList[i].Death && clock() - _ScoreClock[i] <= 750 && EnemyList[i].GetIfexploded()) {
+			CTextDraw::ChangeFontLog(pDC, 48, "STZhongsong", RGB(255,255,255));
+			CTextDraw::Print(pDC,EnemyList[i].GetX1(), EnemyList[i].GetY1(), to_string(EnemyList[i].GetEnemyScore()));
 		}
 	}
+	
 	CDDraw::ReleaseBackCDC();
 }
 bool CGameStateRun::IfNoEnemy() {
@@ -317,6 +325,7 @@ void CGameStateRun::AllEnemyOnMove() {
 		case Enemy::Alive:
 			EnemyList[i].OnMove();
 			EnemyTankCollisionMap(&EnemyList[i]);
+			_ScoreClock[i] = clock();
 			break;
 		case Enemy::Death:
 			enemy.TankExpolsion();

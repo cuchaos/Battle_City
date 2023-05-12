@@ -140,6 +140,7 @@ namespace game_framework {
 		Menu _Menu;
 
 		clock_t _TimerSpawn,_TimerFinish;
+		vector<clock_t> _ScoreClock;
 		int _EnemyQuantity;
 		CPlayer _PlayerTank;
 		bool _isHoldUpKey, _isHoldDownKey, _isHoldRightKey, _isHoldLeftKey;

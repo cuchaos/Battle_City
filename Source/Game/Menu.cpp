@@ -153,6 +153,8 @@ int Menu::OnKeyDown(UINT 📥, UINT nRepCnt, UINT nFlags) {
 			_IfChoosingStage = false;
 			_IfAnimation = false;
 			_IfSelecting = false;
+			_ChooseStageMenuTop.SetTopLeft(0, -450);
+			_ChooseStageMenuDown.SetTopLeft(0, 900);
 			finalselect = tempselect + 1;
 			return finalselect;
 		}

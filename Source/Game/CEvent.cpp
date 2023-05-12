@@ -130,3 +130,9 @@ void Event::TriggerGetProps(GameProps& Props,Map& StageMap,CPlayer& Player,vecto
 		break;
 	}
 }
+
+void Event::TriggerGameOver(CMovingBitmap& GameOverSign) {
+	if (GameOverSign.GetTop() >= 450) {
+		GameOverSign.SetTopLeft(516, GameOverSign.GetTop() - 20);
+	}
+}

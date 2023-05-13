@@ -396,7 +396,7 @@ void CGameStateRun::EnemyAllBulletCollision() {
 		if (!_AllBullet[i]->GetAlreadyFire()) continue;
 		if (BulletHitTank(*_AllBullet[i], &EnemyList[i - 2], &_PlayerTank, FirstBullet)) {
 			if (!_PlayerTank.GetIfInvicible()) {
-				//_PlayerTank.SetLife(_PlayerTank.GetLife()-1);
+				_PlayerTank.SetLife(_PlayerTank.GetLife()-1);
 				GameOverClock = clock();
 			}
 			continue;
@@ -505,8 +505,8 @@ bool CGameStateRun::EnemyTankCollision(CTank *tank) {
 }
 bool CGameStateRun::TankCollision(CTank *tank, CTank *who) {
 	if (who->GetTankState() == who->Alive){
-		vector<vector<int>> _Collision2D = { {2,0,2,2/*Right*/},{0,2,2,2/*Down*/} ,{0,0,0,2/*Left*/},{0,0,2,0/*Up*/} };
 		//這是tank判斷點的位置，為Bitmap的四個角
+		vector<vector<int>> _Collision2D = { {2,0,2,2/*Right*/},{0,2,2,2/*Down*/} ,{0,0,0,2/*Left*/},{0,0,2,0/*Up*/} };
 		//使用Axis-Aligned Bounding Box方法判斷碰撞
 		//但是tank不是以碰撞箱作為碰撞判斷，以點作為碰撞判斷，避免tank碰撞箱重疊會無法移動
 		if ((tank->GetX1() + _Collision2D[tank->GetOriginAngle()][0] * 32 <= who->GetX1() + 64 && 

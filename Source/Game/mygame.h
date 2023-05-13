@@ -151,6 +151,7 @@ namespace game_framework {
 		vector<int> _IfEatItem;
 		int _OnIceCountDown; // If we on ice,we should go without any keydown,this is 
 							// the go on counter 2 Grid,so is 64 pixel
+		bool _collision;
 		int tempIndex;
 		int _HoldKey;
 		int _PlayerTankFrontX ;

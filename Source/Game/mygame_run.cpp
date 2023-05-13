@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "../Core/Resource.h"
 #include <mmsystem.h>
 #include <ddraw.h>
@@ -245,7 +245,8 @@ void CGameStateRun::OnShowText() {
 	for (int i = 0; i < 4; i++){
 		CTextDraw::Print(pDC, 0, 50+25*i, (to_string(EnemyList[i].GetX1()) + "," + to_string(EnemyList[i].GetY1())));
 	}
-	
+	CTextDraw::Print(pDC, 0, 200, (to_string(TankCollision(&_PlayerTank,&EnemyList[0]))));
+	CTextDraw::Print(pDC, 0, 225, (to_string(_collision)));
 	for (int i = 0; i < 4; i++){
 		if (EnemyList[i].GetTankState() == EnemyList[i].Death && clock() - _ScoreClock[i] <= 750 && EnemyList[i].GetIfexploded()) {
 			CTextDraw::ChangeFontLog(pDC, 48, "STZhongsong", RGB(255,255,255));
@@ -489,72 +490,33 @@ void CGameStateRun::EnemyTankCollisionMap(Enemy *tank) {
 	tank->Animation();
 }
 bool CGameStateRun::EnemyTankCollision(CTank *tank) {
-	bool _collision = false;
+	_collision = false;
 	for (int i = 0; i < 4; i++) {
-		for (int i = 0; i < 4; i++) {
-			if (EnemyList[i].GetX1() != tank->GetX1()) {
-				_collision |= TankCollision(tank, &EnemyList[i]);
-			}
+		if (EnemyList[i].GetX1() != tank->GetX1() || EnemyList[i].GetY1() != tank->GetY1()) {
+			_collision |= TankCollision(tank, &EnemyList[i]);
 		}
-		//_collision |= TankCollision(tank, &EnemyList[i]);
 	}
-	if (tank->GetX1() != _PlayerTank.GetX1()){
+	if (tank->GetX1() != _PlayerTank.GetX1() || tank->GetY1() != _PlayerTank.GetY1()){
 		_collision |= TankCollision(tank, &_PlayerTank);
 	}
 	return _collision;
 }
 bool CGameStateRun::TankCollision(CTank *tank, CTank *who) {
 	if (who->GetTankState() == who->Alive){
-		//_tempcollision = Stage1.GetFrontGridsIndex(tank->GetTankFront());
-		/*switch (tank->GetOriginAngle())
-		{
-		case Right:
-			if ((_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1())) ||
-				(_tempcollision[1][0] == Stage1.GetGridIndexX(who->GetX1()) && _tempcollision[1][1] == Stage1.GetGridIndexY(who->GetY1())) ||
-				(_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1()) + 1) ||
-				(_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) + 1 && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1())) ||
-				(_tempcollision[1][0] == Stage1.GetGridIndexX(who->GetX1()) + 1 && _tempcollision[1][1] == Stage1.GetGridIndexY(who->GetY1())) ||
-				(_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) + 1 && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1()) + 1)) {
-				return true;
-			}
-			break;
-		case Down:
-			if ((_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1())) ||
-				(_tempcollision[1][0] == Stage1.GetGridIndexX(who->GetX1()) && _tempcollision[1][1] == Stage1.GetGridIndexY(who->GetY1())) ||
-				(_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) + 1 && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1())) ||
-				(_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1()) + 1) ||
-				(_tempcollision[1][0] == Stage1.GetGridIndexX(who->GetX1()) && _tempcollision[1][1] == Stage1.GetGridIndexY(who->GetY1()) + 1) ||
-				(_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) + 1 && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1()) + 1)) {
-				return true;
-			}
-			break;
-		case Left:
-			if ((_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) + 1 && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1())) ||
-				(_tempcollision[1][0] == Stage1.GetGridIndexX(who->GetX1()) + 1 && _tempcollision[1][1] == Stage1.GetGridIndexY(who->GetY1())) ||
-				(_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) + 1 && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1()) + 1) ||
-				(_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) + 2 && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1())) ||
-				(_tempcollision[1][0] == Stage1.GetGridIndexX(who->GetX1()) + 2 && _tempcollision[1][1] == Stage1.GetGridIndexY(who->GetY1())) ||
-				(_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) + 2 && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1()) + 1)) {
-				return true;
-			}
-			break;
-		case Up:
-			if ((_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1()) + 1) ||
-				(_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) + 1 && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1()) + 1) ||
-				(_tempcollision[1][0] == Stage1.GetGridIndexX(who->GetX1()) && _tempcollision[1][1] == Stage1.GetGridIndexY(who->GetY1()) + 1) ||
-				(_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1()) + 2) ||
-				(_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) + 1 && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1()) + 2) ||
-				(_tempcollision[1][0] == Stage1.GetGridIndexX(who->GetX1()) && _tempcollision[1][1] == Stage1.GetGridIndexY(who->GetY1()) + 2)) {
-				return true;
-			}
-			break;
-		}*/
-
-		vector<vector<int>> _Collision2D = { {2,1/*Right*/},{1,2/*Down*/} ,{0,1/*Left*/},{1,0/*Up*/} };
-		if (tank->GetX1() + _Collision2D[tank->GetOriginAngle()][0] * 32 <= who->GetX1() + 64 && 
-			tank->GetX1() + _Collision2D[tank->GetOriginAngle()][0] * 32 >= who->GetX1() &&
-			tank->GetY1() + _Collision2D[tank->GetOriginAngle()][1] * 32 <= who->GetY1() + 64 && 
-			tank->GetY1() + _Collision2D[tank->GetOriginAngle()][1] * 32 >= who->GetY1()){
+		//這是tank判斷點的位置，為Bitmap的四個角
+		vector<vector<int>> _Collision2D = { {2,0,2,2/*Right*/},{0,2,2,2/*Down*/} ,{0,0,0,2/*Left*/},{0,0,2,0/*Up*/} };
+		//使用Axis-Aligned Bounding Box方法判斷碰撞
+		//但是tank不是以碰撞箱作為碰撞判斷，以點作為碰撞判斷，避免tank碰撞箱重疊會無法移動
+		if ((tank->GetX1() + 1 + _Collision2D[tank->GetOriginAngle()][0] * 31 <= who->GetX1() + 64 && 
+			tank->GetX1() + 1 + _Collision2D[tank->GetOriginAngle()][0] * 31 >= who->GetX1()&&
+			tank->GetY1() + 1 + _Collision2D[tank->GetOriginAngle()][1] * 31 <= who->GetY1() + 64 && 
+			tank->GetY1() + 1 + _Collision2D[tank->GetOriginAngle()][1] * 31 >= who->GetY1())){
+			return true;
+		}
+		if (tank->GetX1() + _Collision2D[tank->GetOriginAngle()][2] * 31 <= who->GetX1() + 64 &&
+			tank->GetX1() + _Collision2D[tank->GetOriginAngle()][2] * 31 >= who->GetX1()&&
+			tank->GetY1() + _Collision2D[tank->GetOriginAngle()][3] * 31 <= who->GetY1() + 64 &&
+			tank->GetY1() + _Collision2D[tank->GetOriginAngle()][3] * 31 >= who->GetY1()) {
 			return true;
 		}
 	}

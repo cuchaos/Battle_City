@@ -108,6 +108,12 @@ bool CTank::GetIfRespawnanimationdone() {
 bool CTank::GetIfexploded() {
 	return _IfExploded;
 }
+bool CTank::GetTankCollision() {
+	return _TankCollision;
+}
+void CTank::SetTankCollision(bool n) {
+	_TankCollision = n;
+}
 void CTank::SetXY(int _x, int _y) {
 	_X = _x;
 	_Y = _y;
@@ -177,6 +183,19 @@ void CTank::TurnFace(UINT nChar) {
 	}
 }
 void CTank::TankFront() {		// 對坦克前方的兩格格子做XY定位
+	//vector<int> _AngleMove = {1/*Right*/,1/*Down*/,0/*Left*/,0/*Up*/ };
+	//if (_OriginAngle == Left || _OriginAngle == Right) {
+	//	_FrontXY[0][0] = _X + _AngleMove[_OriginAngle] * (Width * 2);
+	//	_FrontXY[0][1] = _Y + Height / 2;
+	//	_FrontXY[0][0] = _X + _AngleMove[_OriginAngle] * (Width * 2);
+	//	_FrontXY[1][1] = _Y + Height * 3 / 2;
+	//}
+	//else if (_OriginAngle == Up || _OriginAngle == Down) {
+	//	_FrontXY[0][0] = _X + Width / 2;
+	//	_FrontXY[0][1] = _Y + _AngleMove[_OriginAngle] * (Height * 2);
+	//	_FrontXY[1][0] = _X + Width * 3 / 2;
+	//	_FrontXY[1][1] = _Y + _AngleMove[_OriginAngle] * (Height * 2);
+	//}
 	if (_OriginAngle == Right) {
 		_FrontXY[0][0] = _X + Width * 2;
 		_FrontXY[0][1] = _Y + Height / 2;

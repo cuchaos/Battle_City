@@ -76,8 +76,10 @@ void Enemy::OnMove() {
 		return;
 	}
 	if (clock() - _ChooseClock >= 500 /*_RandomMoveTime*/) {
-		_RandomFuncChoose = rand() % 2;
-		_RandomDirection = rand() % 4;
+		//_RandomFuncChoose = rand() % 2;
+		_RandomFuncChoose = 0;
+		//_RandomDirection = rand() % 4;
+		_RandomDirection = rand() % 2 *2;
 		_ChooseClock = clock();
 	}
 	else if (_RandomFuncChoose % 2 == 0) {

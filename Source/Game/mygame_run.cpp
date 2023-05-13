@@ -2,7 +2,6 @@
 #include "../Core/Resource.h"
 #include <mmsystem.h>
 #include <ddraw.h>
-#include "../Library/audio.h"
 #include "../Library/gameutil.h"
 #include "../Library/gamecore.h"
 #include "mygame.h"
@@ -83,6 +82,10 @@ void CGameStateRun::OnMove()
 		break;
 	case PreBattle:
 		state = Battle;
+		if (!_AllAudioIfPlaying[AUDIO_BGM]) {
+			_AllAudioIfPlaying[AUDIO_BGM] = true;
+			audio->Play(AUDIO_BGM, true);
+		}
 		break;
 	case Battle:
 		if (IfNoEnemy()) {
@@ -101,6 +104,10 @@ void CGameStateRun::OnMove()
 }
 void CGameStateRun::OnInit()                                  
 {
+	audio->Load(AUDIO_BGM, "resources/BattleBackgroundSound.wav");
+	for (int i = 0;i < 17;i++) {
+		_AllAudioIfPlaying.push_back(false);
+	}
 	srand((unsigned)time(NULL));
 	_Menu.LoadBitMap();
 	_PlayerTank.LoadBitmap();

@@ -27,7 +27,6 @@ namespace game_framework {
 		int GetEnemyDirectionInfo(int num);
 		clock_t GetSpawnClock();
 
-		void EnemyRandomDirection();
 		void SetFaceDirection() override;
 		void SetEnemyHaveItem(bool has);		// 設定有道具
 		void SetEnemyType(int _num);			// 設定敵人類型
@@ -50,7 +49,6 @@ namespace game_framework {
 		void SetIfFire(int FireOrder, bool Status) override;
 
 		CMovingBitmap GetEnemyBitmap();
-		void OnShowScore(CDC *pDC, CFont* &fp);
 	private:
 		clock_t _TimeFinish, _TimeStart, _StopClock, _UpClock, _ChooseClock,_SuccessClock,_FireClock;		// 計時器 (結束-開始 = 經過時間)
 		static clock_t _SpawnClock;

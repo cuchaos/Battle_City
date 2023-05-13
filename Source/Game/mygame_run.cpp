@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "../Core/Resource.h"
 #include <mmsystem.h>
 #include <ddraw.h>
@@ -245,7 +245,8 @@ void CGameStateRun::OnShowText() {
 	for (int i = 0; i < 4; i++){
 		CTextDraw::Print(pDC, 0, 50+25*i, (to_string(EnemyList[i].GetX1()) + "," + to_string(EnemyList[i].GetY1())));
 	}
-	
+	CTextDraw::Print(pDC, 0, 200, (to_string(TankCollision(&_PlayerTank,&EnemyList[0]))));
+	CTextDraw::Print(pDC, 0, 225, (to_string(_collision)));
 	for (int i = 0; i < 4; i++){
 		if (EnemyList[i].GetTankState() == EnemyList[i].Death && clock() - _ScoreClock[i] <= 750 && EnemyList[i].GetIfexploded()) {
 			CTextDraw::ChangeFontLog(pDC, 48, "STZhongsong", RGB(255,255,255));
@@ -489,34 +490,33 @@ void CGameStateRun::EnemyTankCollisionMap(Enemy *tank) {
 	tank->Animation();
 }
 bool CGameStateRun::EnemyTankCollision(CTank *tank) {
-	bool _collision = false;
+	_collision = false;
 	for (int i = 0; i < 4; i++) {
-		for (int i = 0; i < 4; i++) {
-			if (EnemyList[i].GetX1() != tank->GetX1()) {
-				_collision |= TankCollision(tank, &EnemyList[i]);
-			}
+		if (EnemyList[i].GetX1() != tank->GetX1() || EnemyList[i].GetY1() != tank->GetY1()) {
+			_collision |= TankCollision(tank, &EnemyList[i]);
 		}
-		//_collision |= TankCollision(tank, &EnemyList[i]);
 	}
-	if (tank->GetX1() != _PlayerTank.GetX1()){
+	if (tank->GetX1() != _PlayerTank.GetX1() || tank->GetY1() != _PlayerTank.GetY1()){
 		_collision |= TankCollision(tank, &_PlayerTank);
 	}
 	return _collision;
 }
 bool CGameStateRun::TankCollision(CTank *tank, CTank *who) {
 	if (who->GetTankState() == who->Alive){
-		//³o¬Otank§PÂ_ÂIªº¦ì¸m¡A¬°Bitmapªº¥|­Ó¨¤
+		//é€™æ˜¯tankåˆ¤æ–·é»çš„ä½ç½®ï¼Œç‚ºBitmapçš„å››å€‹è§’
 		vector<vector<int>> _Collision2D = { {2,0,2,2/*Right*/},{0,2,2,2/*Down*/} ,{0,0,0,2/*Left*/},{0,0,2,0/*Up*/} };
-		//¨Ï¥ÎAxis-Aligned Bounding Box¤èªk§PÂ_¸I¼²
-		//¦ı¬Otank¤£¬O¥H¸I¼²½c§@¬°¸I¼²§PÂ_¡A¥HÂI§@¬°¸I¼²§PÂ_¡AÁ×§Ktank¸I¼²½c­«Å|·|µLªk²¾°Ê
-		if ((tank->GetX1() + _Collision2D[tank->GetOriginAngle()][0] * 32 <= who->GetX1() + 64 && 
-			tank->GetX1() + _Collision2D[tank->GetOriginAngle()][0] * 32 >= who->GetX1() &&
-			tank->GetY1() + _Collision2D[tank->GetOriginAngle()][1] * 32 <= who->GetY1() + 64 && 
-			tank->GetY1() + _Collision2D[tank->GetOriginAngle()][1] * 32 >= who->GetY1()) ||
-			(tank->GetX1() + _Collision2D[tank->GetOriginAngle()][2] * 32 <= who->GetX1() + 64 &&
-			tank->GetX1() + _Collision2D[tank->GetOriginAngle()][2] * 32 >= who->GetX1() &&
-			tank->GetY1() + _Collision2D[tank->GetOriginAngle()][3] * 32 <= who->GetY1() + 64 &&
-			tank->GetY1() + _Collision2D[tank->GetOriginAngle()][3] * 32 >= who->GetY1())){
+		//ä½¿ç”¨Axis-Aligned Bounding Boxæ–¹æ³•åˆ¤æ–·ç¢°æ’
+		//ä½†æ˜¯tankä¸æ˜¯ä»¥ç¢°æ’ç®±ä½œç‚ºç¢°æ’åˆ¤æ–·ï¼Œä»¥é»ä½œç‚ºç¢°æ’åˆ¤æ–·ï¼Œé¿å…tankç¢°æ’ç®±é‡ç–Šæœƒç„¡æ³•ç§»å‹•
+		if ((tank->GetX1() + 1 + _Collision2D[tank->GetOriginAngle()][0] * 31 <= who->GetX1() + 64 && 
+			tank->GetX1() + 1 + _Collision2D[tank->GetOriginAngle()][0] * 31 >= who->GetX1()&&
+			tank->GetY1() + 1 + _Collision2D[tank->GetOriginAngle()][1] * 31 <= who->GetY1() + 64 && 
+			tank->GetY1() + 1 + _Collision2D[tank->GetOriginAngle()][1] * 31 >= who->GetY1())){
+			return true;
+		}
+		if (tank->GetX1() + _Collision2D[tank->GetOriginAngle()][2] * 31 <= who->GetX1() + 64 &&
+			tank->GetX1() + _Collision2D[tank->GetOriginAngle()][2] * 31 >= who->GetX1()&&
+			tank->GetY1() + _Collision2D[tank->GetOriginAngle()][3] * 31 <= who->GetY1() + 64 &&
+			tank->GetY1() + _Collision2D[tank->GetOriginAngle()][3] * 31 >= who->GetY1()) {
 			return true;
 		}
 	}

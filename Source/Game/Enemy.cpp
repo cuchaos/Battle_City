@@ -79,7 +79,7 @@ void Enemy::OnMove() {
 		_RandomFuncChoose = rand() % 2;
 		//_RandomFuncChoose = 0;
 		_RandomDirection = rand() % 4;
-		//_RandomDirection = rand() % 2 *2;
+		//_RandomDirection = rand() % 2 *2+1;
 		_ChooseClock = clock();
 	}
 	else if (_RandomFuncChoose % 2 == 0) {

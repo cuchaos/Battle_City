@@ -23,6 +23,7 @@ namespace game_framework {
 		bool GetIfBattle();
 		bool GetIfFire(int FireOrder) override;
 		bool SuccessMove();
+		void EnemyRandomDirection();
 		int GetEnemyDirectionInfo(int num);
 
 

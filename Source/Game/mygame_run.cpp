@@ -64,7 +64,7 @@ void CGameStateRun::OnMove()
 			AllBulletCollision();
 			AllBulletFly();
 			if (_PlayerLife == 0 && _PlayerTank.GetTankState() == CTank::Death) {
-				if (clock() - GameOverClock > 10000) {
+				if (clock() - GameOverClock > 5000) {
 					GotoGameState(GAME_STATE_INIT);
 				}
 				else {
@@ -239,9 +239,8 @@ void CGameStateRun::OnShowText() {
 	CTextDraw::Print(pDC, 0, 175, (to_string(_PlayerLife)));
 
 	CTextDraw::Print(pDC, 0 , 450, (to_string(state)));
-	//CTextDraw::Print(pDC, 0, 475, (to_string(_NowStage)));
-	//CTextDraw::Print(pDC, 0, 500, (to_string(_EnemyNum)));
-	CTextDraw::Print(pDC, 0, 500, (to_string(_Menu.GetMenuY(_Menu.ChooseStageMenu))));
+	CTextDraw::Print(pDC, 0, 475, (to_string(_NowStage)));
+	CTextDraw::Print(pDC, 0, 500, (to_string(_EnemyNum)));
 	for (int i = 0; i < 4; i++){
 		if (EnemyList[i].GetTankState() == EnemyList[i].Death && clock() - _ScoreClock[i] <= 750 && EnemyList[i].GetIfexploded()) {
 			CTextDraw::ChangeFontLog(pDC, 48, "STZhongsong", RGB(255,255,255));
@@ -312,8 +311,7 @@ void CGameStateRun::PlayerOnMove() {
 	case CPlayer::Death:
 		if ( _PlayerLife > 0) {
 			_PlayerTank.SetPlayerReSpawn();
-		}
-		GameOverClock = clock();
+		}	
 		break;
 	}
 }
@@ -394,6 +392,7 @@ void CGameStateRun::EnemyAllBulletCollision() {
 		if (BulletHitTank(*_AllBullet[i], &EnemyList[i - 2], &_PlayerTank, FirstBullet)) {
 			if (!_PlayerTank.GetIfInvicible()) {
 				_PlayerTank.SetLife(_PlayerTank.GetLife()-1);
+				GameOverClock = clock();
 			}
 			continue;
 		}

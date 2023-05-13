@@ -102,7 +102,8 @@ namespace game_framework {
 			SelectStage,
 			PreBattle,
 			Battle,
-			Settlement
+			Settlement,
+			GameOver
 		};
 		void OnShowText();
 		int _MouseX;
@@ -119,7 +120,7 @@ namespace game_framework {
 
 		bool IfNoEnemy();
 		void RandomSpawnTank(int num);
-		void PlayerOnMove(CPlayer &tank);
+		void PlayerOnMove();
 		void AllEnemyOnMove();
 
 		void AllBulletFly();
@@ -140,6 +141,7 @@ namespace game_framework {
 		Menu _Menu;
 
 		clock_t _TimerSpawn,_TimerFinish;
+		vector<clock_t> _ScoreClock;
 		int _EnemyQuantity;
 		CPlayer _PlayerTank;
 		bool _isHoldUpKey, _isHoldDownKey, _isHoldRightKey, _isHoldLeftKey;
@@ -159,7 +161,9 @@ namespace game_framework {
 		//vector<vector<int>> _tempcollision;
 		std::vector<Enemy> EnemyList = std::vector<Enemy>(4);
 		std::vector<clock_t> EnemyReSpawnLastTime = std::vector<clock_t>(4);
+		clock_t GameOverClock;
 		vector<int> EnemyTypeList = {0,0,0,0};
+		CMovingBitmap _GameOverSign;
 	};
 
 	class CGameStateOver : public CGameState {

@@ -117,12 +117,13 @@ int Enemy::GetEnemyType() {
 bool Enemy::GetIfBattle() {
 	return _IfBattle;
 }
-
+clock_t Enemy::GetSpawnClock() {
+	return _SpawnClock;
+}
 void Enemy::SetEnemyHaveItem(bool has) {
 	_EnemyHaveItem = has;
 }
 void Enemy::SetEnemyInit() {
-	_SpawnClock = clock();
 	_TankState = Alive;
 	_OriginAngle = Down;
 	_TurnAngle = Down;
@@ -322,14 +323,14 @@ void Enemy::FireBullet(int BulletOrder) {
 	_IfFire = _Bullet.GetAlreadyFire();
 }
 void Enemy::SetEnemyReSpawn() {
-	if (_IfExploded) {
-		_TankState = Spawn;
-		_IfRespawnAnimationDone = false;
-		_Tank.SetTopLeft(0, 0);
-		_X = Width * (rand() % 4 * 8) + 100;
-		_Y = Height * 0;
-		_SpawnAnimation.SetTopLeft(_X, _Y);
-	}
+	_TankState = Spawn;
+	_SpawnClock = clock();
+	_IfRespawnAnimationDone = false;
+	_Tank.SetTopLeft(0, 0);
+	_X = Width * (rand() % 4 * 8) + 100;
+	_Y = Height * 0;
+	_SpawnAnimation.SetTopLeft(_X, _Y);
+	
 }
 void Enemy::OnShow() {
 	if (_IfBattle) {
@@ -351,16 +352,15 @@ void Enemy::OnShow() {
 				_TankBrokenAnimation.SetTopLeft(_X, _Y);
 				Enemy::TankExpolsion();
 			}
+			if(_IfExploded && clock())
 			break;
 		}
 	}
 }
 
-void Enemy::OnShowScore(CDC *pDC, CFont* &fp) {
-	pDC->SetBkMode(TRANSPARENT);
-	pDC->SetTextColor(RGB(255, 255, 255));
-	CTextDraw::ChangeFontLog(pDC, 48, "STZhongsong", RGB(255,255,255));
-	if (clock() - _SpawnClock <= 500) {
-		CTextDraw::Print(pDC, _X, _Y, to_string(_EnemyScore));
-	}
-}
+//void Enemy::OnShowScore(CDC *pDC, CFont* &fp) {
+//	pDC->SetBkMode(TRANSPARENT);
+//	pDC->SetTextColor(RGB(255, 255, 255));
+//	CTextDraw::ChangeFontLog(pDC, 48, "STZhongsong", RGB(255,255,255));
+//	CTextDraw::Print(pDC, _X, _Y, to_string(_EnemyScore));
+//}

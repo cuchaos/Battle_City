@@ -25,10 +25,23 @@ CGameStateRun::~CGameStateRun()
 
 void CGameStateRun::OnBeginState()
 {
+	state = SelectStage;
+	_NowStage = -1;
+	_IfBattling = false;
+	_IfSettling = false;
+	_isHoldDownKey = _isHoldUpKey = _isHoldLeftKey = _isHoldRightKey = false;
+	_IfEatItem = {0,0,0,0};
+	_ScoreClock = { 0,0,0,0 };
+	_MouseX = 0;
+	_MouseY = 0;
+	_OnIceCountDown = 0;
+	_PlayerTankFrontX = 0;
+	_PlayerTankFrontY = 0;
+	_PlayerLife = 2;
+	_NowPropSize = 0;
+	_TimerSpawn = clock();
+	_GameOverSign.SetTopLeft(516, 900);
 }
-
-
-
 void CGameStateRun::OnMove()                            
 {
 	switch(state) {
@@ -42,14 +55,22 @@ void CGameStateRun::OnMove()
 			_IfBattling = true;
 			_IfSettling = false;
 			_NowPropSize = 0;
-			_EnemyNum = 20;
+			_EnemyNum = 16;
 			break;
 		case Battle:
 			TrigAllProp();
-			PlayerOnMove(_PlayerTank);
+			PlayerOnMove();
 			AllEnemyOnMove();
 			AllBulletCollision();
 			AllBulletFly();
+			if (_PlayerLife == 0 && _PlayerTank.GetTankState() == CTank::Death) {
+				if (clock() - GameOverClock > 5000) {
+					GotoGameState(GAME_STATE_INIT);
+				}
+				else {
+					event.TriggerGameOver(_GameOverSign);
+				}
+			}
 			_TimerFinish = clock();
 			break;
 		case Settlement:
@@ -80,30 +101,14 @@ void CGameStateRun::OnMove()
 }
 void CGameStateRun::OnInit()                                  
 {
-	state = SelectStage;
 	srand((unsigned)time(NULL));
-	_NowStage = -1;
-	_IfBattling = false;
-	_IfSettling = false;
 	_Menu.LoadBitMap();
-	_isHoldDownKey = _isHoldUpKey = _isHoldLeftKey = _isHoldRightKey = false;
-	_IfEatItem = {0,0,0,0};
-
-	_MouseX = 0;
-	_MouseY = 0;
-	_OnIceCountDown = 0;
 	_PlayerTank.LoadBitmap();
-	_PlayerTankFrontX = 0;
-	_PlayerTankFrontY = 0;
-	_PlayerLife = 2;
-	_NowPropSize = 0;
+	_GameOverSign.LoadBitmapByString({ "resources/GameOverSign.bmp" }, RGB(0, 0, 0));
 	for (int i = 0; i < 5; i++) {
 		_Prop.push_back(GameProps());
 		_Prop[i].OnInit();
 	}
-
-	_TimerSpawn = clock();
-
 	for (int i=0; i<4; ++i) {
 		EnemyList[i].LoadBitmap();
 		EnemyReSpawnLastTime[i] = clock();
@@ -119,6 +124,7 @@ void CGameStateRun::OnInit()
 			_AllBullet.push_back(&EnemyList[i - 2]._Bullet);
 		}
 	}
+	
 }
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -212,6 +218,9 @@ void CGameStateRun::OnShow()
 		if (Stage1.GetIfGrassInMap()) {
 			Stage1.OnShowGrass();
 		}
+		if (_PlayerLife == 0 && _PlayerTank.GetTankState() == CTank::Death) {
+			_GameOverSign.ShowBitmap();
+		}
 	}
 	OnShowText();
 }
@@ -222,23 +231,28 @@ void CGameStateRun::OnShowText() {
 	pDC->SetTextColor(RGB(0, 180, 0));
 	_TimerFinish = clock();
 	CTextDraw::Print(pDC, 0, 0, (to_string(_TimerSpawn / CLOCKS_PER_SEC) + " " + to_string(_TimerFinish)));
-	/*CTextDraw::Print(pDC, 0, 25, (to_string(_EnemyQuantity)));
-	CTextDraw::Print(pDC, 0, 50, (to_string(_MouseX) + " " + to_string(_MouseY)));
-	CTextDraw::Print(pDC, 0, 150, (to_string(Stage1.GetEnemySignNum())));
-	CTextDraw::Print(pDC, 0, 125, (to_string(EnemyTankCollision(&_PlayerTank))));*/
+
 	_Menu.OnShowText(pDC, fp);
 	
 	CTextDraw::ChangeFontLog(pDC, 15, "STZhongsong", RGB(255, 255, 255));
+	CTextDraw::Print(pDC, 0, 150, (to_string(_PlayerTank.GetTankState())));
+	CTextDraw::Print(pDC, 0, 175, (to_string(_PlayerLife)));
+
+	CTextDraw::Print(pDC, 0 , 450, (to_string(state)));
+	CTextDraw::Print(pDC, 0, 475, (to_string(_NowStage)));
+	CTextDraw::Print(pDC, 0, 500, (to_string(_EnemyNum)));
 	CTextDraw::Print(pDC, 0, 25, (to_string(_PlayerTank.GetX1())+","+ to_string(_PlayerTank.GetY1())));
 	for (int i = 0; i < 4; i++){
 		CTextDraw::Print(pDC, 0, 50+25*i, (to_string(EnemyList[i].GetX1()) + "," + to_string(EnemyList[i].GetY1())));
 	}
 	
 	for (int i = 0; i < 4; i++){
-		if (EnemyList[i].GetTankState() == EnemyList[i].Death) {
-			EnemyList[i].OnShowScore(pDC, fp);
+		if (EnemyList[i].GetTankState() == EnemyList[i].Death && clock() - _ScoreClock[i] <= 750 && EnemyList[i].GetIfexploded()) {
+			CTextDraw::ChangeFontLog(pDC, 48, "STZhongsong", RGB(255,255,255));
+			CTextDraw::Print(pDC,EnemyList[i].GetX1(), EnemyList[i].GetY1(), to_string(EnemyList[i].GetEnemyScore()));
 		}
 	}
+	
 	CDDraw::ReleaseBackCDC();
 }
 bool CGameStateRun::IfNoEnemy() {
@@ -273,35 +287,36 @@ void CGameStateRun::TrigAllProp() {
 			_IfEatItem[1] = _Prop[i].GetX();
 			_IfEatItem[2] = _Prop[i].GetY();
 			_IfEatItem[3] = clock();
-			event.TriggerGetProps(_Prop[i], Stage1, _PlayerTank, EnemyList);
+			event.TriggerGetProps(_Prop[i], Stage1, _PlayerTank, EnemyList,_EnemyNum);
 		}
 	}
 }
-void CGameStateRun::PlayerOnMove(CPlayer &Player) {
-	switch (Player.GetTankState())
+void CGameStateRun::PlayerOnMove() {
+	switch (_PlayerTank.GetTankState())
 	{
 	case CPlayer::Spawn:
-		if (Player.GetIfRespawnanimationdone()) {
-			Player.SetPlayerInit();
+		if (_PlayerTank.GetIfRespawnanimationdone()) {
+			_PlayerTank.SetPlayerInit();
+			_isHoldDownKey = _isHoldUpKey = _isHoldLeftKey = _isHoldRightKey = false;
 			_PlayerLife -= 1;
 		}
 		break;
 	case CPlayer::Alive:
 		if (_isHoldRightKey == true || _isHoldLeftKey == true
 			|| _isHoldDownKey == true || _isHoldUpKey == true) {
-			Player.TurnFace(_HoldKey);
-			PlayerTankCollisionMap(&Player);
+			_PlayerTank.TurnFace(_HoldKey);
+			PlayerTankCollisionMap(&_PlayerTank);
 		}
 		else if (_OnIceCountDown > 0) {
-			Player.TurnFace(_HoldKey);
-			PlayerTankCollisionMap(&Player);
+			_PlayerTank.TurnFace(_HoldKey);
+			PlayerTankCollisionMap(&_PlayerTank);
 			_OnIceCountDown -= 4;
 		}
 		break;
 	case CPlayer::Death:
 		if ( _PlayerLife > 0) {
-			Player.SetPlayerReSpawn();
-		}
+			_PlayerTank.SetPlayerReSpawn();
+		}	
 		break;
 	}
 }
@@ -316,10 +331,11 @@ void CGameStateRun::AllEnemyOnMove() {
 		case Enemy::Alive:
 			EnemyList[i].OnMove();
 			EnemyTankCollisionMap(&EnemyList[i]);
+			_ScoreClock[i] = clock();
 			break;
 		case Enemy::Death:
 			enemy.TankExpolsion();
-			if (_EnemyNum > 0 && clock() - EnemyReSpawnLastTime[i] >= 2500
+			if (_EnemyNum > 0 && clock() - enemy.GetSpawnClock() >= 2500
 				&& enemy.GetIfexploded()) {
 				event.TriggerUpdateMap(Stage1);
 				if (_EnemyNum % 4 == 0) {
@@ -380,7 +396,8 @@ void CGameStateRun::EnemyAllBulletCollision() {
 		if (!_AllBullet[i]->GetAlreadyFire()) continue;
 		if (BulletHitTank(*_AllBullet[i], &EnemyList[i - 2], &_PlayerTank, FirstBullet)) {
 			if (!_PlayerTank.GetIfInvicible()) {
-				//_PlayerTank.SetLife(_PlayerTank.GetLife()-1);
+				_PlayerTank.SetLife(_PlayerTank.GetLife()-1);
+				GameOverClock = clock();
 			}
 			continue;
 		}

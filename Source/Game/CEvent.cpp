@@ -44,12 +44,13 @@ void Event::TriggerSetBattleMap(vector<vector<int>>& Stage,Map& StageMap, Menu& 
 	StageMap.OnInit(Stage);
 	StageMap.SetIfShowMap(true);
 	BattleMenu.SetMenuType(BattleMenu.BattleMenu);
-	Player.SetLife(0);
+	Player.SetPlayerReSpawn();
 	Player.SetIfBattle(true);
 	for (auto& enemy : AllEnemy) {
-		enemy.SetLife(0);
+		enemy.SetEnemyReSpawn();
 		enemy.SetIfGetTimeStop(false);
 		enemy.SetIfBattle(true);
+		TriggerUpdateMap(StageMap);
 	}
 }
 void Event::TriggerSettlement(Menu& SettlementMenu, vector<int>& StageEnemy, int& NowScore,int& TheHighestScore,int& NowStage) {
@@ -78,7 +79,7 @@ void Event::TriggerNextStage(Map& StageMap, Menu& BattleMenu, int& EnemyNum, int
 void Event::TriggerSetProps(vector<GameProps>& Props,int NowPropIndex) {
 	Props[NowPropIndex].SetGameProps();
 }
-void Event::TriggerGetProps(GameProps& Props,Map& StageMap,CPlayer& Player,vector<Enemy>& AllEnemy) {
+void Event::TriggerGetProps(GameProps& Props,Map& StageMap,CPlayer& Player,vector<Enemy>& AllEnemy,int& EnemyNum) {
 	Props.SetIfShow(false);
 	GameProps::ItemType type = Props.GetType();
 	switch (type)
@@ -93,8 +94,9 @@ void Event::TriggerGetProps(GameProps& Props,Map& StageMap,CPlayer& Player,vecto
 		break;
 	case GameProps::ItemType::Handgrenade:
 		for (int i = 0; i < 4; i++) {
-			AllEnemy[i].SetLife(0);
-			if (StageMap.GetEnemySignNum() > 0) {
+			if (AllEnemy[i].GetLife() > 0) {
+				AllEnemy[i].SetLife(0);
+				EnemyNum -= 1;
 				TriggerUpdateMap(StageMap);
 			}
 		}
@@ -126,5 +128,11 @@ void Event::TriggerGetProps(GameProps& Props,Map& StageMap,CPlayer& Player,vecto
 	case GameProps::ItemType::Ship:
 		Player.SetIfGetShip(true);
 		break;
+	}
+}
+
+void Event::TriggerGameOver(CMovingBitmap& GameOverSign) {
+	if (GameOverSign.GetTop() >= 450) {
+		GameOverSign.SetTopLeft(516, GameOverSign.GetTop() - 20);
 	}
 }

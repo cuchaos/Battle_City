@@ -49,7 +49,6 @@ namespace game_framework {
 		void SetIfFire(int FireOrder, bool Status) override;
 
 		CMovingBitmap GetEnemyBitmap();
-		void OnShowScore(CDC *pDC, CFont* &fp);
 	private:
 		clock_t _TimeFinish, _TimeStart, _StopClock, _UpClock, _ChooseClock,_SuccessClock,_FireClock;		// 計時器 (結束-開始 = 經過時間)
 		static clock_t _SpawnClock;

@@ -44,13 +44,12 @@
 #include "Map.h"
 #include "CPlayer.h"
 #include "Enemy.h"
+#include "../Library/audio.h"
 namespace game_framework {
-	enum AUDIO_ID {				
-		AUDIO_DING,				
-		AUDIO_LAKE,				
-		AUDIO_NTUT				
+	enum AUDIO_ID {
+		AUDIO_BGM = 16,
+		AUDIO_Move = 17
 	};
-
 	class CGameStateInit : public CGameState {
 	public:
 		CGameStateInit(CGame *g);
@@ -165,6 +164,9 @@ namespace game_framework {
 		clock_t GameOverClock;
 		vector<int> EnemyTypeList = {0,0,0,0};
 		CMovingBitmap _GameOverSign;
+
+		CAudio* audio = CAudio::Instance();
+		vector<bool> _AllAudioIfPlaying;
 	};
 
 	class CGameStateOver : public CGameState {

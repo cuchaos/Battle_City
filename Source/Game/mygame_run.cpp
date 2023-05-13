@@ -229,11 +229,10 @@ void CGameStateRun::OnShowText() {
 	_Menu.OnShowText(pDC, fp);
 	
 	CTextDraw::ChangeFontLog(pDC, 15, "STZhongsong", RGB(255, 255, 255));
-	CTextDraw::Print(pDC, 0, 150, (to_string(_PlayerTank.GetTankState())));
-	CTextDraw::Print(pDC, 0, 175, (to_string(_PlayerLife)));
-
-	CTextDraw::Print(pDC, 0 , 450, (to_string(state)));
-	CTextDraw::Print(pDC, 0, 475, (to_string(_NowStage)));
+	CTextDraw::Print(pDC, 0, 25, (to_string(_PlayerTank.GetX1())+","+ to_string(_PlayerTank.GetY1())));
+	for (int i = 0; i < 4; i++){
+		CTextDraw::Print(pDC, 0, 50+25*i, (to_string(EnemyList[i].GetX1()) + "," + to_string(EnemyList[i].GetY1())));
+	}
 	
 	for (int i = 0; i < 4; i++){
 		if (EnemyList[i].GetTankState() == EnemyList[i].Death) {
@@ -381,7 +380,7 @@ void CGameStateRun::EnemyAllBulletCollision() {
 		if (!_AllBullet[i]->GetAlreadyFire()) continue;
 		if (BulletHitTank(*_AllBullet[i], &EnemyList[i - 2], &_PlayerTank, FirstBullet)) {
 			if (!_PlayerTank.GetIfInvicible()) {
-				_PlayerTank.SetLife(_PlayerTank.GetLife()-1);
+				//_PlayerTank.SetLife(_PlayerTank.GetLife()-1);
 			}
 			continue;
 		}
@@ -475,14 +474,22 @@ void CGameStateRun::EnemyTankCollisionMap(Enemy *tank) {
 bool CGameStateRun::EnemyTankCollision(CTank *tank) {
 	bool _collision = false;
 	for (int i = 0; i < 4; i++) {
-		_collision |= TankCollision(tank, &EnemyList[i]);
+		for (int i = 0; i < 4; i++) {
+			if (EnemyList[i].GetX1() != tank->GetX1()) {
+				_collision |= TankCollision(tank, &EnemyList[i]);
+			}
+		}
+		//_collision |= TankCollision(tank, &EnemyList[i]);
 	}
-	return _collision || TankCollision(tank, &_PlayerTank);
+	if (tank->GetX1() != _PlayerTank.GetX1()){
+		_collision |= TankCollision(tank, &_PlayerTank);
+	}
+	return _collision;
 }
 bool CGameStateRun::TankCollision(CTank *tank, CTank *who) {
-	if (who->GetTankState()== who->Alive){
-		_tempcollision = Stage1.GetFrontGridsIndex(tank->GetTankFront());
-		switch (tank->GetOriginAngle())
+	if (who->GetTankState() == who->Alive){
+		//_tempcollision = Stage1.GetFrontGridsIndex(tank->GetTankFront());
+		/*switch (tank->GetOriginAngle())
 		{
 		case Right:
 			if ((_tempcollision[0][0] == Stage1.GetGridIndexX(who->GetX1()) && _tempcollision[0][1] == Stage1.GetGridIndexY(who->GetY1())) ||
@@ -524,6 +531,14 @@ bool CGameStateRun::TankCollision(CTank *tank, CTank *who) {
 				return true;
 			}
 			break;
+		}*/
+
+		vector<vector<int>> _Collision2D = { {2,1/*Right*/},{1,2/*Down*/} ,{0,1/*Left*/},{1,0/*Up*/} };
+		if (tank->GetX1() + _Collision2D[tank->GetOriginAngle()][0] * 32 <= who->GetX1() + 64 && 
+			tank->GetX1() + _Collision2D[tank->GetOriginAngle()][0] * 32 >= who->GetX1() &&
+			tank->GetY1() + _Collision2D[tank->GetOriginAngle()][1] * 32 <= who->GetY1() + 64 && 
+			tank->GetY1() + _Collision2D[tank->GetOriginAngle()][1] * 32 >= who->GetY1()){
+			return true;
 		}
 	}
 	return false;

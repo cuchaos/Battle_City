@@ -8,10 +8,10 @@ namespace game_framework {
 	public:
 		CTank();
 		enum Direction {
-			Right,
-			Down,
-			Left,
-			Up,
+			Right, //0
+			Down, //1
+			Left, //2
+			Up, //3
 		};
 		enum TankState {
 			Spawn,
@@ -36,8 +36,10 @@ namespace game_framework {
 		int GetTankState();
 		bool GetIfRespawnanimationdone();
 		bool GetIfexploded();
+		bool GetTankCollision();
 		CMovingBitmap GetTankBitmap();
 
+		void SetTankCollision(bool n);
 		void SetIfBattle(bool Battle);
 		void SetXY(int x, int y);			//座標設定
 		void SetLife(int num);
@@ -85,7 +87,7 @@ namespace game_framework {
 		int _RespawnAnimationNum;
 		bool _IfExploded;
 
-
+		bool _TankCollision;
 		bool _IfFire;
 		int _BulletFlySpeed;
 					

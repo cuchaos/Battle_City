@@ -384,7 +384,7 @@ void CGameStateRun::PlayerBulletCollision(BulletOrder Order) {
 	auto& CurrentBullet = Order == FirstBullet ? _AllBullet[0] : _AllBullet[1];
 	for (auto& enemy : EnemyList) {
 		if (BulletHitTank(*CurrentBullet, &_PlayerTank, &enemy, Order)) {
-			enemy.SetLife(0);
+			enemy.SetLife(enemy.GetLife() - 1);
 			if (enemy.GetEnemyHaveItem()) {
 				event.TriggerSetProps(_Prop, _NowPropSize);
 				enemy.SetEnemyHaveItem(false);

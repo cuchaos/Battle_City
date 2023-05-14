@@ -141,10 +141,11 @@ void Enemy::SetEnemyInit() {
 		_EnemyScore = 100;
 		break;
 	case QuickTank:
+		_BulletFlySpeed = 25;
 		_EnemyScore = 300;
 		break;
 	case ArmorTank:
-		_MovementSpeed = 4;
+		_MovementSpeed = 8;
 		_EnemyScore = 200;
 		break;
 	case HeavyTank:

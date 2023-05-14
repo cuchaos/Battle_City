@@ -327,7 +327,7 @@ void Enemy::SetEnemyReSpawn() {
 	_SpawnClock = clock();
 	_IfRespawnAnimationDone = false;
 	_Tank.SetTopLeft(0, 0);
-	_X = Width * (rand() % 4 * 8) + 100;
+	_X = Width * (rand() % 3 * 12) + 100;
 	_Y = Height * 0;
 	_SpawnAnimation.SetTopLeft(_X, _Y);
 	

@@ -242,22 +242,11 @@ void CGameStateRun::OnShowText() {
 	_Menu.OnShowText(pDC, fp);
 	
 	CTextDraw::ChangeFontLog(pDC, 15, "STZhongsong", RGB(255, 255, 255));
-	/*CTextDraw::Print(pDC, 0, 150, (to_string(_PlayerTank.GetTankState())));
-	CTextDraw::Print(pDC, 0, 175, (to_string(_PlayerLife)));*/
-
-	/*CTextDraw::Print(pDC, 0 , 450, (to_string(state)));
-	CTextDraw::Print(pDC, 0, 475, (to_string(_NowStage)));*/
 	CTextDraw::Print(pDC, 0, 500, (to_string(_EnemyNum)));
 	for (int i = 0; i < 4; i++){
 		CTextDraw::Print(pDC, 0, 25+50* i, (to_string(EnemyTypeList[i])));
 	}
-	/*CTextDraw::Print(pDC, 0, 25, (to_string(_PlayerTank.GetX1())+","+ to_string(_PlayerTank.GetY1())));
-	for (int i = 0; i < 4; i++){
-		CTextDraw::Print(pDC, 0, 50+25*i, (to_string(EnemyList[i].GetX1()) + "," + to_string(EnemyList[i].GetY1())));
-	}
-	CTextDraw::Print(pDC, 0, 200, (to_string(TankCollision(&_PlayerTank,&EnemyList[0]))));
-	CTextDraw::Print(pDC, 0, 225, (to_string(_collision)));
-	*/
+
 	for (int i = 0; i < 4; i++){
 		if (EnemyList[i].GetTankState() == EnemyList[i].Death && clock() - _ScoreClock[i] <= 750 && EnemyList[i].GetIfexploded()) {
 			CTextDraw::ChangeFontLog(pDC, 48, "STZhongsong", RGB(255,255,255));
@@ -407,7 +396,7 @@ void CGameStateRun::EnemyAllBulletCollision() {
 		if (!_AllBullet[i]->GetAlreadyFire()) continue;
 		if (BulletHitTank(*_AllBullet[i], &EnemyList[i - 2], &_PlayerTank, FirstBullet)) {
 			if (!_PlayerTank.GetIfInvicible()) {
-				_PlayerTank.SetLife(_PlayerTank.GetLife()-1);
+				//_PlayerTank.SetLife(_PlayerTank.GetLife()-1);
 				GameOverClock = clock();
 			}
 			continue;

@@ -119,9 +119,7 @@ void CTank::SetXY(int _x, int _y) {
 	_Y = _y;
 }
 void CTank::SetLife(int num) {
-	if (_Life > 0) {
-		_Life = num;
-	}
+	_Life = num;
 	if (_Life == 0) {
 		_TankState = Death;
 		_IfExploded = false;

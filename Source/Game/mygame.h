@@ -47,8 +47,16 @@
 #include "../Library/audio.h"
 namespace game_framework {
 	enum AUDIO_ID {
-		AUDIO_BGM = 16,
-		AUDIO_Move = 17
+		AUDIO_HitHeavyTank = 1,
+		AUDIO_HitIronOrBound = 2,
+		AUDIO_HitBrickWall = 4,
+		AUDIO_FireBullet = 5,
+		AUDIO_Explosion = 6,
+		AUDIO_HitHomeOrPlayer = 10,
+		AUDIO_ItemApear = 11,
+		AUDIO_GetItem = 13,
+		AUDIO_BGM = 15,
+		AUDIO_Move = 16
 	};
 	class CGameStateInit : public CGameState {
 	public:
@@ -79,12 +87,8 @@ namespace game_framework {
 		void OnBeginState();							
 		void OnInit();  								
 		void OnKeyDown(UINT, UINT, UINT);
-		void OnKeyUp(UINT, UINT, UINT);
-		void OnLButtonDown(UINT nFlags, CPoint point);  
-		void OnLButtonUp(UINT nFlags, CPoint point);	
+		void OnKeyUp(UINT, UINT, UINT);	
 		void OnMouseMove(UINT nFlags, CPoint point);	
-		void OnRButtonDown(UINT nFlags, CPoint point);  
-		void OnRButtonUp(UINT nFlags, CPoint point);	
 		Map Stage1;
 	protected:
 		enum Direction {
@@ -110,6 +114,7 @@ namespace game_framework {
 		void OnMove();								
 		void OnShow();									
 		InGameState state;
+		void PlayAudio(AUDIO_ID Id, bool IfRepeat);
 		void PlayerTankCollisionMap(CPlayer *tank);
 		void EnemyTankCollisionMap(Enemy *tank);
 		bool EnemyTankCollision(CTank *tank);

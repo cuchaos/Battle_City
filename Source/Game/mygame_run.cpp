@@ -41,6 +41,12 @@ void CGameStateRun::OnBeginState()
 	_TimerSpawn = clock();
 	_GameOverSign.SetTopLeft(516, 900);
 }
+void CGameStateRun::PlayAudio(AUDIO_ID Id,bool IfRepeat) {
+	if (!_AllAudioIfPlaying[Id]) {
+		_AllAudioIfPlaying[Id] = IfRepeat;
+		audio->Play(Id, IfRepeat);
+	}
+}
 void CGameStateRun::OnMove()                            
 {
 	switch(state) {
@@ -82,10 +88,7 @@ void CGameStateRun::OnMove()
 		break;
 	case PreBattle:
 		state = Battle;
-		if (!_AllAudioIfPlaying[AUDIO_BGM]) {
-			_AllAudioIfPlaying[AUDIO_BGM] = true;
-			audio->Play(AUDIO_BGM, true);
-		}
+		PlayAudio(AUDIO_BGM,true);
 		break;
 	case Battle:
 		if (IfNoEnemy()) {
@@ -104,7 +107,13 @@ void CGameStateRun::OnMove()
 }
 void CGameStateRun::OnInit()                                  
 {
-	audio->Load(AUDIO_BGM, "resources/BattleBackgroundSound.wav");
+	
+	for (int i = 1;i < 18;i++) {
+		string tempname = string("resources/Sound/Battle_City_SFX(");
+		tempname += to_string(i) + ").wav";
+		audio->Load(i-1, const_cast<char*>(tempname.c_str()));
+	}
+	
 	for (int i = 0;i < 17;i++) {
 		_AllAudioIfPlaying.push_back(false);
 	}
@@ -142,12 +151,16 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				_PlayerTank.FireBullet(2);
 			}
 			_PlayerTank.FireBullet(1);
+			PlayAudio(AUDIO_FireBullet,false);
 		}
 		if (nChar == VK_DOWN)	_isHoldDownKey = true;
 		if (nChar == VK_UP)		_isHoldUpKey = true;
 		if (nChar == VK_LEFT)	_isHoldLeftKey = true;
 		if (nChar == VK_RIGHT)	_isHoldRightKey = true;
-		if (nChar == VK_DOWN || nChar == VK_RIGHT || nChar == VK_LEFT || nChar == VK_UP) _HoldKey = nChar;
+		if (nChar == VK_DOWN || nChar == VK_RIGHT || nChar == VK_LEFT || nChar == VK_UP) {
+			_HoldKey = nChar;
+			PlayAudio(AUDIO_Move,true);
+		} 
 		if (nChar == 'A') {
 			_IfBattling = false;
 			_IfSettling = true;
@@ -183,31 +196,20 @@ void CGameStateRun::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 				Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 3) {
 				_OnIceCountDown = 64;
 			}
+			else {
+				if (_AllAudioIfPlaying[AUDIO_Move]) {
+					_AllAudioIfPlaying[AUDIO_Move] = false;
+					audio->Stop(AUDIO_Move);
+				}
+			}
 		}
 	}
-}
-
-void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  
-{
-	
-}
-
-void CGameStateRun::OnLButtonUp(UINT nFlags, CPoint point)    
-{
 }
 
 void CGameStateRun::OnMouseMove(UINT nFlags, CPoint point)    
 {
 	_MouseX = point.x;
 	_MouseY = point.y;
-}
-
-void CGameStateRun::OnRButtonDown(UINT nFlags, CPoint point)  
-{
-}
-
-void CGameStateRun::OnRButtonUp(UINT nFlags, CPoint point)    
-{
 }
 
 void CGameStateRun::OnShow()
@@ -380,6 +382,7 @@ void CGameStateRun::PlayerBulletCollision(BulletOrder Order) {
 				_NowPropSize += 1;
 			}
 			_NowTotalScore += enemy.GetEnemyScore();
+			PlayAudio(AUDIO_Explosion,false);
 			break;
 		}
 		if (BulletHitBullet(*CurrentBullet, &_PlayerTank, &enemy, Order)) {
@@ -398,6 +401,7 @@ void CGameStateRun::EnemyAllBulletCollision() {
 			if (!_PlayerTank.GetIfInvicible()) {
 				//_PlayerTank.SetLife(_PlayerTank.GetLife()-1);
 				GameOverClock = clock();
+				PlayAudio(AUDIO_HitHomeOrPlayer, false);
 			}
 			continue;
 		}

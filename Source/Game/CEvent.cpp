@@ -47,10 +47,10 @@ void Event::TriggerSetBattleMap(vector<vector<int>>& Stage,Map& StageMap, Menu& 
 	Player.SetPlayerReSpawn();
 	Player.SetIfBattle(true);
 	for (auto& enemy : AllEnemy) {
-		enemy.SetEnemyReSpawn();
+		//enemy.SetEnemyReSpawn();
 		enemy.SetIfGetTimeStop(false);
 		enemy.SetIfBattle(true);
-		TriggerUpdateMap(StageMap);
+		//TriggerUpdateMap(StageMap);
 	}
 }
 void Event::TriggerSettlement(Menu& SettlementMenu, vector<int>& StageEnemy, int& NowScore,int& TheHighestScore,int& NowStage) {

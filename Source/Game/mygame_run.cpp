@@ -54,7 +54,7 @@ void CGameStateRun::OnMove()
 			_IfBattling = true;
 			_IfSettling = false;
 			_NowPropSize = 0;
-			_EnemyNum = 16;
+			_EnemyNum = 20;
 			break;
 		case Battle:
 			TrigAllProp();
@@ -242,25 +242,17 @@ void CGameStateRun::OnShowText() {
 	_Menu.OnShowText(pDC, fp);
 	
 	CTextDraw::ChangeFontLog(pDC, 15, "STZhongsong", RGB(255, 255, 255));
-	CTextDraw::Print(pDC, 0, 150, (to_string(_PlayerTank.GetTankState())));
-	CTextDraw::Print(pDC, 0, 175, (to_string(_PlayerLife)));
-
-	CTextDraw::Print(pDC, 0 , 450, (to_string(state)));
-	CTextDraw::Print(pDC, 0, 475, (to_string(_NowStage)));
 	CTextDraw::Print(pDC, 0, 500, (to_string(_EnemyNum)));
-	CTextDraw::Print(pDC, 0, 25, (to_string(_PlayerTank.GetX1())+","+ to_string(_PlayerTank.GetY1())));
 	for (int i = 0; i < 4; i++){
-		CTextDraw::Print(pDC, 0, 50+25*i, (to_string(EnemyList[i].GetX1()) + "," + to_string(EnemyList[i].GetY1())));
+		CTextDraw::Print(pDC, 0, 25+50* i, (to_string(EnemyTypeList[i])));
 	}
-	CTextDraw::Print(pDC, 0, 200, (to_string(TankCollision(&_PlayerTank,&EnemyList[0]))));
-	CTextDraw::Print(pDC, 0, 225, (to_string(_collision)));
+
 	for (int i = 0; i < 4; i++){
 		if (EnemyList[i].GetTankState() == EnemyList[i].Death && clock() - _ScoreClock[i] <= 750 && EnemyList[i].GetIfexploded()) {
 			CTextDraw::ChangeFontLog(pDC, 48, "STZhongsong", RGB(255,255,255));
 			CTextDraw::Print(pDC,EnemyList[i].GetX1(), EnemyList[i].GetY1(), to_string(EnemyList[i].GetEnemyScore()));
 		}
 	}
-	
 	CDDraw::ReleaseBackCDC();
 }
 bool CGameStateRun::IfNoEnemy() {
@@ -346,7 +338,7 @@ void CGameStateRun::AllEnemyOnMove() {
 			if (_EnemyNum > 0 && clock() - enemy.GetSpawnClock() >= 2500
 				&& enemy.GetIfexploded()) {
 				event.TriggerUpdateMap(Stage1);
-				if (_EnemyNum % 4 == 0) {
+				if (_EnemyNum % 4 == 1) {
 					event.TriggerReSetProps(_Prop);
 					EnemyList[i].SetEnemyHaveItem(true);
 				}
@@ -381,7 +373,7 @@ void CGameStateRun::PlayerBulletCollision(BulletOrder Order) {
 	auto& CurrentBullet = Order == FirstBullet ? _AllBullet[0] : _AllBullet[1];
 	for (auto& enemy : EnemyList) {
 		if (BulletHitTank(*CurrentBullet, &_PlayerTank, &enemy, Order)) {
-			enemy.SetLife(0);
+			enemy.SetLife(enemy.GetLife() - 1);
 			if (enemy.GetEnemyHaveItem()) {
 				event.TriggerSetProps(_Prop, _NowPropSize);
 				enemy.SetEnemyHaveItem(false);
@@ -404,7 +396,7 @@ void CGameStateRun::EnemyAllBulletCollision() {
 		if (!_AllBullet[i]->GetAlreadyFire()) continue;
 		if (BulletHitTank(*_AllBullet[i], &EnemyList[i - 2], &_PlayerTank, FirstBullet)) {
 			if (!_PlayerTank.GetIfInvicible()) {
-				_PlayerTank.SetLife(_PlayerTank.GetLife()-1);
+				//_PlayerTank.SetLife(_PlayerTank.GetLife()-1);
 				GameOverClock = clock();
 			}
 			continue;
@@ -514,6 +506,7 @@ bool CGameStateRun::TankCollision(CTank *tank, CTank *who) {
 		vector<vector<int>> _Collision2D = { {2,0,2,2/*Right*/},{0,2,2,2/*Down*/} ,{0,0,0,2/*Left*/},{0,0,2,0/*Up*/} };
 		//使用Axis-Aligned Bounding Box方法判斷碰撞
 		//但是tank不是以碰撞箱作為碰撞判斷，以點作為碰撞判斷，避免tank碰撞箱重疊會無法移動
+		// +1 校準位置 避免會重疊到邊界的碰撞箱
 		if ((tank->GetX1() + 1 + _Collision2D[tank->GetOriginAngle()][0] * 31 <= who->GetX1() + 64 && 
 			tank->GetX1() + 1 + _Collision2D[tank->GetOriginAngle()][0] * 31 >= who->GetX1()&&
 			tank->GetY1() + 1 + _Collision2D[tank->GetOriginAngle()][1] * 31 <= who->GetY1() + 64 && 

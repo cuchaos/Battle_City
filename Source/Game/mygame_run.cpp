@@ -245,9 +245,8 @@ void CGameStateRun::OnShowText() {
 	
 	CTextDraw::ChangeFontLog(pDC, 15, "STZhongsong", RGB(255, 255, 255));
 	CTextDraw::Print(pDC, 0, 500, (to_string(_EnemyNum)));
-	for (int i = 0; i < 4; i++){
-		CTextDraw::Print(pDC, 0, 25+50* i, (to_string(EnemyTypeList[i])));
-	}
+	CTextDraw::Print(pDC, 0, 100, (to_string(_AllAudioIfPlaying[2])));
+	CTextDraw::Print(pDC, 0, 125, (to_string(_AllAudioIfPlaying[4])));
 
 	for (int i = 0; i < 4; i++){
 		if (EnemyList[i].GetTankState() == EnemyList[i].Death && clock() - _ScoreClock[i] <= 750 && EnemyList[i].GetIfexploded()) {
@@ -331,8 +330,16 @@ void CGameStateRun::AllEnemyOnMove() {
 			RandomSpawnTank(i);
 			break;
 		case Enemy::Alive:
-			EnemyList[i].OnMove();
-			EnemyTankCollisionMap(&EnemyList[i]);
+			if (EnemyList[i].GetEnemyType()== Enemy::ArmorTank){
+				for (int j = 0; j <2 ; j++){
+					EnemyList[i].OnMove();
+					EnemyTankCollisionMap(&EnemyList[i]);
+				}
+			}
+			else{
+				EnemyList[i].OnMove();
+				EnemyTankCollisionMap(&EnemyList[i]);
+			}
 			_ScoreClock[i] = clock();
 			break;
 		case Enemy::Death:
@@ -389,10 +396,11 @@ void CGameStateRun::PlayerBulletCollision(BulletOrder Order) {
 			break;
 		}
 	}
-	if (ShootCollision(*CurrentBullet, _PlayerTank.GetLevel()) && CurrentBullet->GetAlreadyFire()) {
+	if (ShootCollision(*CurrentBullet, _PlayerTank.GetLevel(),BulletOwner::Player) && CurrentBullet->GetAlreadyFire()) {
 		_PlayerTank.SetBulletStatus(Order, false);
 		_PlayerTank.SetIfFire(Order, false);
 	}
+	
 }
 void CGameStateRun::EnemyAllBulletCollision() {
 	for (const auto &i : { 2,3,4,5 }) { // Enemy's bullet
@@ -405,7 +413,7 @@ void CGameStateRun::EnemyAllBulletCollision() {
 			}
 			continue;
 		}
-		if (ShootCollision(*_AllBullet[i], EnemyList[i - 2].GetLevel())) {
+		if (ShootCollision(*_AllBullet[i], EnemyList[i - 2].GetLevel(),BulletOwner::Eenemy)) {
 			EnemyList[i - 2].SetBulletStatus(1, false);
 			EnemyList[i - 2].SetIfFire(1, false);
 		}
@@ -433,7 +441,7 @@ void CGameStateRun::AllBulletFly() {
 		}
 	}
 }
-bool CGameStateRun::ShootCollision(CBullet Bullet, int TankLevel) {
+bool CGameStateRun::ShootCollision(CBullet Bullet, int TankLevel,int who) {
 	if (Stage1.GetIfBoardEdge(Bullet.GetNowBackPlace()[0][0], Bullet.GetNowBackPlace()[0][1]
 		, Bullet.GetHeight(), Bullet.GetWidth(), Bullet.GetDirection()) == true) {
 		_tempcollision = Stage1.GetFrontGridsIndex(Bullet.GetNowFrontPlace());
@@ -445,10 +453,21 @@ bool CGameStateRun::ShootCollision(CBullet Bullet, int TankLevel) {
 			if (Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 4 || Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 5) {
 				Stage1.ShootWall(Bullet.GetDirection(), TankLevel, _tempcollision[1][1], _tempcollision[1][0]);
 			}
+			if (who == BulletOwner::Player){
+				if (Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 5 || Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 5) {
+					PlayAudio(AUDIO_HitIronOrBound, false);
+				}
+				if (Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 4 || Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 4) {
+					PlayAudio(AUDIO_HitBrickWall, false);
+				}
+			}
 			return true;
 		}
 	}
 	else {
+		if (who == BulletOwner::Player) {
+			PlayAudio(AUDIO_HitIronOrBound, false);
+		}
 		return true;
 	}
 	return false;

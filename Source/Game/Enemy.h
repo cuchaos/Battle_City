@@ -8,8 +8,8 @@ namespace game_framework {
 	public:
 		enum EnemyType {
 			LightTank,
-			QuickTank,
 			ArmorTank,
+			QuickTank,
 			HeavyTank,
 		};
 		Enemy();

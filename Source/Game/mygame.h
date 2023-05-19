@@ -58,6 +58,10 @@ namespace game_framework {
 		AUDIO_BGM = 15,
 		AUDIO_Move = 16
 	};
+	enum BulletOwner {
+		Eenemy,
+		Player
+	};
 	class CGameStateInit : public CGameState {
 	public:
 		CGameStateInit(CGame *g);
@@ -119,7 +123,7 @@ namespace game_framework {
 		void EnemyTankCollisionMap(Enemy *tank);
 		bool EnemyTankCollision(CTank *tank);
 		bool TankCollision(CTank *tank ,CTank *who);
-		bool ShootCollision(CBullet Bullet,int TankLevel); 
+		bool ShootCollision(CBullet Bullet,int TankLevel,int who); 
 		Event event;
 
 		bool IfNoEnemy();

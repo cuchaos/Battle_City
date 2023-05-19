@@ -91,7 +91,7 @@ void CGameStateRun::OnMove()
 		PlayAudio(AUDIO_BGM,true);
 		break;
 	case Battle:
-		if (IfNoEnemy()) {
+		if (_EnemyNum == 0) {
 			_IfBattling = false;
 			_IfSettling = true;
 			Stage1.SetIfShowMap(false);
@@ -257,14 +257,13 @@ void CGameStateRun::OnShowText() {
 	}
 	CDDraw::ReleaseBackCDC();
 }
-bool CGameStateRun::IfNoEnemy() {
+bool CGameStateRun::IfHaveEnemy() {
 	for (int i = 0; i < 4; i++) {
-		auto& enemy = EnemyList[i];
-		if (EnemyTypeList[i] != 0 || enemy.GetTankState() != enemy.Death) {
-			return false;
+		if (EnemyTypeList[i] != 0) {
+			return true;
 		}
 	}
-	return true;
+	return false;
 }
 bool CGameStateRun::IfResetPropTime(int NowPropIndex, GameProps NowProp) {
 	GameProps::ItemType NowPropType = _Prop[NowPropIndex].GetType();
@@ -337,7 +336,7 @@ void CGameStateRun::AllEnemyOnMove() {
 			break;
 		case Enemy::Death:
 			enemy.TankExpolsion();
-			if (_EnemyNum > 0 && clock() - enemy.GetSpawnClock() >= 2500
+			if ( IfHaveEnemy() && clock() - enemy.GetSpawnClock() >= 2500
 				&& enemy.GetIfexploded()) {
 				event.TriggerUpdateMap(Stage1);
 				if (_EnemyNum % 4 == 1) {
@@ -345,7 +344,6 @@ void CGameStateRun::AllEnemyOnMove() {
 					EnemyList[i].SetEnemyHaveItem(true);
 				}
 				enemy.SetEnemyReSpawn();
-				_EnemyNum -= 1;
 			}
 			break;
 		}
@@ -376,6 +374,7 @@ void CGameStateRun::PlayerBulletCollision(BulletOrder Order) {
 	for (auto& enemy : EnemyList) {
 		if (BulletHitTank(*CurrentBullet, &_PlayerTank, &enemy, Order)) {
 			enemy.SetLife(enemy.GetLife() - 1);
+			if(enemy.GetLife() <= 0) _EnemyNum -= 1;
 			if (enemy.GetEnemyHaveItem()) {
 				event.TriggerSetProps(_Prop, _NowPropSize);
 				enemy.SetEnemyHaveItem(false);

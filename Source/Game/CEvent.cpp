@@ -47,10 +47,8 @@ void Event::TriggerSetBattleMap(vector<vector<int>>& Stage,Map& StageMap, Menu& 
 	Player.SetPlayerReSpawn();
 	Player.SetIfBattle(true);
 	for (auto& enemy : AllEnemy) {
-		//enemy.SetEnemyReSpawn();
 		enemy.SetIfGetTimeStop(false);
 		enemy.SetIfBattle(true);
-		//TriggerUpdateMap(StageMap);
 	}
 }
 void Event::TriggerSettlement(Menu& SettlementMenu, vector<int>& StageEnemy, int& NowScore,int& TheHighestScore,int& NowStage) {
@@ -94,10 +92,9 @@ void Event::TriggerGetProps(GameProps& Props,Map& StageMap,CPlayer& Player,vecto
 		break;
 	case GameProps::ItemType::Handgrenade:
 		for (int i = 0; i < 4; i++) {
-			if (AllEnemy[i].GetLife() > 0) {
+			if (AllEnemy[i].GetTankState() == CTank::Alive) {
 				AllEnemy[i].SetLife(0);
 				EnemyNum -= 1;
-				TriggerUpdateMap(StageMap);
 			}
 		}
 		Props.SetIfExist(false);

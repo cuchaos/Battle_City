@@ -169,6 +169,9 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			event.TriggerSettlement(_Menu, _AllStageEnemy[_NowStage - 1], _NowTotalScore, _TheHighestScore,_NowStage);
 			state = Settlement;
 		}
+		if (nChar == 'L') {
+			_PlayerLife+=1;
+		}
 	}	
 	else {
 		if (!_IfSettling && state == SelectStage) {
@@ -240,14 +243,17 @@ void CGameStateRun::OnShowText() {
 	pDC->SetBkMode(TRANSPARENT);
 	pDC->SetTextColor(RGB(0, 180, 0));
 	_TimerFinish = clock();
-	CTextDraw::Print(pDC, 0, 0, to_string(_TimerFinish));
+	CTextDraw::Print(pDC, 0, 0, ("CPU Clock:"+ to_string(_TimerFinish)));
 
 	_Menu.OnShowText(pDC, fp);
-	
 	CTextDraw::ChangeFontLog(pDC, 15, "STZhongsong", RGB(255, 255, 255));
-	CTextDraw::Print(pDC, 0, 500, (to_string(_EnemyExistNum)));
-	CTextDraw::Print(pDC, 0, 100, (to_string(_AllAudioIfPlaying[2])));
-	CTextDraw::Print(pDC, 0, 125, (to_string(_AllAudioIfPlaying[4])));
+	CTextDraw::Print(pDC, 0, 70, ("EnemyNums:" + to_string(_EnemyExistNum)));
+	CTextDraw::Print(pDC, 0, 50, ("EatItem:"+to_string(_IfPlayerEatItem)));
+	CTextDraw::Print(pDC, 0, 90, ("PlayerRespawnTimes:" + to_string(_PlayerLife)));
+	CTextDraw::Print(pDC, 0, 110, ("PlayerLife:" + to_string(_PlayerTank.GetLife())));
+	CTextDraw::Print(pDC, 0, 500, ("Press L Add RespawnTimes"));
+	CTextDraw::Print(pDC, 0, 520, ("Press A Jump to Next Stage"));
+
 
 	for (int i = 0; i < 4; i++){
 		if (EnemyList[i].GetTankState() == EnemyList[i].Death && clock() - _ScoreClock[i] <= 750 && EnemyList[i].GetIfexploded()) {
@@ -356,9 +362,10 @@ void CGameStateRun::AllEnemyOnMove() {
 			if ( IfHaveEnemy() && clock() - enemy.GetSpawnClock() >= 2500
 				&& enemy.GetIfexploded()) {
 				event.TriggerUpdateMap(Stage1);
-				if (_EnemyExistNum % 4 == 1) {
+				if ((EnemyTypeList[0] + EnemyTypeList[1] + EnemyTypeList[2] + EnemyTypeList[3]) % 4 == 1) {
 					event.TriggerReSetProps(_Prop);
 					EnemyList[i].SetEnemyHaveItem(true);
+					_IfPlayerEatItem = false;
 				}
 				enemy.SetEnemyReSpawn();
 			}
@@ -391,11 +398,13 @@ void CGameStateRun::PlayerBulletCollision(BulletOrder Order) {
 	for (auto& enemy : EnemyList) {
 		if (BulletHitTank(*CurrentBullet, &_PlayerTank, &enemy, Order)) {
 			enemy.SetLife(enemy.GetLife() - 1);
-			if(enemy.GetLife() <= 0) _EnemyExistNum -= 1;
-			if (enemy.GetEnemyHaveItem()) {
+			if (enemy.GetLife() <= 0) { 
+				_EnemyExistNum -= 1; 
+				if (enemy.GetEnemyHaveItem()) {
 				event.TriggerSetProps(_Prop, _NowPropSize);
 				enemy.SetEnemyHaveItem(false);
 				_NowPropSize += 1;
+			}
 			}
 			_NowTotalScore += enemy.GetEnemyScore();
 			PlayAudio(AUDIO_Explosion,false);

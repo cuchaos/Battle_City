@@ -126,7 +126,7 @@ namespace game_framework {
 		bool ShootCollision(CBullet Bullet,int TankLevel,int who); 
 		Event event;
 
-		bool IfNoEnemy();
+		bool IfHaveEnemy();
 		void RandomSpawnTank(int num);
 		void PlayerOnMove();
 		void AllEnemyOnMove();
@@ -166,8 +166,6 @@ namespace game_framework {
 		int _PlayerTankFrontY ;
 		int _PlayerLife;
 		vector<vector<int>> _tempcollision = { {0,0},{0,0} };
-		//vector<vector<int>> _Tanktempcollision = { {0,0},{0,0} };
-		//vector<vector<int>> _tempcollision;
 		std::vector<Enemy> EnemyList = std::vector<Enemy>(4);
 		std::vector<clock_t> EnemyReSpawnLastTime = std::vector<clock_t>(4);
 		clock_t GameOverClock;

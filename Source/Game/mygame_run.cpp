@@ -28,6 +28,8 @@ void CGameStateRun::OnBeginState()
 	_NowStage = -1;
 	_IfBattling = false;
 	_IfSettling = false;
+	_IfGameOver = false;
+	IfGotoNextStage = false;
 	_isHoldDownKey = _isHoldUpKey = _isHoldLeftKey = _isHoldRightKey = false;
 	_IfEatItem = {0,0,0,0};
 	_ScoreClock = { 0,0,0,0 };
@@ -58,6 +60,8 @@ void CGameStateRun::OnMove()
 			event.TriggerSetBattleMap(_AllStage[_NowStage-1],Stage1,_Menu,_PlayerTank,_Prop,EnemyList);
 			EnemyTypeList.assign(_AllStageEnemy[_NowStage - 1].begin(), _AllStageEnemy[_NowStage - 1].end());
 			_IfBattling = true;
+			_IfGameOver = false;
+			IfGotoNextStage = false;
 			_IfSettling = false;
 			_NowPropSize = 0;
 			_EnemyNum = 20;
@@ -68,7 +72,7 @@ void CGameStateRun::OnMove()
 			AllEnemyOnMove();
 			AllBulletCollision();
 			AllBulletFly();
-			if (_PlayerLife == 0 && _PlayerTank.GetTankState() == CTank::Death) {
+			if (_IfGameOver) {
 				if (clock() - GameOverClock > 5000) {
 					GotoGameState(GAME_STATE_INIT);
 				}
@@ -92,12 +96,19 @@ void CGameStateRun::OnMove()
 		break;
 	case Battle:
 		if (_EnemyNum == 0) {
-			_IfBattling = false;
-			_IfSettling = true;
-			Stage1.SetIfShowMap(false);
-			event.TriggerSettlement(_Menu, _AllStageEnemy[_NowStage - 1], _NowTotalScore, _TheHighestScore, _NowStage);
-			state = Settlement;
+			if (!IfGotoNextStage) {
+				GotoNextStageDelay = clock();
+				IfGotoNextStage = true;
+			}
+			if (clock() - GotoNextStageDelay >= 2500) {
+				_IfBattling = false;
+				_IfSettling = true;
+				Stage1.SetIfShowMap(false);
+				event.TriggerSettlement(_Menu, _AllStageEnemy[_NowStage - 1], _NowTotalScore, _TheHighestScore, _NowStage);
+				state = Settlement;
+			}
 		}
+		IfGameOver();
 		break;
 	case Settlement:
 		if (!_IfSettling) {
@@ -107,7 +118,6 @@ void CGameStateRun::OnMove()
 }
 void CGameStateRun::OnInit()                                  
 {
-	
 	for (int i = 1;i < 18;i++) {
 		string tempname = string("resources/Sound/Battle_City_SFX(");
 		tempname += to_string(i) + ").wav";
@@ -125,7 +135,7 @@ void CGameStateRun::OnInit()
 		_Prop.push_back(GameProps());
 		_Prop[i].OnInit();
 	}
-	for (int i=0; i<4; ++i) {
+	for (int i = 0; i < 4; ++i) {
 		EnemyList[i].LoadBitmap();
 		EnemyReSpawnLastTime[i] = clock();
 	}
@@ -145,7 +155,7 @@ void CGameStateRun::OnInit()
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	if (_IfBattling && _PlayerTank.GetTankState() == CPlayer::Alive) {
+	if (_IfBattling && _PlayerTank.GetTankState() == CPlayer::Alive && !_IfGameOver) {
 		if (nChar == 0x5A || nChar == 0x58) {
 			if (_PlayerTank.GetLevel() > 3 && _PlayerTank.GetIfFire(1) == true) {
 				_PlayerTank.FireBullet(2);
@@ -227,7 +237,7 @@ void CGameStateRun::OnShow()
 		if (Stage1.GetIfGrassInMap()) {
 			Stage1.OnShowGrass();
 		}
-		if (_PlayerLife == 0 && _PlayerTank.GetTankState() == CTank::Death) {
+		if (_IfGameOver) {
 			_GameOverSign.ShowBitmap();
 		}
 	}
@@ -289,6 +299,11 @@ void CGameStateRun::TrigAllProp() {
 			_IfEatItem[3] = clock();
 			event.TriggerGetProps(_Prop[i], Stage1, _PlayerTank, EnemyList,_EnemyNum);
 		}
+	}
+}
+void CGameStateRun::IfGameOver() {
+	if (_PlayerLife == 0 && _PlayerTank.GetTankState() == CTank::Death) {
+		_IfGameOver = true;
 	}
 }
 void CGameStateRun::PlayerOnMove() {
@@ -406,7 +421,7 @@ void CGameStateRun::EnemyAllBulletCollision() {
 		if (!_AllBullet[i]->GetAlreadyFire()) continue;
 		if (BulletHitTank(*_AllBullet[i], &EnemyList[i - 2], &_PlayerTank, FirstBullet)) {
 			if (!_PlayerTank.GetIfInvicible()) {
-				//_PlayerTank.SetLife(_PlayerTank.GetLife()-1);
+				_PlayerTank.SetLife(_PlayerTank.GetLife()-1);
 				GameOverClock = clock();
 				PlayAudio(AUDIO_HitHomeOrPlayer, false);
 			}
@@ -451,6 +466,11 @@ bool CGameStateRun::ShootCollision(CBullet Bullet, int TankLevel,int who) {
 			}
 			if (Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 4 || Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 5) {
 				Stage1.ShootWall(Bullet.GetDirection(), TankLevel, _tempcollision[1][1], _tempcollision[1][0]);
+			}
+			if (Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 7 || Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 7) {
+				Stage1.SetHomeBreak();
+				_IfGameOver = true;
+				GameOverClock = clock();
 			}
 			if (who == BulletOwner::Player){
 				if (Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 5 || Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 5) {

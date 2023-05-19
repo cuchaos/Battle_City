@@ -17,6 +17,7 @@ namespace game_framework {
 		void OnShow();
 		void OnShowGrass();
 		void ShootWall(int Direction, int Attack, int x, int y); //Iron wall or wall was shot
+		void SetHomeBreak();
 
 		void SetGetShovel(int Type);
 		void SetIfShowMap(bool Status);

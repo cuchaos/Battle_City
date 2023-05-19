@@ -65,6 +65,13 @@ void Map::OnInit(vector<vector<int>> stage) {
 void Map::ShootWall(int Direction, int TankLevel, int x, int y) {
 	_Stage[x][y].ChangeGridState(Direction, TankLevel);
 }
+void Map::SetHomeBreak() {
+	_Stage[24][12].ChangeGridState(0, 0);
+	_Stage[25][12].ChangeGridState(0, 0);
+	_Stage[24][13].ChangeGridState(0, 0);
+	_Stage[25][13].ChangeGridState(0, 0);
+}
+
 
 int Map::GetGridIndexX(int NowX) {
 	return (NowX - 100) / 32;

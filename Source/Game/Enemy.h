@@ -33,6 +33,7 @@ namespace game_framework {
 		void SetEnemyInit();					// 設定初始化
 		void SetOriginAngle(int _direction);	// 設定轉向方向 
 		void SetEnemyReSpawn();
+		void SetEnemyIfExplision(bool State);
 		
 		int GetEnemyType();
 		bool GetEnemySetInit();

@@ -112,6 +112,7 @@ namespace game_framework {
 			Settlement,
 			GameOver
 		};
+		void IfGameOver();
 		void OnShowText();
 		int _MouseX;
 		int _MouseY;
@@ -150,6 +151,8 @@ namespace game_framework {
 
 		clock_t _TimerSpawn,_TimerFinish;
 		vector<clock_t> _ScoreClock;
+		clock_t GotoNextStageDelay;
+		bool IfGotoNextStage;
 		int _EnemyQuantity;
 		CPlayer _PlayerTank;
 		bool _isHoldUpKey, _isHoldDownKey, _isHoldRightKey, _isHoldLeftKey;
@@ -160,6 +163,7 @@ namespace game_framework {
 		int _OnIceCountDown; // If we on ice,we should go without any keydown,this is 
 							// the go on counter 2 Grid,so is 64 pixel
 		bool _collision;
+		bool _IfGameOver;
 		int tempIndex;
 		int _HoldKey;
 		int _PlayerTankFrontX ;

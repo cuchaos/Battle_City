@@ -66,7 +66,7 @@ MapItem::MapItem(int ItemType) { // Item Type = Raw Data
 			_IfShoot = true;
 			_IfBreak = true;
 			_IfWalk = false;
-			_OneGrid.LoadBitmapByString({ "resources/Home.bmp" }, RGB(0, 0, 0));
+			_OneGrid.LoadBitmapByString({ "resources/Home.bmp","resources/HomeBreak.bmp"}, RGB(0, 0, 0));
 			_OneGrid.SetTopLeft(484, 768);
 			break;
 	}
@@ -91,6 +91,9 @@ void MapItem::ChangeGridState(int Direction,int TankLevel) {
 		_IfShoot = false;
 		_IfBreak = false;
 		_IfWalk = true;
+	}
+	else if (_Type == FlagHome) {
+		_OneGrid.SetFrameIndexOfBitmap(1);
 	}
 }
 int MapItem::GetType() {

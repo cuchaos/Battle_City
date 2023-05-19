@@ -28,6 +28,7 @@ void CPlayer::SetPlayerInit() {
 	_IfSpawnInvicible = true;
 	_IfGetShip = false;
 	_IfSecondFire = false;
+	_Life = 1;
 	_RespawnAnimationNum = 0;
 	_SpawnInvicibleClock = clock();
 	_Tank.SetFrameIndexOfBitmap(_Frameindex);

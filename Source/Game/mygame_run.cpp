@@ -29,7 +29,7 @@ void CGameStateRun::OnBeginState()
 	_IfBattling = false;
 	_IfSettling = false;
 	_isHoldDownKey = _isHoldUpKey = _isHoldLeftKey = _isHoldRightKey = false;
-	_IfEatItem = {0,0,0,0};
+	/*_IfEatItem = {0,0,0,0};*/
 	_ScoreClock = { 0,0,0,0 };
 	_MouseX = 0;
 	_MouseY = 0;
@@ -107,7 +107,7 @@ void CGameStateRun::OnMove()
 }
 void CGameStateRun::OnInit()                                  
 {
-	
+	_IfPlayerEatItem = false;
 	for (int i = 1;i < 18;i++) {
 		string tempname = string("resources/Sound/Battle_City_SFX(");
 		tempname += to_string(i) + ").wav";
@@ -167,6 +167,9 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			Stage1.SetIfShowMap(false);
 			event.TriggerSettlement(_Menu, _AllStageEnemy[_NowStage - 1], _NowTotalScore, _TheHighestScore,_NowStage);
 			state = Settlement;
+		}
+		if (nChar == 'L') {
+			_PlayerLife+=1;
 		}
 	}	
 	else {
@@ -239,14 +242,18 @@ void CGameStateRun::OnShowText() {
 	pDC->SetBkMode(TRANSPARENT);
 	pDC->SetTextColor(RGB(0, 180, 0));
 	_TimerFinish = clock();
-	CTextDraw::Print(pDC, 0, 0, (to_string(_TimerSpawn / CLOCKS_PER_SEC) + " " + to_string(_TimerFinish)));
+	CTextDraw::Print(pDC, 0, 0, ("CPU Clock:"+ to_string(_TimerFinish)));
 
 	_Menu.OnShowText(pDC, fp);
-	
 	CTextDraw::ChangeFontLog(pDC, 15, "STZhongsong", RGB(255, 255, 255));
-	CTextDraw::Print(pDC, 0, 500, (to_string(_EnemyNum)));
-	CTextDraw::Print(pDC, 0, 100, (to_string(_AllAudioIfPlaying[2])));
-	CTextDraw::Print(pDC, 0, 125, (to_string(_AllAudioIfPlaying[4])));
+	CTextDraw::Print(pDC, 0, 70, ("EnemyNums:" + to_string(_EnemyNum)));
+	CTextDraw::Print(pDC, 0, 50, ("EatItem:"+to_string(_IfPlayerEatItem)));
+	CTextDraw::Print(pDC, 0, 90, ("PlayerRespawnTimes:" + to_string(_PlayerLife)));
+	CTextDraw::Print(pDC, 0, 110, ("PlayerLife:" + to_string(_PlayerTank.GetLife())));
+	CTextDraw::Print(pDC, 0, 500, ("Press L Add RespawnTimes"));
+	CTextDraw::Print(pDC, 0, 520, ("Press A Jump to Next Stage"));
+
+	
 
 	for (int i = 0; i < 4; i++){
 		if (EnemyList[i].GetTankState() == EnemyList[i].Death && clock() - _ScoreClock[i] <= 750 && EnemyList[i].GetIfexploded()) {
@@ -283,11 +290,12 @@ void CGameStateRun::TrigAllProp() {
 			if (IfResetPropTime(i, _Prop[i])) {
 				continue;
 			}
-			_IfEatItem[0] = 1;
-			_IfEatItem[1] = _Prop[i].GetX();
-			_IfEatItem[2] = _Prop[i].GetY();
-			_IfEatItem[3] = clock();
+			//_IfEatItem[0] = 1;
+			//_IfEatItem[1] = _Prop[i].GetX();
+			//_IfEatItem[2] = _Prop[i].GetY();
+			//_IfEatItem[3] = clock();
 			event.TriggerGetProps(_Prop[i], Stage1, _PlayerTank, EnemyList,_EnemyNum);
+			_IfPlayerEatItem = true;
 		}
 	}
 }
@@ -346,9 +354,10 @@ void CGameStateRun::AllEnemyOnMove() {
 			if ( IfHaveEnemy() && clock() - enemy.GetSpawnClock() >= 2500
 				&& enemy.GetIfexploded()) {
 				event.TriggerUpdateMap(Stage1);
-				if (_EnemyNum % 4 == 1) {
+				if ((EnemyTypeList[0] + EnemyTypeList[1] + EnemyTypeList[2] + EnemyTypeList[3]) % 4 == 1) {
 					event.TriggerReSetProps(_Prop);
 					EnemyList[i].SetEnemyHaveItem(true);
+					_IfPlayerEatItem = false;
 				}
 				enemy.SetEnemyReSpawn();
 			}
@@ -381,11 +390,13 @@ void CGameStateRun::PlayerBulletCollision(BulletOrder Order) {
 	for (auto& enemy : EnemyList) {
 		if (BulletHitTank(*CurrentBullet, &_PlayerTank, &enemy, Order)) {
 			enemy.SetLife(enemy.GetLife() - 1);
-			if(enemy.GetLife() <= 0) _EnemyNum -= 1;
-			if (enemy.GetEnemyHaveItem()) {
+			if (enemy.GetLife() <= 0) { 
+				_EnemyNum -= 1; 
+				if (enemy.GetEnemyHaveItem()) {
 				event.TriggerSetProps(_Prop, _NowPropSize);
 				enemy.SetEnemyHaveItem(false);
 				_NowPropSize += 1;
+			}
 			}
 			_NowTotalScore += enemy.GetEnemyScore();
 			PlayAudio(AUDIO_Explosion,false);
@@ -406,7 +417,7 @@ void CGameStateRun::EnemyAllBulletCollision() {
 		if (!_AllBullet[i]->GetAlreadyFire()) continue;
 		if (BulletHitTank(*_AllBullet[i], &EnemyList[i - 2], &_PlayerTank, FirstBullet)) {
 			if (!_PlayerTank.GetIfInvicible()) {
-				//_PlayerTank.SetLife(_PlayerTank.GetLife()-1);
+				_PlayerTank.SetLife(_PlayerTank.GetLife()-1);
 				GameOverClock = clock();
 				PlayAudio(AUDIO_HitHomeOrPlayer, false);
 			}

@@ -68,7 +68,20 @@ void Enemy::LoadBitmap() {
 								"resources/Enemy_HeavyTank_Red_Right1.bmp","resources/Enemy_HeavyTank_Red_Right2.bmp",
 								"resources/Enemy_HeavyTank_Red_Left1.bmp","resources/Enemy_HeavyTank_Red_Left2.bmp",
 								"resources/Enemy_HeavyTank_Red_Top1.bmp","resources/Enemy_HeavyTank_Red_Top2.bmp",
-								"resources/Enemy_HeavyTank_Red_Bottom1.bmp","resources/Enemy_HeavyTank_Red_Bottom2.bmp" }, RGB(0, 0, 0));
+								"resources/Enemy_HeavyTank_Red_Bottom1.bmp","resources/Enemy_HeavyTank_Red_Bottom2.bmp",
+								//HeavyTank Super State
+								"resources/Enemy_HeavyTank_Right1_1.bmp","resources/Enemy_HeavyTank_Right2_1.bmp",
+								"resources/Enemy_HeavyTank_Left1_1.bmp","resources/Enemy_HeavyTank_Left2_1.bmp",
+								"resources/Enemy_HeavyTank_Top1_1.bmp","resources/Enemy_HeavyTank_Top2_1.bmp",
+								"resources/Enemy_HeavyTank_Down1_1.bmp","resources/Enemy_HeavyTank_Down2_1.bmp",
+								"resources/Enemy_HeavyTank_Right1_2.bmp","resources/Enemy_HeavyTank_Right2_2.bmp",
+								"resources/Enemy_HeavyTank_Left1_2.bmp","resources/Enemy_HeavyTank_Left2_2.bmp",
+								"resources/Enemy_HeavyTank_Top1_2.bmp","resources/Enemy_HeavyTank_Top2_2.bmp",
+								"resources/Enemy_HeavyTank_Down1_2.bmp","resources/Enemy_HeavyTank_Down2_2.bmp",
+								"resources/Enemy_HeavyTank_Right1_3.bmp","resources/Enemy_HeavyTank_Right2_3.bmp",
+								"resources/Enemy_HeavyTank_Left1_3.bmp","resources/Enemy_HeavyTank_Left2_3.bmp",
+								"resources/Enemy_HeavyTank_Top1_3.bmp","resources/Enemy_HeavyTank_Top2_3.bmp",
+								"resources/Enemy_HeavyTank_Down1_3.bmp","resources/Enemy_HeavyTank_Down2_3.bmp" }, RGB(0, 0, 0));
 	_Bullet.LoadBitmap();
 }
 void Enemy::OnMove() {
@@ -199,7 +212,12 @@ void Enemy::Animation() {
 		}
 	}
 	else if (!_EnemyHaveItem) {
-		_Tank.SetFrameIndexOfBitmap(_Frameindex + _FrameTime % 6 / 3);
+		if (_Life > 1){
+			_Tank.SetFrameIndexOfBitmap(_Frameindex + _FrameTime % 6 / 3 + 32 + (_Life - 1) * 8);
+		}
+		else{
+			_Tank.SetFrameIndexOfBitmap(_Frameindex + _FrameTime % 6 / 3);
+		}
 	}
 	++_FrameTime;
 }

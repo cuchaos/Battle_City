@@ -174,6 +174,9 @@ namespace game_framework {
 
 		CAudio* audio = CAudio::Instance();
 		vector<bool> _AllAudioIfPlaying;
+
+		bool _IfPlayerEatItem;
+
 	};
 
 	class CGameStateOver : public CGameState {

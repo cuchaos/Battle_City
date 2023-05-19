@@ -330,8 +330,16 @@ void CGameStateRun::AllEnemyOnMove() {
 			RandomSpawnTank(i);
 			break;
 		case Enemy::Alive:
-			EnemyList[i].OnMove();
-			EnemyTankCollisionMap(&EnemyList[i]);
+			if (EnemyList[i].GetEnemyType()== Enemy::ArmorTank){
+				for (int j = 0; j <2 ; j++){
+					EnemyList[i].OnMove();
+					EnemyTankCollisionMap(&EnemyList[i]);
+				}
+			}
+			else{
+				EnemyList[i].OnMove();
+				EnemyTankCollisionMap(&EnemyList[i]);
+			}
 			_ScoreClock[i] = clock();
 			break;
 		case Enemy::Death:

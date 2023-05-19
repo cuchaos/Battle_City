@@ -199,6 +199,9 @@ void Enemy::SetFaceDirection() {
 		break;
 	}
 }
+void Enemy::SetEnemyIfExplision(bool State) {
+	_IfExploded = State;
+}
 void Enemy::Animation() {
 	if (_IfGetTimeStop) {
 		return;

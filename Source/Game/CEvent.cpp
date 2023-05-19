@@ -12,7 +12,7 @@
 using namespace game_framework;
 
 Event::Event() {
-	_IfStart = false;
+	
 }
 
 void Event::TriggerLobbyMenu(Menu& LobbyMenu) {
@@ -47,6 +47,10 @@ void Event::TriggerSetBattleMap(vector<vector<int>>& Stage,Map& StageMap, Menu& 
 	Player.SetPlayerReSpawn();
 	Player.SetIfBattle(true);
 	for (auto& enemy : AllEnemy) {
+		if (enemy.GetTankState() == Enemy::Alive) {
+			enemy.SetLife(0);
+			enemy.SetEnemyIfExplision(true);
+		}
 		enemy.SetIfGetTimeStop(false);
 		enemy.SetIfBattle(true);
 	}

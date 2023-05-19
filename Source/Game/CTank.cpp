@@ -180,20 +180,7 @@ void CTank::TurnFace(UINT nChar) {
 		_FrameTime= 0;
 	}
 }
-void CTank::TankFront() {		// 對坦克前方的兩格格子做XY定位
-	//vector<int> _AngleMove = {1/*Right*/,1/*Down*/,0/*Left*/,0/*Up*/ };
-	//if (_OriginAngle == Left || _OriginAngle == Right) {
-	//	_FrontXY[0][0] = _X + _AngleMove[_OriginAngle] * (Width * 2);
-	//	_FrontXY[0][1] = _Y + Height / 2;
-	//	_FrontXY[0][0] = _X + _AngleMove[_OriginAngle] * (Width * 2);
-	//	_FrontXY[1][1] = _Y + Height * 3 / 2;
-	//}
-	//else if (_OriginAngle == Up || _OriginAngle == Down) {
-	//	_FrontXY[0][0] = _X + Width / 2;
-	//	_FrontXY[0][1] = _Y + _AngleMove[_OriginAngle] * (Height * 2);
-	//	_FrontXY[1][0] = _X + Width * 3 / 2;
-	//	_FrontXY[1][1] = _Y + _AngleMove[_OriginAngle] * (Height * 2);
-	//}
+void CTank::UpdateTankFront() {		
 	if (_OriginAngle == Right) {
 		_FrontXY[0][0] = _X + Width * 2;
 		_FrontXY[0][1] = _Y + Height / 2;

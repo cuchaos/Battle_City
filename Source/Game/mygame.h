@@ -92,8 +92,15 @@ namespace game_framework {
 		void OnInit();  								
 		void OnKeyDown(UINT, UINT, UINT);
 		void OnKeyUp(UINT, UINT, UINT);	
+		void OnMove();
 		void OnMouseMove(UINT nFlags, CPoint point);	
+		void OnShow();
+		void OnShowText();
 		Map Stage1;
+		bool _isHoldUpKey, _isHoldDownKey, _isHoldRightKey, _isHoldLeftKey;
+		int _HoldKey;
+		int _MouseX;
+		int _MouseY;
 	protected:
 		enum Direction {
 			Right,
@@ -112,71 +119,59 @@ namespace game_framework {
 			Settlement,
 			GameOver
 		};
-		void OnShowText();
-		int _MouseX;
-		int _MouseY;
-		void OnMove();								
-		void OnShow();									
-		InGameState state;
-		void PlayAudio(AUDIO_ID Id, bool IfRepeat);
-		void PlayerTankCollisionMap(CPlayer *tank);
-		void EnemyTankCollisionMap(Enemy *tank);
-		bool EnemyTankCollision(CTank *tank);
-		bool TankCollision(CTank *tank ,CTank *who);
-		bool ShootCollision(CBullet Bullet,int TankLevel,int who); 
-		Event event;
-
-		bool IfHaveEnemy();
-		void RandomSpawnTank(int num);
-		void PlayerOnMove();
-		void AllEnemyOnMove();
-
-		void AllBulletFly();
-		void AllBulletCollision();
+		// Collision
+		vector<vector<int>> _tempcollision = { {0,0},{0,0} };
+		// Tank collision with Map
+		bool ShootCollision(CBullet Bullet, int TankLevel, int who);
+		void PlayerTankCollisionMap(CPlayer* tank);
+		void EnemyTankCollisionMap(Enemy* tank);
+		// Tank collision with tank
+		bool IfFrontHaveTank(CTank* tank, CTank* who);
+		bool TankCollision(CTank* tank);
+		// Bullet collision
+		// Bullet collision with tank and another bullet
+		bool BulletHitTank(CBullet CurrentBullet, CTank* BulletOwner, CTank* DetectTarget, BulletOrder Order);
+		bool BulletHitBullet(CBullet CurrentBullet, CTank* BulletOwner, CTank* DetectTarget, BulletOrder Order);
 		void PlayerBulletCollision(BulletOrder Order);
 		void EnemyAllBulletCollision();
-		bool BulletHitTank(CBullet CurrentBullet, CTank *BulletOwner, CTank *DetectTarget, BulletOrder Order);
-		bool BulletHitBullet(CBullet CurrentBullet, CTank *BulletOwner, CTank *DetectTarget, BulletOrder Order);
-		vector<CBullet*> _AllBullet; // index 0 and 1 is player's , index >= 2 is enemy's
-		int _NowStage;
-		int _EnemyNum;
-
-		bool IfResetPropTime(int NowPropIndex,GameProps NowProp);
-		void TrigAllProp();
-		int _NowPropSize;  // the var that record Prop number
-		vector<GameProps> _Prop;
-		
-		Menu _Menu;
-
-		clock_t _TimerSpawn,_TimerFinish;
-		vector<clock_t> _ScoreClock;
-		int _EnemyQuantity;
-		CPlayer _PlayerTank;
-		bool _isHoldUpKey, _isHoldDownKey, _isHoldRightKey, _isHoldLeftKey;
-		bool _IfBattling; //the var that depend on Map and Gray Menu and tank and props show 
-		bool _IfSettling;
-		bool _IfSelecting;
-		vector<int> _IfEatItem;
-		int _OnIceCountDown; // If we on ice,we should go without any keydown,this is 
-							// the go on counter 2 Grid,so is 64 pixel
-		bool _collision;
-		int tempIndex;
-		int _HoldKey;
-		int _PlayerTankFrontX ;
-		int _PlayerTankFrontY ;
-		int _PlayerLife;
-		vector<vector<int>> _tempcollision = { {0,0},{0,0} };
-		std::vector<Enemy> EnemyList = std::vector<Enemy>(4);
-		std::vector<clock_t> EnemyReSpawnLastTime = std::vector<clock_t>(4);
-		clock_t GameOverClock;
-		vector<int> EnemyTypeList = {0,0,0,0};
-		CMovingBitmap _GameOverSign;
-
+		// All Bullet collision
+		void AllBulletCollision();
+		// OnMove
+		void PlayerOnMove();
+		void AllEnemyOnMove();
+		void AllBulletFly();
+		void TriggerAllProp();
+		bool IfResetPropTime(int NowPropIndex, GameProps NowProp);
+		void RandomSpawnTank(int num);
+		// GameState transformation
+		InGameState state;
+		void IfGameOver();
+		void SetGameOverAndGotoLobby();
+		bool IfHaveEnemy();
+		// Audio
 		CAudio* audio = CAudio::Instance();
 		vector<bool> _AllAudioIfPlaying;
-
-		bool _IfPlayerEatItem;
-
+		void PlayAudio(AUDIO_ID Id, bool IfRepeat);
+		// else
+		Event event;
+		Menu _Menu;
+		CPlayer _PlayerTank;
+		vector<Enemy> EnemyList = vector<Enemy>(4);
+		vector<int> EnemyTypeList = { 0,0,0,0 };
+		vector<GameProps> _Prop;
+		vector<CBullet*> _AllBullet; // index 0 and 1 is player's , index >= 2 is enemy's
+		bool _IfBattling, _IfSettling, _IfSelecting;
+		int _NowStage;
+		int _PlayerLife;
+		int _EnemyExistNum;
+		int _NowPropSize;  // the var that record prop's size
+		int _OnIceCountDown; // If we on ice,we should go without any keydown,this is 
+		// the go on counter 2 Grid,so is 64 pixel
+		bool IfGotoNextStage, _IfGameOver;
+		clock_t GotoNextStageDelay, GameOverClock;
+		clock_t _EnemyReSpawnLastTime, _TimerFinish;
+		vector<clock_t> _ScoreClock;
+		CMovingBitmap _GameOverSign;
 	};
 
 	class CGameStateOver : public CGameState {

@@ -45,7 +45,7 @@ namespace game_framework {
 		void SetLife(int num);
 		void SetTankState(TankState State);
 		// location
-		void TankFront();					//坦克前方的格子做定位
+		void UpdateTankFront();					//坦克前方的格子做定位
 		void LocationPoint();				//位置校正
 		void TurnFace(UINT 📥);			//調整圖片方向
 		

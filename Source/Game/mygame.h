@@ -162,7 +162,7 @@ namespace game_framework {
 		vector<CBullet*> _AllBullet; // index 0 and 1 is player's , index >= 2 is enemy's
 		bool _IfBattling, _IfSettling, _IfSelecting;
 		int _NowStage;
-		int _PlayerLife;
+		int _PlayerRespawnTimes;
 		int _EnemyExistNum;
 		int _NowPropSize;  // the var that record prop's size
 		int _OnIceCountDown; // If we on ice,we should go without any keydown,this is 

@@ -18,6 +18,6 @@ namespace game_framework {
 		static void TriggerNextStage(Map& StageMap, Menu& BattleMenu, int& EnemyNum, int& NowStage, vector<Enemy>& EnemyList);
 		static void TriggerSetProps(vector<GameProps>& Props,int NowPropndex);
 		static void TriggerReSetProps(vector<GameProps>& Props);
-		static void TriggerGetProps(GameProps& Props, Map& StageMap, CPlayer& Player,vector<Enemy>& AllEnemy, int& EnemyNum); // lost a enemy class
+		static void TriggerGetProps(GameProps& Props, Map& StageMap, CPlayer& Player,vector<Enemy>& AllEnemy, int& EnemyNum , int& PlayerRespawnTimes); // lost a enemy class
 	};
 }

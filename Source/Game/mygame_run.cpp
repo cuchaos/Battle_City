@@ -251,6 +251,7 @@ void CGameStateRun::OnShowText() {
 	_Menu.OnShowText(pDC, fp);
 	CTextDraw::ChangeFontLog(pDC, 15, "STZhongsong", RGB(255, 255, 255));
 	CTextDraw::Print(pDC, 0, 70, ("EnemyNums:" + to_string(_EnemyExistNum)));
+	CTextDraw::Print(pDC, 0, 90, ("PlayerRespawnTimes:" + to_string(_PlayerLife)));
 	//CTextDraw::Print(pDC, 0, 50, ("EatItem:"+to_string(_IfPlayerEatItem)));
 	CTextDraw::Print(pDC, 0, 90, ("PlayerRespawnTimes:" + to_string(_PlayerRespawnTimes)));
 	CTextDraw::Print(pDC, 0, 110, ("PlayerLife:" + to_string(_PlayerTank.GetLife())));
@@ -357,11 +358,11 @@ void CGameStateRun::AllEnemyOnMove() {
 			RandomSpawnTank(i);
 			break;
 		case Enemy::Alive:
-			EnemyList[i].OnMove();
-			EnemyTankCollisionMap(&EnemyList[i]);
-			if (EnemyList[i].GetEnemyType() == Enemy::ArmorTank) {
-				EnemyList[i].OnMove();
-				EnemyTankCollisionMap(&EnemyList[i]);
+			enemy.OnMove();
+			EnemyTankCollisionMap(&enemy);
+			if (enemy.GetEnemyType()== Enemy::ArmorTank){
+				enemy.OnMove();
+				EnemyTankCollisionMap(&enemy);
 			}
 			_ScoreClock[i] = clock();
 			break;
@@ -371,7 +372,7 @@ void CGameStateRun::AllEnemyOnMove() {
 				&& enemy.GetIfexploded()) {
 				event.TriggerUpdateMap(Stage1);
 				int RespawnEnemyNumber = (EnemyTypeList[0] + EnemyTypeList[1] + EnemyTypeList[2] + EnemyTypeList[3]);
-				if (RespawnEnemyNumber % 4 == 0 && RespawnEnemyNumber != 0) {
+				if (RespawnEnemyNumber % 4 == 0 && RespawnEnemyNumber != 20) {
 					event.TriggerReSetProps(_Prop);
 					EnemyList[i].SetEnemyHaveItem(true);
 				}

@@ -81,13 +81,13 @@ void Event::TriggerNextStage(Map& StageMap, Menu& BattleMenu, int& EnemyNum, int
 void Event::TriggerSetProps(vector<GameProps>& Props,int NowPropIndex) {
 	Props[NowPropIndex].SetGameProps();
 }
-void Event::TriggerGetProps(GameProps& Props,Map& StageMap,CPlayer& Player,vector<Enemy>& AllEnemy,int& EnemyNum) {
+void Event::TriggerGetProps(GameProps& Props,Map& StageMap,CPlayer& Player,vector<Enemy>& AllEnemy,int& EnemyNum,int& PlayerRespawnTimes) {
 	Props.SetIfShow(false);
 	GameProps::ItemType type = Props.GetType();
 	switch (type)
 	{
 	case GameProps::ItemType::Chariot:
-		Player.SetLife(Player.GetLife() + 1);
+		PlayerRespawnTimes += 1;
 		Props.SetIfExist(false);
 		break;
 	case GameProps::ItemType::Star:

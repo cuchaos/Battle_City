@@ -69,6 +69,7 @@ void CBullet::SetBulletFire(int TankX,int TankY,int TankDirect,int BulletSpeed) 
 		_Direction = TankDirect;
 		_NowBackPlace[0][0] = TankX;
 		_NowBackPlace[0][1] = TankY;
+		_Bulletimage.SetTopLeft(_NowBackPlace[0][0], _NowBackPlace[0][1]);
 		if (_Direction == Right || _Direction == Left) {
 			_NowBackPlace[1][0] = TankX;
 			_NowBackPlace[1][1] = TankY + _Bulletimage.GetHeight();	
@@ -93,7 +94,6 @@ void CBullet::SetBulletFire(int TankX,int TankY,int TankDirect,int BulletSpeed) 
 
 			_Boom.SetTopLeft(_NowBackPlace[0][0] - 18, _NowBackPlace[0][1]);
 		}
-		_Bulletimage.SetTopLeft(_NowBackPlace[0][0], _NowBackPlace[0][1]);
 	}
 }
 
@@ -129,7 +129,7 @@ void CBullet::OnShow() {
 	if (_AlreadyFire == true) {
 		_Bulletimage.ShowBitmap();
 	}
-	if (_IfBoom == true) {
+	else if (_IfBoom == true) {
 		if (_Boom.IsAnimationDone() == false) {
 			_Boom.ShowBitmap();
 		}

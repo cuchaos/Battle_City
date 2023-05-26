@@ -173,8 +173,7 @@ void CPlayer::OnShow() {
 				_Ship.SetTopLeft(_X, _Y);
 				_Ship.ShowBitmap();
 			}
-			_Bullet.OnShow();
-			_SecondBullet.OnShow();
+			
 			break;
 		case Death:
 			if (!_IfExploded) {
@@ -183,6 +182,8 @@ void CPlayer::OnShow() {
 			}
 			break;
 		}
+		_Bullet.OnShow();
+		_SecondBullet.OnShow();
 	}
 }
 

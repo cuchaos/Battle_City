@@ -369,7 +369,6 @@ void Enemy::OnShow() {
 		case Alive:
 			_Tank.SetTopLeft(_X, _Y);
 			_Tank.ShowBitmap();
-			_Bullet.OnShow();
 			break;
 		case Death:
 			if (!_IfExploded) {
@@ -379,6 +378,7 @@ void Enemy::OnShow() {
 			if(_IfExploded && clock())
 			break;
 		}
+		_Bullet.OnShow();
 	}
 }
 

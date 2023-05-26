@@ -64,6 +64,7 @@ namespace game_framework {
 		int GetBulletOwner();
 		CMovingBitmap GetBulletBitmap();
 		void SetBulletOwner(int Who);
+
 	protected:
 		static vector<vector<int>> _Move;
 		int _X, _Y;									//地圖座標

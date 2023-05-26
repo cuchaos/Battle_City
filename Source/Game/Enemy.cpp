@@ -89,16 +89,16 @@ void Enemy::OnMove() {
 		return;
 	}
 	if (clock() - _ChooseClock >= 500 /*_RandomMoveTime*/) {
-		_RandomFuncChoose = rand() % 2;
+		_RandomFuncChoose = rand() % 5;
 		//_RandomFuncChoose = 0;
 		_RandomDirection = rand() % 4;
 		//_RandomDirection = rand() % 2 *2+1;
 		_ChooseClock = clock();
 	}
-	else if (_RandomFuncChoose % 2 == 0) {
+	else if (_RandomFuncChoose == 0) {
 		EnemyRandomDirection();
 	}
-	else if (_RandomFuncChoose % 2 == 1) {
+	else if (_RandomFuncChoose > 0) {
 		ENemyMoveDown();
 	}
 	if (_IfFire == false && clock() - _FireClock >= 1000) {
@@ -293,21 +293,14 @@ void Enemy::ENemyMoveDown() {
 		}
 		else {
 			if (_Times >=20) {
-				_RandomLR = rand() % 3;
+				_RandomLR = rand() % 26;
+				if ((_X-100)/32 > 13) _RandomLR += ((_X - 100) / 32) - 13;
+				else if ((_X - 100) / 32 < 13) _RandomLR += ((_X - 100) / 32) - 13;
 				_Times = 0;
 			}
 			else{
-				switch (_RandomLR) {
-				case 0:
-					TurnFace(VK_LEFT);
-					break;
-				case 1:
-					TurnFace(VK_RIGHT);
-					break;
-					/*case 2:
-						TurnFace(VK_DOWN);
-						break;*/
-				}
+				if (_RandomLR > 13) TurnFace(VK_LEFT);
+				else if (_RandomLR < 13) TurnFace(VK_RIGHT);
 			}
 			++_Times;
 		}

@@ -143,10 +143,11 @@ namespace game_framework {
 		void TriggerAllProp();
 		bool IfResetPropTime(int NowPropIndex, GameProps NowProp);
 		void RandomSpawnTank(int num);
+		void OnShowScore(CDC* pDC, CFont*& fp);
 		// GameState transformation
 		InGameState state;
 		void IfGameOver();
-		void SetGameOverAndGotoLobby();
+		void SetGameOverAndGotoSettlement();
 		bool IfHaveEnemy();
 		// Audio
 		CAudio* audio = CAudio::Instance();
@@ -158,6 +159,7 @@ namespace game_framework {
 		CPlayer _PlayerTank;
 		vector<Enemy> EnemyList = vector<Enemy>(4);
 		vector<int> EnemyTypeList = { 0,0,0,0 };
+		vector<int> DeadEnemyList = { 0,0,0,0 };
 		vector<GameProps> _Prop;
 		vector<CBullet*> _AllBullet; // index 0 and 1 is player's , index >= 2 is enemy's
 		bool _IfBattling, _IfSettling, _IfSelecting;

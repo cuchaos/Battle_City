@@ -81,7 +81,7 @@ void Event::TriggerNextStage(Map& StageMap, Menu& BattleMenu, int& EnemyNum, int
 void Event::TriggerSetProps(vector<GameProps>& Props,int NowPropIndex) {
 	Props[NowPropIndex].SetGameProps();
 }
-void Event::TriggerGetProps(GameProps& Props,Map& StageMap,CPlayer& Player,vector<Enemy>& AllEnemy,int& EnemyNum,int& PlayerRespawnTimes) {
+void Event::TriggerGetProps(GameProps& Props,Map& StageMap,CPlayer& Player,vector<Enemy>& AllEnemy,int& EnemyNum,int& PlayerRespawnTimes,vector<int>& DeadEnemyList) {
 	Props.SetIfShow(false);
 	GameProps::ItemType type = Props.GetType();
 	switch (type)
@@ -98,6 +98,7 @@ void Event::TriggerGetProps(GameProps& Props,Map& StageMap,CPlayer& Player,vecto
 		for (int i = 0; i < 4; i++) {
 			if (AllEnemy[i].GetTankState() == CTank::Alive) {
 				AllEnemy[i].SetLife(0);
+				DeadEnemyList[AllEnemy[i].GetEnemyType()] += 1;
 				EnemyNum -= 1;
 			}
 		}

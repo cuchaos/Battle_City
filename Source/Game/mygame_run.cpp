@@ -35,7 +35,7 @@ void CGameStateRun::OnBeginState()
 	_MouseX = 0;
 	_MouseY = 0;
 	_OnIceCountDown = 0;
-	_PlayerLife = 2;
+	_PlayerRespawnTimes = 2;
 	_NowPropSize = 0;
 	_EnemyReSpawnLastTime = clock();
 	_GameOverSign.SetTopLeft(516, 900);
@@ -53,7 +53,7 @@ void CGameStateRun::OnMove()
 			event.TriggerSelectingStage(_Menu);
 			break;
 		case PreBattle:
-			_PlayerLife += 1;
+			_PlayerRespawnTimes += 1;
 			event.TriggerSetBattleMap(_AllStage[_NowStage-1],Stage1,_Menu,_PlayerTank,_Prop,EnemyList);
 			EnemyTypeList.assign(_AllStageEnemy[_NowStage - 1].begin(), _AllStageEnemy[_NowStage - 1].end());
 			_IfBattling = true;
@@ -170,7 +170,10 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			state = Settlement;
 		}
 		if (nChar == 'L') {
-			_PlayerLife+=1;
+			_PlayerRespawnTimes+=1;
+		}
+		if (nChar == 'D') {
+			_PlayerTank.SetLife(0);
 		}
 	}	
 	else {
@@ -221,15 +224,15 @@ void CGameStateRun::OnShow()
 	_Menu.OnShow();
 	if (_IfBattling) {
 		Stage1.OnShow();
-		if (_NowPropSize != 0) {
-			_Prop[_NowPropSize-1].OnShow();
-		}
 		_PlayerTank.OnShow();
 		for (int i = 0; i < 4; i++) {
 			EnemyList[i].OnShow();
 		}
 		if (Stage1.GetIfGrassInMap()) {
 			Stage1.OnShowGrass();
+		}
+		if (_NowPropSize != 0) {
+			_Prop[_NowPropSize-1].OnShow();
 		}
 		if (_IfGameOver) {
 			_GameOverSign.ShowBitmap();
@@ -249,9 +252,14 @@ void CGameStateRun::OnShowText() {
 	CTextDraw::ChangeFontLog(pDC, 15, "STZhongsong", RGB(255, 255, 255));
 	CTextDraw::Print(pDC, 0, 70, ("EnemyNums:" + to_string(_EnemyExistNum)));
 	CTextDraw::Print(pDC, 0, 90, ("PlayerRespawnTimes:" + to_string(_PlayerLife)));
+	//CTextDraw::Print(pDC, 0, 50, ("EatItem:"+to_string(_IfPlayerEatItem)));
+	CTextDraw::Print(pDC, 0, 90, ("PlayerRespawnTimes:" + to_string(_PlayerRespawnTimes)));
 	CTextDraw::Print(pDC, 0, 110, ("PlayerLife:" + to_string(_PlayerTank.GetLife())));
+	CTextDraw::Print(pDC, 0, 130, ("Bullet Position:" + to_string(_AllBullet[0]->GetNowFrontPlace()[0][0]) +","+ to_string(_AllBullet[0]->GetNowFrontPlace()[0][1])));
 	CTextDraw::Print(pDC, 0, 500, ("Press L Add RespawnTimes"));
 	CTextDraw::Print(pDC, 0, 520, ("Press A Jump to Next Stage"));
+	CTextDraw::Print(pDC, 0, 540, ("Press D Kill Yourself"));
+	
 
 
 	for (int i = 0; i < 4; i++){
@@ -260,6 +268,12 @@ void CGameStateRun::OnShowText() {
 			CTextDraw::Print(pDC,EnemyList[i].GetX1(), EnemyList[i].GetY1(), to_string(EnemyList[i].GetEnemyScore()));
 		}
 	}
+	if (state == Battle){
+		CTextDraw::ChangeFontLog(pDC, 42, "STZhongsong", RGB(0, 0, 0));
+		CTextDraw::Print(pDC, 1035, 515, (to_string(_PlayerRespawnTimes)));
+		CTextDraw::Print(pDC, 1100, 755, ("1"));
+	}
+	
 	CDDraw::ReleaseBackCDC();
 }
 bool CGameStateRun::IfHaveEnemy() {
@@ -289,12 +303,12 @@ void CGameStateRun::TriggerAllProp() {
 			if (IfResetPropTime(i, _Prop[i])) {
 				continue;
 			}
-			event.TriggerGetProps(_Prop[i], Stage1, _PlayerTank, EnemyList,_EnemyExistNum);
+			event.TriggerGetProps(_Prop[i], Stage1, _PlayerTank, EnemyList,_EnemyExistNum,_PlayerRespawnTimes);
 		}
 	}
 }
 void CGameStateRun::IfGameOver() {
-	if (_PlayerLife == 0 && _PlayerTank.GetTankState() == CTank::Death) {
+	if (_PlayerRespawnTimes == 0 && _PlayerTank.GetTankState() == CTank::Death) {
 		_IfGameOver = true;
 	}
 }
@@ -313,7 +327,7 @@ void CGameStateRun::PlayerOnMove() {
 		if (_PlayerTank.GetIfRespawnanimationdone()) {
 			_PlayerTank.SetPlayerInit();
 			_isHoldDownKey = _isHoldUpKey = _isHoldLeftKey = _isHoldRightKey = false;
-			_PlayerLife -= 1;
+			_PlayerRespawnTimes -= 1;
 		}
 		break;
 	case CPlayer::Alive:
@@ -329,7 +343,7 @@ void CGameStateRun::PlayerOnMove() {
 		}
 		break;
 	case CPlayer::Death:
-		if ( _PlayerLife > 0) {
+		if ( _PlayerRespawnTimes > 0) {
 			_PlayerTank.SetPlayerReSpawn();
 		}	
 		break;
@@ -434,7 +448,7 @@ void CGameStateRun::EnemyAllBulletCollision() {
 }
 void CGameStateRun::AllBulletCollision() {
 	for (const auto &i : {0,1} ) { // player's bullet
-		if ( ! _AllBullet[i]->GetAlreadyFire()) continue; 
+		if ( !_AllBullet[i]->GetAlreadyFire()) continue; 
 		switch (i)
 		{
 		case 0:
@@ -469,6 +483,7 @@ bool CGameStateRun::ShootCollision(CBullet Bullet, int TankLevel,int who) {
 			if (Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 7 || Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 7) {
 				Stage1.SetHomeBreak();
 				_IfGameOver = true;
+				PlayAudio(AUDIO_HitHomeOrPlayer, false);
 				GameOverClock = clock();
 			}
 			if (who == BulletOwner::Player){

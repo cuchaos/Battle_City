@@ -31,7 +31,7 @@ void CGameStateRun::OnBeginState()
 	_IfGameOver = false;
 	IfGotoNextStage = false;
 	_isHoldDownKey = _isHoldUpKey = _isHoldLeftKey = _isHoldRightKey = false;
-	_ScoreClock = { 0,0,0,0 };
+	_ScoreClock = { 0,0,0,0,0,0,0,0,0};
 	_MouseX = 0;
 	_MouseY = 0;
 	_OnIceCountDown = 0;
@@ -62,6 +62,7 @@ void CGameStateRun::OnMove()
 			_IfSettling = false;
 			_NowPropSize = 0;
 			_EnemyExistNum = 20;
+			DeadEnemyList = { 0,0,0,0 };
 			break;
 		case Battle:
 			TriggerAllProp();
@@ -70,7 +71,7 @@ void CGameStateRun::OnMove()
 			AllBulletCollision();
 			AllBulletFly();
 			if (_IfGameOver) {
-				SetGameOverAndGotoLobby();
+				SetGameOverAndGotoSettlement();
 			}
 			_TimerFinish = clock();
 			break;
@@ -103,6 +104,9 @@ void CGameStateRun::OnMove()
 		IfGameOver();
 		break;
 	case Settlement:
+		if (_IfGameOver && !_IfSettling) {
+			GotoGameState(GAME_STATE_INIT);
+		}
 		if (!_IfSettling) {
 			state = PreBattle;
 		}
@@ -240,6 +244,25 @@ void CGameStateRun::OnShow()
 	}
 	OnShowText();
 }
+void CGameStateRun::OnShowScore(CDC* pDC, CFont*& fp) {
+	for (int i = 0; i < 4; i++) {
+		if (EnemyList[i].GetTankState() == EnemyList[i].Death && clock() - _ScoreClock[i] <= 750 && EnemyList[i].GetIfexploded()) {
+			CTextDraw::ChangeFontLog(pDC, 48, "STZhongsong", RGB(255, 255, 255));
+			CTextDraw::Print(pDC, EnemyList[i].GetX1(), EnemyList[i].GetY1(), to_string(EnemyList[i].GetEnemyScore()));
+		}
+	}
+	int nowpropindex = _NowPropSize - 1;
+	if (nowpropindex < 0) {
+		return;
+	}
+	if (!_Prop[nowpropindex].GetIfTouched()) {
+		_ScoreClock[4 + nowpropindex] = clock();
+	}
+	if (_Prop[nowpropindex].GetIfTouched() && clock() - _ScoreClock[4+nowpropindex] <= 750) {
+		CTextDraw::ChangeFontLog(pDC, 48, "STZhongsong", RGB(255, 255, 255));
+		CTextDraw::Print(pDC, _Prop[nowpropindex].GetX(), _Prop[nowpropindex].GetY(), to_string(500));
+	}
+}
 void CGameStateRun::OnShowText() {
 	CDC *pDC = CDDraw::GetBackCDC();
 	CFont *fp;
@@ -251,7 +274,6 @@ void CGameStateRun::OnShowText() {
 	_Menu.OnShowText(pDC, fp);
 	CTextDraw::ChangeFontLog(pDC, 15, "STZhongsong", RGB(255, 255, 255));
 	CTextDraw::Print(pDC, 0, 70, ("EnemyNums:" + to_string(_EnemyExistNum)));
-	//CTextDraw::Print(pDC, 0, 90, ("PlayerRespawnTimes:" + to_string(_PlayerLife)));
 	//CTextDraw::Print(pDC, 0, 50, ("EatItem:"+to_string(_IfPlayerEatItem)));
 	CTextDraw::Print(pDC, 0, 90, ("PlayerRespawnTimes:" + to_string(_PlayerRespawnTimes)));
 	CTextDraw::Print(pDC, 0, 110, ("PlayerLife:" + to_string(_PlayerTank.GetLife())));
@@ -262,16 +284,8 @@ void CGameStateRun::OnShowText() {
 	CTextDraw::Print(pDC, 0, 500, ("Press L Add RespawnTimes"));
 	CTextDraw::Print(pDC, 0, 520, ("Press A Jump to Next Stage"));
 	CTextDraw::Print(pDC, 0, 540, ("Press D Kill Yourself"));
-	
-
-
-	for (int i = 0; i < 4; i++){
-		if (EnemyList[i].GetTankState() == EnemyList[i].Death && clock() - _ScoreClock[i] <= 750 && EnemyList[i].GetIfexploded()) {
-			CTextDraw::ChangeFontLog(pDC, 48, "STZhongsong", RGB(255,255,255));
-			CTextDraw::Print(pDC,EnemyList[i].GetX1(), EnemyList[i].GetY1(), to_string(EnemyList[i].GetEnemyScore()));
-		}
-	}
 	if (state == Battle){
+		OnShowScore(pDC, fp);
 		CTextDraw::ChangeFontLog(pDC, 42, "STZhongsong", RGB(0, 0, 0));
 		CTextDraw::Print(pDC, 1035, 515, (to_string(_PlayerRespawnTimes)));
 		CTextDraw::Print(pDC, 1100, 755, ("1"));
@@ -306,7 +320,7 @@ void CGameStateRun::TriggerAllProp() {
 			if (IfResetPropTime(i, _Prop[i])) {
 				continue;
 			}
-			event.TriggerGetProps(_Prop[i], Stage1, _PlayerTank, EnemyList,_EnemyExistNum,_PlayerRespawnTimes);
+			event.TriggerGetProps(_Prop[i], Stage1, _PlayerTank, EnemyList,_EnemyExistNum,_PlayerRespawnTimes,DeadEnemyList);
 		}
 	}
 }
@@ -315,9 +329,13 @@ void CGameStateRun::IfGameOver() {
 		_IfGameOver = true;
 	}
 }
-void CGameStateRun::SetGameOverAndGotoLobby() {
+void CGameStateRun::SetGameOverAndGotoSettlement() {
 	if (clock() - GameOverClock > 5000) {
-		GotoGameState(GAME_STATE_INIT);
+		_IfBattling = false;
+		_IfSettling = true;
+		Stage1.SetIfShowMap(false);
+		event.TriggerSettlement(_Menu, DeadEnemyList, _NowTotalScore, _TheHighestScore, _NowStage);
+		state = Settlement;
 	}
 	else {
 		event.TriggerGameOver(_GameOverSign);
@@ -411,12 +429,13 @@ void CGameStateRun::PlayerBulletCollision(BulletOrder Order) {
 		if (BulletHitTank(*CurrentBullet, &_PlayerTank, &enemy, Order)) {
 			enemy.SetLife(enemy.GetLife() - 1);
 			if (enemy.GetLife() <= 0) { 
-				_EnemyExistNum -= 1; 
+				_EnemyExistNum -= 1;
+				DeadEnemyList[enemy.GetEnemyType()] += 1;
 				if (enemy.GetEnemyHaveItem()) {
 				event.TriggerSetProps(_Prop, _NowPropSize);
 				enemy.SetEnemyHaveItem(false);
 				_NowPropSize += 1;
-			}
+				}
 			}
 			_NowTotalScore += enemy.GetEnemyScore();
 			PlayAudio(AUDIO_Explosion,false);

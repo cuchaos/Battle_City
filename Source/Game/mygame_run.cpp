@@ -358,7 +358,7 @@ void CGameStateRun::AllEnemyOnMove() {
 				&& enemy.GetIfexploded()) {
 				event.TriggerUpdateMap(Stage1);
 				int RespawnEnemyNumber = (EnemyTypeList[0] + EnemyTypeList[1] + EnemyTypeList[2] + EnemyTypeList[3]);
-				if (RespawnEnemyNumber % 4 == 0 && RespawnEnemyNumber != 0) {
+				if (RespawnEnemyNumber % 4 == 0 && RespawnEnemyNumber != 20) {
 					event.TriggerReSetProps(_Prop);
 					EnemyList[i].SetEnemyHaveItem(true);
 				}

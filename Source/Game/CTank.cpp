@@ -111,6 +111,9 @@ bool CTank::GetIfexploded() {
 bool CTank::GetTankCollision() {
 	return _TankCollision;
 }
+int CTank::GetBitmapIndex() {
+	return _Tank.GetFrameIndexOfBitmap();
+}
 void CTank::SetTankCollision(bool n) {
 	_TankCollision = n;
 }

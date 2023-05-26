@@ -17,7 +17,8 @@ namespace game_framework {
 		void TankExpolsion() override;
 		void Animation() override;
 		void LevelUP();
-
+		
+		
 		bool GetIfInvicible();
 		bool GetIfFire(int FireOrder) override;
 

@@ -37,6 +37,7 @@ namespace game_framework {
 		bool GetIfRespawnanimationdone();
 		bool GetIfexploded();
 		bool GetTankCollision();
+		int GetBitmapIndex();
 		CMovingBitmap GetTankBitmap();
 
 		void SetTankCollision(bool n);

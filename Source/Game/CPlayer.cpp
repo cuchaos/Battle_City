@@ -20,8 +20,6 @@ CPlayer::CPlayer() : CTank(){
 }
 void CPlayer::SetPlayerInit() {
 	_TankState = Alive;
-	_OriginAngle = Up;
-	_TurnAngle = Up;
 	_NowGrid = { (_X - 100) / Width, _Y / Height };
 	_OffsetXY = { 0,0 };
 	_IfInvicible = false;
@@ -31,8 +29,10 @@ void CPlayer::SetPlayerInit() {
 	_Life = 1;
 	_RespawnAnimationNum = 0;
 	_SpawnInvicibleClock = clock();
-	_Tank.SetFrameIndexOfBitmap(_Frameindex);
+	_OriginAngle = Up;
+	_TurnAngle = Up;
 	SetFaceDirection();
+	_Tank.SetFrameIndexOfBitmap(_Frameindex);
 }
 void CPlayer::SetPlayerReSpawn() {
 	if (_IfExploded) {

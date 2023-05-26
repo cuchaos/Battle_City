@@ -278,6 +278,9 @@ void CGameStateRun::OnShowText() {
 	CTextDraw::Print(pDC, 0, 90, ("PlayerRespawnTimes:" + to_string(_PlayerRespawnTimes)));
 	CTextDraw::Print(pDC, 0, 110, ("PlayerLife:" + to_string(_PlayerTank.GetLife())));
 	CTextDraw::Print(pDC, 0, 130, ("Bullet Position:" + to_string(_AllBullet[0]->GetNowFrontPlace()[0][0]) +","+ to_string(_AllBullet[0]->GetNowFrontPlace()[0][1])));
+	CTextDraw::Print(pDC, 0, 150, ("PlayerAngle:" + to_string(_PlayerTank.GetOriginAngle())));
+	CTextDraw::Print(pDC, 0, 170, ("PlayerBitmapIndex:" + to_string(_PlayerTank.GetBitmapIndex())));
+	CTextDraw::Print(pDC, 0, 190, ("PlayerHoleKey:" + to_string(_HoldKey)));
 	CTextDraw::Print(pDC, 0, 500, ("Press L Add RespawnTimes"));
 	CTextDraw::Print(pDC, 0, 520, ("Press A Jump to Next Stage"));
 	CTextDraw::Print(pDC, 0, 540, ("Press D Kill Yourself"));
@@ -343,8 +346,8 @@ void CGameStateRun::PlayerOnMove() {
 	{
 	case CPlayer::Spawn:
 		if (_PlayerTank.GetIfRespawnanimationdone()) {
-			_PlayerTank.SetPlayerInit();
 			_isHoldDownKey = _isHoldUpKey = _isHoldLeftKey = _isHoldRightKey = false;
+			_PlayerTank.SetPlayerInit();
 			_PlayerRespawnTimes -= 1;
 		}
 		break;

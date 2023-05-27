@@ -96,6 +96,7 @@ namespace game_framework {
 		void OnMouseMove(UINT nFlags, CPoint point);	
 		void OnShow();
 		void OnShowText();
+		void OnShowScore(CDC* pDC, CFont*& fp);
 		Map Stage1;
 		bool _isHoldUpKey, _isHoldDownKey, _isHoldRightKey, _isHoldLeftKey;
 		int _HoldKey;
@@ -143,7 +144,6 @@ namespace game_framework {
 		void TriggerAllProp();
 		bool IfResetPropTime(int NowPropIndex, GameProps NowProp);
 		void RandomSpawnTank(int num);
-		void OnShowScore(CDC* pDC, CFont*& fp);
 		// GameState transformation
 		InGameState state;
 		void IfGameOver();
@@ -169,7 +169,8 @@ namespace game_framework {
 		int _NowPropSize;  // the var that record prop's size
 		int _OnIceCountDown; // If we on ice,we should go without any keydown,this is 
 		// the go on counter 2 Grid,so is 64 pixel
-		bool IfGotoNextStage, _IfGameOver;
+		bool _IfGotoNextStage, _IfGameOver;
+		bool _IfNeedShowPropScore;
 		clock_t GotoNextStageDelay, GameOverClock;
 		clock_t _EnemyReSpawnLastTime, _TimerFinish;
 		vector<clock_t> _ScoreClock;

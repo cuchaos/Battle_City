@@ -29,9 +29,10 @@ void CGameStateRun::OnBeginState()
 	_IfBattling = false;
 	_IfSettling = false;
 	_IfGameOver = false;
-	IfGotoNextStage = false;
+	_IfGotoNextStage = false;
+	_IfNeedShowPropScore = false;
 	_isHoldDownKey = _isHoldUpKey = _isHoldLeftKey = _isHoldRightKey = false;
-	_ScoreClock = { 0,0,0,0,0,0,0,0,0};
+	_ScoreClock = { 0,0,0,0,0};
 	_MouseX = 0;
 	_MouseY = 0;
 	_OnIceCountDown = 0;
@@ -58,7 +59,7 @@ void CGameStateRun::OnMove()
 			EnemyTypeList.assign(_AllStageEnemy[_NowStage - 1].begin(), _AllStageEnemy[_NowStage - 1].end());
 			_IfBattling = true;
 			_IfGameOver = false;
-			IfGotoNextStage = false;
+			_IfGotoNextStage = false;
 			_IfSettling = false;
 			_NowPropSize = 0;
 			_EnemyExistNum = 20;
@@ -89,9 +90,9 @@ void CGameStateRun::OnMove()
 		break;
 	case Battle:
 		if (_EnemyExistNum == 0) {
-			if (!IfGotoNextStage) {
+			if (!_IfGotoNextStage) {
 				GotoNextStageDelay = clock();
-				IfGotoNextStage = true;
+				_IfGotoNextStage = true;
 			}
 			if (clock() - GotoNextStageDelay >= 2500) {
 				_IfBattling = false;
@@ -251,16 +252,19 @@ void CGameStateRun::OnShowScore(CDC* pDC, CFont*& fp) {
 			CTextDraw::Print(pDC, EnemyList[i].GetX1(), EnemyList[i].GetY1(), to_string(EnemyList[i].GetEnemyScore()));
 		}
 	}
-	int nowpropindex = _NowPropSize - 1;
-	if (nowpropindex < 0) {
+	int Nowpropindex = _NowPropSize - 1;
+	if (Nowpropindex < 0) {
 		return;
 	}
-	if (!_Prop[nowpropindex].GetIfTouched()) {
-		_ScoreClock[4 + nowpropindex] = clock();
-	}
-	if (_Prop[nowpropindex].GetIfTouched() && clock() - _ScoreClock[4+nowpropindex] <= 750) {
+	if (_IfNeedShowPropScore) {
 		CTextDraw::ChangeFontLog(pDC, 48, "STZhongsong", RGB(255, 255, 255));
-		CTextDraw::Print(pDC, _Prop[nowpropindex].GetX(), _Prop[nowpropindex].GetY(), to_string(500));
+		CTextDraw::Print(pDC, _Prop[Nowpropindex].GetX(), _Prop[Nowpropindex].GetY(), to_string(500));
+		if (clock() - _ScoreClock[4] >= 750) {
+			_IfNeedShowPropScore = false;
+		}
+	}
+	else {
+		_ScoreClock[4] = clock();
 	}
 }
 void CGameStateRun::OnShowText() {
@@ -274,7 +278,6 @@ void CGameStateRun::OnShowText() {
 	_Menu.OnShowText(pDC, fp);
 	CTextDraw::ChangeFontLog(pDC, 15, "STZhongsong", RGB(255, 255, 255));
 	CTextDraw::Print(pDC, 0, 70, ("EnemyNums:" + to_string(_EnemyExistNum)));
-	//CTextDraw::Print(pDC, 0, 50, ("EatItem:"+to_string(_IfPlayerEatItem)));
 	CTextDraw::Print(pDC, 0, 90, ("PlayerRespawnTimes:" + to_string(_PlayerRespawnTimes)));
 	CTextDraw::Print(pDC, 0, 110, ("PlayerLife:" + to_string(_PlayerTank.GetLife())));
 	CTextDraw::Print(pDC, 0, 130, ("Bullet Position:" + to_string(_AllBullet[0]->GetNowFrontPlace()[0][0]) +","+ to_string(_AllBullet[0]->GetNowFrontPlace()[0][1])));
@@ -317,6 +320,9 @@ void CGameStateRun::TriggerAllProp() {
 	for (int i = _NowPropSize - 1; i > -1; i--) {
 		if ((CMovingBitmap::IsOverlap(_PlayerTank.GetTankBitmap(), _Prop[i].GetPropBitmap())
 			|| _Prop[i].GetIfTouched()) && _Prop[i].GetIfExist()) {
+			if (!_Prop[i].GetIfTouched()) {
+				_IfNeedShowPropScore = true;
+			}
 			if (IfResetPropTime(i, _Prop[i])) {
 				continue;
 			}

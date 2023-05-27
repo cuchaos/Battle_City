@@ -283,7 +283,7 @@ void Enemy::ENemyMoveDown() {
 	}
 	if (_KeepUP){
 		TurnFace(VK_UP);
-		if (clock() - _UpClock >= 1000) {
+		if (clock() - _UpClock >= 500) {
 			_KeepUP = false;
 		}
 	}
@@ -294,8 +294,8 @@ void Enemy::ENemyMoveDown() {
 		else {
 			if (_Times >=20) {
 				_RandomLR = rand() % 26;
-				if ((_X-100)/32 > 13) _RandomLR += ((_X - 100) / 32) - 13;
-				else if ((_X - 100) / 32 < 13) _RandomLR += ((_X - 100) / 32) - 13;
+				if ((_X-100)/32 > 13 && _Y>13) _RandomLR += ((_X - 100) / 32) - 13;
+				else if ((_X - 100) / 32 < 13 && _Y > 13) _RandomLR += ((_X - 100) / 32) - 13;
 				_Times = 0;
 			}
 			else{

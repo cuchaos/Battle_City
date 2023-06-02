@@ -13,11 +13,11 @@ namespace game_framework {
 		static void TriggerSelectingStage(Menu& GrayMenu); //use this func when choosing stage,and battle 
 		static void TriggerSettlement(Menu& SettlementMenu, vector<int>& StageEnemy, int& NowScore, int& TheHighestScore, int& NowStage);
 		static void TriggerGameOver(CMovingBitmap& GameOverSign);
-		static void TriggerSetBattleMap(vector<vector<int>>& Stage,Map& StageMap, Menu& BattleMenu, CPlayer& Player, vector<GameProps>& Props, vector<Enemy>& AllEnemy);
+		static void TriggerSetBattleMap(vector<vector<int>>& Stage,Map& StageMap, Menu& BattleMenu, CPlayer& Player, GameProps& Props, vector<Enemy>& AllEnemy);
 		static void TriggerUpdateMap(Map& StageMap);
 		static void TriggerNextStage(Map& StageMap, Menu& BattleMenu, int& EnemyNum, int& NowStage, vector<Enemy>& EnemyList);
-		static void TriggerSetProps(vector<GameProps>& Props,int NowPropndex);
-		static void TriggerReSetProps(vector<GameProps>& Props);
-		static void TriggerGetProps(GameProps& Props, Map& StageMap, CPlayer& Player,vector<Enemy>& AllEnemy, int& EnemyNum , int& PlayerRespawnTimes,vector<int>& DeadEnemylist); // lost a enemy class
+		static void TriggerSetDropProp(GameProps& Prop);
+		static void TriggerCancelPropOnMap(GameProps& Prop);
+		static void TriggerPropsEffect(GameProps& Props, Map& StageMap, CPlayer& Player,vector<Enemy>& AllEnemy, int& EnemyNum , int& PlayerRespawnTimes,vector<int>& DeadEnemylist); // lost a enemy class
 	};
 }

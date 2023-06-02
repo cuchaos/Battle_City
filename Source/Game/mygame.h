@@ -175,6 +175,7 @@ namespace game_framework {
 		clock_t _EnemyReSpawnLastTime, _TimerFinish;
 		vector<clock_t> _ScoreClock;
 		CMovingBitmap _GameOverSign;
+		GameProps cheatprop;
 	};
 
 	class CGameStateOver : public CGameState {

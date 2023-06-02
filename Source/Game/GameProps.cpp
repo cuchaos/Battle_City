@@ -134,4 +134,6 @@ void GameProps::OnShow() {
 		_Props.ShowBitmap();
 	}
 }
-
+void GameProps::SetPropType(ItemType type) {
+	_Type = type;
+}

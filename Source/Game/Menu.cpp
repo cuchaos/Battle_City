@@ -262,6 +262,10 @@ void Menu::OnShowText(CDC *pDC, CFont* &fp) {
 					_NowCountTank++;
 					_Last_time = clock();
 				}
+				else if (_NowCountTank == 3) {
+					int TotalNum = _Dialog[0][0] + _Dialog[0][1] + _Dialog[0][2] + _Dialog[0][3];
+					CTextDraw::Print(pDC, 500, 720, to_string(TotalNum));
+				}
 				if (_IfAnimation == true) {
 					_IfAnimation = false;
 				}

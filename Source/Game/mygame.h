@@ -168,6 +168,7 @@ namespace game_framework {
 		int _EnemyExistNum;
 		int _NowPropSize;  // the var that record prop's size
 		int _OnIceCountDown; // If we on ice,we should go without any keydown,this is 
+		int _NeedAddScore;
 		// the go on counter 2 Grid,so is 64 pixel
 		bool _IfGotoNextStage, _IfGameOver;
 		bool _IfNeedShowPropScore;

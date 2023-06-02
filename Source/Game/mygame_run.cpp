@@ -132,6 +132,7 @@ void CGameStateRun::OnInit()
 		_Prop.push_back(GameProps());
 		_Prop[i].OnInit();
 	}
+	cheatprop.OnInit();
 	for (int i = 0; i < 4; ++i) {
 		EnemyList[i].LoadBitmap();
 	}
@@ -179,6 +180,51 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		}
 		if (nChar == 'D') {
 			_PlayerTank.SetLife(0);
+		}
+		if (nChar == 'I'){
+			if (_PlayerTank.GetIfInvicible()==false){
+				_PlayerTank.SetIfInvicible(true);
+			}
+			else{
+				_PlayerTank.SetIfInvicible(false);
+			}
+		}
+		switch (nChar){
+			case '1':
+				cheatprop.SetGameProps();
+				cheatprop.SetPropType(GameProps::ItemType::Chariot);
+				break;
+			case '2':
+				cheatprop.SetGameProps();
+				cheatprop.SetPropType(GameProps::ItemType::Clock);
+				break;
+			case '3':
+				cheatprop.SetGameProps();
+				cheatprop.SetPropType(GameProps::ItemType::Handgrenade);
+				break;
+			case '4':
+				cheatprop.SetGameProps();
+				cheatprop.SetPropType(GameProps::ItemType::Pistol);
+				break;
+			case '5':
+				cheatprop.SetGameProps();
+				cheatprop.SetPropType(GameProps::ItemType::Ship);
+				break;
+			case '6':
+				cheatprop.SetGameProps();
+				cheatprop.SetPropType(GameProps::ItemType::Shovel);
+				break;
+			case '7':
+				cheatprop.SetGameProps();
+				cheatprop.SetPropType(GameProps::ItemType::Star);
+				break;
+			case '8':
+				cheatprop.SetGameProps();
+				cheatprop.SetPropType(GameProps::ItemType::Steel_helmet);
+				break;
+			case 'P':
+				event.TriggerGetProps(cheatprop, Stage1, _PlayerTank, EnemyList, _EnemyExistNum, _PlayerRespawnTimes, DeadEnemyList);
+				break;
 		}
 	}	
 	else {
@@ -286,7 +332,10 @@ void CGameStateRun::OnShowText() {
 	CTextDraw::Print(pDC, 0, 190, ("PlayerHoleKey:" + to_string(_HoldKey)));
 	CTextDraw::Print(pDC, 0, 500, ("Press L Add RespawnTimes"));
 	CTextDraw::Print(pDC, 0, 520, ("Press A Jump to Next Stage"));
-	CTextDraw::Print(pDC, 0, 540, ("Press D Kill Yourself"));
+	CTextDraw::Print(pDC, 0, 540, ("Press D Respawn"));
+	CTextDraw::Print(pDC, 0, 560, ("Press I Open/Close Invicible Mode"));
+	CTextDraw::Print(pDC, 0, 580, ("Press 1~8 Select PropType P Spawn Prop"));
+	
 	if (state == Battle){
 		OnShowScore(pDC, fp);
 		CTextDraw::ChangeFontLog(pDC, 42, "STZhongsong", RGB(0, 0, 0));

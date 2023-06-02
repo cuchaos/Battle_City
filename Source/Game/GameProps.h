@@ -27,6 +27,7 @@ namespace game_framework {
 		void SetIfShow(bool IfShow);
 		void SetIfExist(bool IfExist);
 		void SetIfCountDown(bool IfCountDown);
+		void SetPropType(ItemType type);
 		void ReStartAllProp();
 
 		int GetX();

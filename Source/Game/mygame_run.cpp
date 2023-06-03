@@ -311,7 +311,7 @@ void CGameStateRun::OnShowText() {
 	CTextDraw::Print(pDC, 0, 520, ("Press A Jump to Next Stage"));
 	CTextDraw::Print(pDC, 0, 540, ("Press D Respawn"));
 	CTextDraw::Print(pDC, 0, 560, ("Press I Open/Close Invicible Mode"));
-	CTextDraw::Print(pDC, 0, 580, ("Press 1~8 Select PropType P Spawn Prop"));
+	CTextDraw::Print(pDC, 0, 580, ("Press 1~8 Select PropType"));
 	
 	if (state == Battle){
 		OnShowScore(pDC, fp);

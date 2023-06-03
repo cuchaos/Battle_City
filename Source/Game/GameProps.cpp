@@ -67,8 +67,9 @@ void GameProps::SetIfExist(bool IfExist) {
 }
 void GameProps::ReStartAllProp() {
 	fill(_AllPropsIfEffect.begin(), _AllPropsIfEffect.end(), false);
+	_IfExist = false;
 }
-vector<bool> GameProps::GetAllPropType() {
+vector<bool> GameProps::GetAllPropIfEffect() {
 	return _AllPropsIfEffect;
 }
 GameProps::ItemType GameProps::GetType() {

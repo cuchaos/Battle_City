@@ -30,7 +30,7 @@ namespace game_framework {
 		int GetY();
 		ItemType GetType();
 		bool GetIfExist();
-		vector<bool> GetAllPropType();
+		vector<bool> GetAllPropIfEffect();
 		CMovingBitmap GetPropBitmap();
 	private:
 		CMovingBitmap _PropPicture;

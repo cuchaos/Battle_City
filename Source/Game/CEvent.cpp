@@ -47,6 +47,8 @@ void Event::TriggerSetBattleMap(vector<vector<int>>& Stage,Map& StageMap, Menu& 
 	for (auto& enemy : AllEnemy) {
 		if (enemy.GetTankState() == Enemy::Alive) {
 			enemy.SetLife(0);
+			enemy._Bullet.SetBulletAlreadyFire(false);
+			enemy._Bullet.SetIfBoom(false);
 			enemy.SetEnemyIfExplision(true);
 		}
 		enemy.SetIfGetTimeStop(false);
@@ -70,14 +72,12 @@ void Event::TriggerNextStage(Map& StageMap, Menu& BattleMenu, int& EnemyNum, int
 	}
 	StageMap.SetIfShowMap(false);
 	EnemyNum = 20;
-	//GotoGameState(GAME_STATE_RUN);
-
 }
 void Event::TriggerSetDropProp(GameProps& Prop) {
 	Prop.SetDropProp();
 }
 void Event::TriggerPropsEffect(GameProps& Props,Map& StageMap,CPlayer& Player,vector<Enemy>& AllEnemy,int& EnemyNum,int& PlayerRespawnTimes,vector<int>& DeadEnemyList) {
-	vector<bool> PropsIfEffect = Props.GetAllPropType();
+	vector<bool> PropsIfEffect = Props.GetAllPropIfEffect();
 	for (int i = 0;i < 8;i++) {
 		if (!PropsIfEffect[i]) {
 			continue;

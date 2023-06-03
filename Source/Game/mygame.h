@@ -141,7 +141,7 @@ namespace game_framework {
 		void PlayerOnMove();
 		void AllEnemyOnMove();
 		void AllBulletFly();
-		void TriggerAllProp();
+		void IfTouchPropOnMap();
 		bool IfResetPropTime(int NowPropIndex, GameProps NowProp);
 		void RandomSpawnTank(int num);
 		// GameState transformation
@@ -160,13 +160,12 @@ namespace game_framework {
 		vector<Enemy> EnemyList = vector<Enemy>(4);
 		vector<int> EnemyTypeList = { 0,0,0,0 };
 		vector<int> DeadEnemyList = { 0,0,0,0 };
-		vector<GameProps> _Prop;
 		vector<CBullet*> _AllBullet; // index 0 and 1 is player's , index >= 2 is enemy's
+		GameProps _Prop;
 		bool _IfBattling, _IfSettling, _IfSelecting;
 		int _NowStage;
 		int _PlayerRespawnTimes;
 		int _EnemyExistNum;
-		int _NowPropSize;  // the var that record prop's size
 		int _OnIceCountDown; // If we on ice,we should go without any keydown,this is 
 		int _NeedAddScore;
 		// the go on counter 2 Grid,so is 64 pixel

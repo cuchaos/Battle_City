@@ -37,7 +37,6 @@ void CGameStateRun::OnBeginState()
 	_MouseY = 0;
 	_OnIceCountDown = 0;
 	_PlayerRespawnTimes = 2;
-	_NowPropSize = 0;
 	_EnemyReSpawnLastTime = clock();
 	_GameOverSign.SetTopLeft(516, 900);
 }
@@ -61,12 +60,12 @@ void CGameStateRun::OnMove()
 			_IfGameOver = false;
 			_IfGotoNextStage = false;
 			_IfSettling = false;
-			_NowPropSize = 0;
 			_EnemyExistNum = 20;
 			DeadEnemyList = { 0,0,0,0 };
 			break;
 		case Battle:
-			TriggerAllProp();
+			IfTouchPropOnMap();
+			event.TriggerPropsEffect(_Prop, Stage1, _PlayerTank, EnemyList, _EnemyExistNum, _PlayerRespawnTimes, DeadEnemyList);
 			PlayerOnMove();
 			AllEnemyOnMove();
 			AllBulletCollision();
@@ -128,10 +127,7 @@ void CGameStateRun::OnInit()
 	_Menu.LoadBitMap();
 	_PlayerTank.LoadBitmap();
 	_GameOverSign.LoadBitmapByString({ "resources/GameOverSign.bmp" }, RGB(0, 0, 0));
-	for (int i = 0; i < 5; i++) {
-		_Prop.push_back(GameProps());
-		_Prop[i].OnInit();
-	}
+	_Prop.OnInit();
 	cheatprop.OnInit();
 	for (int i = 0; i < 4; ++i) {
 		EnemyList[i].LoadBitmap();
@@ -189,6 +185,7 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				_PlayerTank.SetIfInvicible(false);
 			}
 		}
+		/*
 		switch (nChar){
 			case '1':
 				cheatprop.SetGameProps();
@@ -226,6 +223,7 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				event.TriggerGetProps(cheatprop, Stage1, _PlayerTank, EnemyList, _EnemyExistNum, _PlayerRespawnTimes, DeadEnemyList);
 				break;
 		}
+		*/
 	}	
 	else {
 		if (!_IfSettling && state == SelectStage) {
@@ -282,9 +280,7 @@ void CGameStateRun::OnShow()
 		if (Stage1.GetIfGrassInMap()) {
 			Stage1.OnShowGrass();
 		}
-		if (_NowPropSize != 0) {
-			_Prop[_NowPropSize-1].OnShow();
-		}
+		_Prop.OnShow();
 		if (_IfGameOver) {
 			_GameOverSign.ShowBitmap();
 		}
@@ -297,20 +293,6 @@ void CGameStateRun::OnShowScore(CDC* pDC, CFont*& fp) {
 			CTextDraw::ChangeFontLog(pDC, 48, "STZhongsong", RGB(255, 255, 255));
 			CTextDraw::Print(pDC, EnemyList[i].GetX1(), EnemyList[i].GetY1(), to_string(EnemyList[i].GetEnemyScore()));
 		}
-	}
-	int Nowpropindex = _NowPropSize - 1;
-	if (Nowpropindex < 0) {
-		return;
-	}
-	if (_IfNeedShowPropScore) {
-		CTextDraw::ChangeFontLog(pDC, 48, "STZhongsong", RGB(255, 255, 255));
-		CTextDraw::Print(pDC, _Prop[Nowpropindex].GetX(), _Prop[Nowpropindex].GetY(), to_string(500));
-		if (clock() - _ScoreClock[4] >= 750) {
-			_IfNeedShowPropScore = false;
-		}
-	}
-	else {
-		_ScoreClock[4] = clock();
 	}
 }
 void CGameStateRun::OnShowText() {
@@ -354,34 +336,11 @@ bool CGameStateRun::IfHaveEnemy() {
 	}
 	return false;
 }
-bool CGameStateRun::IfResetPropTime(int NowPropIndex, GameProps NowProp) {
-	GameProps::ItemType NowPropType = _Prop[NowPropIndex].GetType();
-	if (NowPropIndex == _NowPropSize - 1 && _Prop[NowPropIndex].count(NowPropType) > 1
-		&& (NowPropType == GameProps::ItemType::Clock
-		|| NowPropType == GameProps::ItemType::Shovel
-		|| NowPropType == GameProps::ItemType::Steel_helmet) ) {
-		_Prop[_Prop[NowPropIndex].find(NowPropType)].SetIfCountDown(false);
-		_Prop[NowPropIndex].SetIfExist(false);
-		return true;
-	}
-	return false;
-}
-void CGameStateRun::TriggerAllProp() {
-	for (int i = _NowPropSize - 1; i > -1; i--) {
-		if ((CMovingBitmap::IsOverlap(_PlayerTank.GetTankBitmap(), _Prop[i].GetPropBitmap())
-			|| _Prop[i].GetIfTouched()) && _Prop[i].GetIfExist()) {
-			if (!_Prop[i].GetIfTouched()) {
-				_IfNeedShowPropScore = true;
-			}
-			if (IfResetPropTime(i, _Prop[i])) {
-				continue;
-			}
-			event.TriggerGetProps(_Prop[i], Stage1, _PlayerTank, EnemyList,_EnemyExistNum,_PlayerRespawnTimes,DeadEnemyList);
-			if (_NeedAddScore){//if eat prop have timer score will add loop
-				_NowTotalScore += 500;
-				_NeedAddScore = false;
-			}
-		}
+void CGameStateRun::IfTouchPropOnMap() {
+	if (_Prop.GetIfExist() 
+		&& (CMovingBitmap::IsOverlap(_PlayerTank.GetTankBitmap(), _Prop.GetPropBitmap()))) {
+		_Prop.SetPropEffectStart(_Prop.GetType());
+		_Prop.SetIfExist(false);
 	}
 }
 void CGameStateRun::IfGameOver() {
@@ -454,7 +413,7 @@ void CGameStateRun::AllEnemyOnMove() {
 				event.TriggerUpdateMap(Stage1);
 				int RespawnEnemyNumber = (EnemyTypeList[0] + EnemyTypeList[1] + EnemyTypeList[2] + EnemyTypeList[3]);
 				if (RespawnEnemyNumber % 4 == 0 && RespawnEnemyNumber != 20) {
-					event.TriggerReSetProps(_Prop);
+					event.TriggerCancelPropOnMap(_Prop);
 					EnemyList[i].SetEnemyHaveItem(true);
 					_NeedAddScore = true;
 				}
@@ -493,9 +452,8 @@ void CGameStateRun::PlayerBulletCollision(BulletOrder Order) {
 				_EnemyExistNum -= 1;
 				DeadEnemyList[enemy.GetEnemyType()] += 1;
 				if (enemy.GetEnemyHaveItem()) {
-				event.TriggerSetProps(_Prop, _NowPropSize);
+				event.TriggerSetDropProp(_Prop);
 				enemy.SetEnemyHaveItem(false);
-				_NowPropSize += 1;
 				}
 			}
 			_NowTotalScore += enemy.GetEnemyScore();

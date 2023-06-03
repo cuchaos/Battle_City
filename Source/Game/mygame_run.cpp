@@ -274,8 +274,9 @@ void CGameStateRun::OnShow()
 	if (_IfBattling) {
 		Stage1.OnShow();
 		_PlayerTank.OnShow();
-		for (int i = 0; i < 4; i++) {
-			EnemyList[i].OnShow();
+		for (auto& enemy : EnemyList) {
+			enemy.OnShow();
+			enemy._Bullet.OnShow();
 		}
 		if (Stage1.GetIfGrassInMap()) {
 			Stage1.OnShowGrass();
@@ -305,9 +306,8 @@ void CGameStateRun::OnShowText() {
 
 	_Menu.OnShowText(pDC, fp);
 	CTextDraw::ChangeFontLog(pDC, 15, "STZhongsong", RGB(255, 255, 255));
-	CTextDraw::Print(pDC, 0, 70, ("EnemyNums:" + to_string(_EnemyExistNum)));
-	CTextDraw::Print(pDC, 0, 90, ("PlayerRespawnTimes:" + to_string(_PlayerRespawnTimes)));
-	CTextDraw::Print(pDC, 0, 110, ("PlayerLife:" + to_string(_PlayerTank.GetLife())));
+	CTextDraw::Print(pDC, 0, 90, ("EnemyNums:" + to_string(_EnemyExistNum)));
+	CTextDraw::Print(pDC, 0, 110, ("PlayerLife(remaing Respawntimes):" + to_string(_PlayerRespawnTimes)));
 	CTextDraw::Print(pDC, 0, 130, ("Bullet Position:" + to_string(_AllBullet[0]->GetNowFrontPlace()[0][0]) +","+ to_string(_AllBullet[0]->GetNowFrontPlace()[0][1])));
 	CTextDraw::Print(pDC, 0, 150, ("PlayerAngle:" + to_string(_PlayerTank.GetOriginAngle())));
 	CTextDraw::Print(pDC, 0, 170, ("PlayerBitmapIndex:" + to_string(_PlayerTank.GetBitmapIndex())));

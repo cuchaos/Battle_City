@@ -371,7 +371,6 @@ void Enemy::OnShow() {
 			if(_IfExploded && clock())
 			break;
 		}
-		_Bullet.OnShow();
 	}
 }
 

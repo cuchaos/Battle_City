@@ -55,7 +55,9 @@ void CBullet::SetOwner(int who) {
 	_Owner = who;
 }
 void CBullet::SetIfBoom(bool Status) {
-	_Boom.ToggleAnimation();
+	if (Status) {
+		_Boom.ToggleAnimation();
+	}
 	_IfBoom = Status;
 }
 void CBullet::SetBulletAlreadyFire(bool BulletAlreadyFire) {
@@ -65,6 +67,7 @@ void CBullet::SetBulletFire(int TankX,int TankY,int TankDirect,int BulletSpeed) 
 	if (_AlreadyFire == false) {
 		_Bulletimage.SetFrameIndexOfBitmap(TankDirect);
 		_AlreadyFire = true;
+		_IfBoom = false;
 		_BulletSpeed = BulletSpeed;
 		_Direction = TankDirect;
 		_NowBackPlace[0][0] = TankX;

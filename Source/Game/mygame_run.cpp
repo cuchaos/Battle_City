@@ -329,7 +329,8 @@ void CGameStateRun::OnShowText() {
 	CTextDraw::Print(pDC, 0, 130, ("Bullet Position:" + to_string(_AllBullet[0]->GetNowFrontPlace()[0][0]) +","+ to_string(_AllBullet[0]->GetNowFrontPlace()[0][1])));
 	CTextDraw::Print(pDC, 0, 150, ("PlayerAngle:" + to_string(_PlayerTank.GetOriginAngle())));
 	CTextDraw::Print(pDC, 0, 170, ("PlayerBitmapIndex:" + to_string(_PlayerTank.GetBitmapIndex())));
-	CTextDraw::Print(pDC, 0, 190, ("PlayerHoleKey:" + to_string(_HoldKey)));
+	CTextDraw::Print(pDC, 0, 190, ("PlayerHoldKey:" + to_string(_HoldKey)));
+	CTextDraw::Print(pDC, 0, 210, ("PlayerScore:" + to_string(_NowTotalScore)));
 	CTextDraw::Print(pDC, 0, 500, ("Press L Add RespawnTimes"));
 	CTextDraw::Print(pDC, 0, 520, ("Press A Jump to Next Stage"));
 	CTextDraw::Print(pDC, 0, 540, ("Press D Respawn"));
@@ -376,6 +377,10 @@ void CGameStateRun::TriggerAllProp() {
 				continue;
 			}
 			event.TriggerGetProps(_Prop[i], Stage1, _PlayerTank, EnemyList,_EnemyExistNum,_PlayerRespawnTimes,DeadEnemyList);
+			if (_NeedAddScore){//if eat prop have timer score will add loop
+				_NowTotalScore += 500;
+				_NeedAddScore = false;
+			}
 		}
 	}
 }
@@ -451,6 +456,7 @@ void CGameStateRun::AllEnemyOnMove() {
 				if (RespawnEnemyNumber % 4 == 0 && RespawnEnemyNumber != 20) {
 					event.TriggerReSetProps(_Prop);
 					EnemyList[i].SetEnemyHaveItem(true);
+					_NeedAddScore = true;
 				}
 				enemy.SetEnemyReSpawn();
 			}

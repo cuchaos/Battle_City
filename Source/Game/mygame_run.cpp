@@ -129,6 +129,7 @@ void CGameStateRun::OnInit()
 	_GameOverSign.LoadBitmapByString({ "resources/GameOverSign.bmp" }, RGB(0, 0, 0));
 	_Prop.OnInit();
 	cheatprop.OnInit();
+	_HomeInvicible = false;
 	for (int i = 0; i < 4; ++i) {
 		EnemyList[i].LoadBitmap();
 	}
@@ -184,46 +185,39 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			else{
 				_PlayerTank.SetIfInvicible(false);
 			}
+			if (_HomeInvicible == false) {
+				_HomeInvicible = true;
+			}
+			else {
+				_HomeInvicible = false;
+			}
 		}
-		/*
 		switch (nChar){
 			case '1':
-				cheatprop.SetGameProps();
-				cheatprop.SetPropType(GameProps::ItemType::Chariot);
+				cheatprop.SetPropEffectStart(GameProps::ItemType::Chariot);
 				break;
 			case '2':
-				cheatprop.SetGameProps();
-				cheatprop.SetPropType(GameProps::ItemType::Clock);
+				cheatprop.SetPropEffectStart(GameProps::ItemType::Clock);
 				break;
 			case '3':
-				cheatprop.SetGameProps();
-				cheatprop.SetPropType(GameProps::ItemType::Handgrenade);
+				cheatprop.SetPropEffectStart(GameProps::ItemType::Handgrenade);
 				break;
 			case '4':
-				cheatprop.SetGameProps();
-				cheatprop.SetPropType(GameProps::ItemType::Pistol);
+				cheatprop.SetPropEffectStart(GameProps::ItemType::Pistol);
 				break;
 			case '5':
-				cheatprop.SetGameProps();
-				cheatprop.SetPropType(GameProps::ItemType::Ship);
+				cheatprop.SetPropEffectStart(GameProps::ItemType::Ship);
 				break;
 			case '6':
-				cheatprop.SetGameProps();
-				cheatprop.SetPropType(GameProps::ItemType::Shovel);
+				cheatprop.SetPropEffectStart(GameProps::ItemType::Shovel);
 				break;
 			case '7':
-				cheatprop.SetGameProps();
-				cheatprop.SetPropType(GameProps::ItemType::Star);
+				cheatprop.SetPropEffectStart(GameProps::ItemType::Star);
 				break;
 			case '8':
-				cheatprop.SetGameProps();
-				cheatprop.SetPropType(GameProps::ItemType::Steel_helmet);
-				break;
-			case 'P':
-				event.TriggerGetProps(cheatprop, Stage1, _PlayerTank, EnemyList, _EnemyExistNum, _PlayerRespawnTimes, DeadEnemyList);
+				cheatprop.SetPropEffectStart(GameProps::ItemType::Steel_helmet);
 				break;
 		}
-		*/
 	}	
 	else {
 		if (!_IfSettling && state == SelectStage) {
@@ -341,6 +335,7 @@ void CGameStateRun::IfTouchPropOnMap() {
 		&& (CMovingBitmap::IsOverlap(_PlayerTank.GetTankBitmap(), _Prop.GetPropBitmap()))) {
 		_Prop.SetPropEffectStart(_Prop.GetType());
 		_Prop.SetIfExist(false);
+		_NowTotalScore += 500;
 	}
 }
 void CGameStateRun::IfGameOver() {
@@ -415,7 +410,6 @@ void CGameStateRun::AllEnemyOnMove() {
 				if (RespawnEnemyNumber % 4 == 0 && RespawnEnemyNumber != 20) {
 					event.TriggerCancelPropOnMap(_Prop);
 					EnemyList[i].SetEnemyHaveItem(true);
-					_NeedAddScore = true;
 				}
 				enemy.SetEnemyReSpawn();
 			}
@@ -521,7 +515,7 @@ bool CGameStateRun::ShootCollision(CBullet Bullet, int TankLevel,int who) {
 			if (Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 4 || Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 5) {
 				Stage1.ShootWall(Bullet.GetDirection(), TankLevel, _tempcollision[1][1], _tempcollision[1][0]);
 			}
-			if (Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 7 || Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 7) {
+			if ((Stage1.GetType(_tempcollision[0][1], _tempcollision[0][0]) == 7 || Stage1.GetType(_tempcollision[1][1], _tempcollision[1][0]) == 7) && !_HomeInvicible) {
 				Stage1.SetHomeBreak();
 				_IfGameOver = true;
 				PlayAudio(AUDIO_HitHomeOrPlayer, false);

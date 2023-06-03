@@ -167,7 +167,6 @@ namespace game_framework {
 		int _PlayerRespawnTimes;
 		int _EnemyExistNum;
 		int _OnIceCountDown; // If we on ice,we should go without any keydown,this is 
-		int _NeedAddScore;
 		// the go on counter 2 Grid,so is 64 pixel
 		bool _IfGotoNextStage, _IfGameOver;
 		bool _IfNeedShowPropScore;
@@ -176,6 +175,8 @@ namespace game_framework {
 		vector<clock_t> _ScoreClock;
 		CMovingBitmap _GameOverSign;
 		GameProps cheatprop;
+		//cheat permeter
+		bool _HomeInvicible ;
 	};
 
 	class CGameStateOver : public CGameState {
